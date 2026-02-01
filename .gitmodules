@@ -1,0 +1,3 @@
+[submodule "labs"]
+	path = labs
+	url = git@github.com:NUS-EE4218/labs.git
