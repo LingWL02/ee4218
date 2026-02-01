@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-/* 
+/*
 ----------------------------------------------------------------------------------
 --	(c) Rajesh C Panicker, NUS
 --  Description : Template for the Matrix Multiply unit for the AXI Stream Coprocessor
@@ -20,31 +20,71 @@
 module matrix_multiply
 	#(	parameter width = 8, 			// width is the number of bits per location
 		parameter A_depth_bits = 3, 	// depth is the number of locations (2^number of address bits)
-		parameter B_depth_bits = 2, 
+		parameter B_depth_bits = 2,
 		parameter RES_depth_bits = 1
-	) 
+	)
 	(
-		input clk,										
+		input clk,
 		input Start,									// myip_v1_0 -> matrix_multiply_0.
-		output Done,									// matrix_multiply_0 -> myip_v1_0. Possibly reg.
-		
+		output reg Done,									// matrix_multiply_0 -> myip_v1_0. Possibly reg.
+
 		output A_read_en,  								// matrix_multiply_0 -> A_RAM. Possibly reg.
 		output [A_depth_bits-1:0] A_read_address, 		// matrix_multiply_0 -> A_RAM. Possibly reg.
 		input [width-1:0] A_read_data_out,				// A_RAM -> matrix_multiply_0.
-		
+
 		output B_read_en, 								// matrix_multiply_0 -> B_RAM. Possibly reg.
 		output [B_depth_bits-1:0] B_read_address, 		// matrix_multiply_0 -> B_RAM. Possibly reg.
 		input [width-1:0] B_read_data_out,				// B_RAM -> matrix_multiply_0.
-		
-		output RES_write_en, 							// matrix_multiply_0 -> RES_RAM. Possibly reg.
-		output [RES_depth_bits-1:0] RES_write_address, 	// matrix_multiply_0 -> RES_RAM. Possibly reg.
-		output [width-1:0] RES_write_data_in 			// matrix_multiply_0 -> RES_RAM. Possibly reg.
+
+		output reg 						RES_write_en, 							// matrix_multiply_0 -> RES_RAM. Possibly reg.
+		output reg [RES_depth_bits-1:0] RES_write_address, 	// matrix_multiply_0 -> RES_RAM. Possibly reg.
+		output reg [width-1:0] 			RES_write_data_in 			// matrix_multiply_0 -> RES_RAM. Possibly reg.
 	);
-	
+
 	// implement the logic to read A_RAM, read B_RAM, do the multiplication and write the results to RES_RAM
 	// Note: A_RAM and B_RAM are to be read synchronously. Read the wiki for more details.
+	reg temp;
+
+	reg state;
+
+	localparam IDLE = 1'b0;
+	localparam BUSY = 1'b1;
+
+	initial begin  // TODO add reset? simulation only
+		state = IDLE;
+		RES_write_en = 0;
+		RES_write_address = 0;
+		RES_write_data_in = 0;
+
+		temp = 0;
+	end
 
 	assign Done = Start; // dummy code. Change as appropriate.
+	always_ff @(posedge clk) begin
+		case (state)
+			IDLE: begin
+				temp <= 0;
+				RES_write_en <= 0;
+				RES_write_address <= 0;
+				RES_write_data_in <= 0;
+				Done <= 0;
+
+				if (Start) begin
+					state <= BUSY;
+				end
+			end
+			BUSY: begin
+				RES_write_en <= 1;
+				RES_write_address <= temp;
+				RES_write_data_in <= 8'hF0 + temp;
+
+				if (temp == 1'b1) begin
+					state <= IDLE;
+					Done <= 1'b1;
+				end
+			end
+		endcase
+	end
 
 endmodule
 
