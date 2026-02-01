@@ -63,16 +63,6 @@ module myip_v1_0
 //----------------------------------------
 // Implementation Section
 //----------------------------------------
-// In this section, we povide an example implementation of MODULE myip_v1_0
-// that does the following:
-//
-// 1. Read all inputs
-// 2. Add each input to the contents of register 'sum' which acts as an accumulator
-// 3. After all the inputs have been read, write out the content of 'sum', 'sum+1', 'sum+2', 'sum+3'
-//
-// You will need to modify this example for
-// MODULE myip_v1_0 to implement your coprocessor
-
 
 // RAM parameters for assignment 1
 	localparam A_depth_bits = 3;  	// 8 elements (A is a 2x4 matrix)
@@ -82,27 +72,27 @@ module myip_v1_0
 
 // wires (or regs) to connect to RAMs and matrix_multiply_0 for assignment 1
 // those which are assigned in an always block of myip_v1_0 shoud be changes to reg.
-	reg		A_write_en;								// myip_v1_0 -> A_RAM. To be assigned within myip_v1_0. Possibly reg.
-	reg		[A_depth_bits-1:0] A_write_address;		// myip_v1_0 -> A_RAM. To be assigned within myip_v1_0. Possibly reg.
-	reg		[width-1:0] A_write_data_in;			// myip_v1_0 -> A_RAM. To be assigned within myip_v1_0. Possibly reg.
-	reg		A_read_en;								// matrix_multiply_0 -> A_RAM.
-	reg		[A_depth_bits-1:0] A_read_address;		// matrix_multiply_0 -> A_RAM.
-	wire	[width-1:0] A_read_data_out;			// A_RAM -> matrix_multiply_0.
-	reg		B_write_en;								// myip_v1_0 -> B_RAM. To be assigned within myip_v1_0. Possibly reg.
-	reg		[B_depth_bits-1:0] B_write_address;		// myip_v1_0 -> B_RAM. To be assigned within myip_v1_0. Possibly reg.
-	reg		[width-1:0] B_write_data_in;			// myip_v1_0 -> B_RAM. To be assigned within myip_v1_0. Possibly reg.
-	reg		B_read_en;								// matrix_multiply_0 -> B_RAM.
-	reg		[B_depth_bits-1:0] B_read_address;		// matrix_multiply_0 -> B_RAM.
-	wire	[width-1:0] B_read_data_out;			// B_RAM -> matrix_multiply_0.
-	reg		RES_write_en;							// matrix_multiply_0 -> RES_RAM.
-	reg		[RES_depth_bits-1:0] RES_write_address;	// matrix_multiply_0 -> RES_RAM.
-	reg		[width-1:0] RES_write_data_in;			// matrix_multiply_0 -> RES_RAM.
-	reg		RES_read_en;  							// myip_v1_0 -> RES_RAM. To be assigned within myip_v1_0. Possibly reg.
-	reg		[RES_depth_bits-1:0] RES_read_address;	// myip_v1_0 -> RES_RAM. To be assigned within myip_v1_0. Possibly reg.
-	wire	[width-1:0] RES_read_data_out;			// RES_RAM -> myip_v1_0
+	reg								A_write_en;				// myip_v1_0 -> A_RAM. To be assigned within myip_v1_0. Possibly reg.
+	reg		[A_depth_bits-1:0] 		A_write_address;		// myip_v1_0 -> A_RAM. To be assigned within myip_v1_0. Possibly reg.
+	reg		[width-1:0]				A_write_data_in;		// myip_v1_0 -> A_RAM. To be assigned within myip_v1_0. Possibly reg.
+	wire							A_read_en;				// matrix_multiply_0 -> A_RAM.
+	wire	[A_depth_bits-1:0] 		A_read_address;			// matrix_multiply_0 -> A_RAM.
+	wire	[width-1:0]	 			A_read_data_out;		// A_RAM -> matrix_multiply_0.
+	reg								B_write_en;				// myip_v1_0 -> B_RAM. To be assigned within myip_v1_0. Possibly reg.
+	reg		[B_depth_bits-1:0] 		B_write_address;		// myip_v1_0 -> B_RAM. To be assigned within myip_v1_0. Possibly reg.
+	reg		[width-1:0] 			B_write_data_in;		// myip_v1_0 -> B_RAM. To be assigned within myip_v1_0. Possibly reg.
+	wire							B_read_en;				// matrix_multiply_0 -> B_RAM.
+	wire	[B_depth_bits-1:0] 		B_read_address;			// matrix_multiply_0 -> B_RAM.
+	wire	[width-1:0] 			B_read_data_out;		// B_RAM -> matrix_multiply_0.
+	wire							RES_write_en;			// matrix_multiply_0 -> RES_RAM.
+	wire	[RES_depth_bits-1:0]	RES_write_address;		// matrix_multiply_0 -> RES_RAM.
+	wire	[width-1:0] 			RES_write_data_in;		// matrix_multiply_0 -> RES_RAM.
+	reg								RES_read_en;  			// myip_v1_0 -> RES_RAM. To be assigned within myip_v1_0. Possibly reg.
+	reg		[RES_depth_bits-1:0] 	RES_read_address;		// myip_v1_0 -> RES_RAM. To be assigned within myip_v1_0. Possibly reg.
+	wire	[width-1:0] 			RES_read_data_out;		// RES_RAM -> myip_v1_0
 
 	// wires (or regs) to connect to matrix_multiply for assignment 1
-	wire	Start; 								// myip_v1_0 -> matrix_multiply_0. To be assigned within myip_v1_0. Possibly reg.
+	reg		Start; 								// myip_v1_0 -> matrix_multiply_0. To be assigned within myip_v1_0. Possibly reg.
 	wire	Done;								// matrix_multiply_0 -> myip_v1_0.
 
 
@@ -120,7 +110,7 @@ module myip_v1_0
 	localparam Read_Inputs = 5'b00100;
 	localparam Compute = 5'b00010;
 	localparam Write_Outputs  = 5'b00001;
-	localparam Write_wait  = 5'b10000;
+	localparam Write_Wait  = 5'b10000;
 
 	reg [4:0] state;
 	reg [4:0] pstate;
@@ -157,25 +147,18 @@ module myip_v1_0
 				begin
 					read_counter 	<= 0;
 					write_counter 	<= 0;
-					sum          	<= 0;
 					S_AXIS_TREADY 	<= 0;
 					M_AXIS_TVALID 	<= 0;
 					M_AXIS_TLAST  	<= 0;
 					A_write_en 		<= 0;
 					A_write_address <= 0;
 					A_write_data_in <= 0;
-					A_read_en 		<= 0;
-					A_read_address 	<= 0;
 					B_write_en 		<= 0;
 					B_write_address <= 0;
 					B_write_data_in <= 0;
-					B_read_en 		<= 0;
-					B_read_address 	<= 0;
-					RES_write_en 	<= 0;
-					RES_write_address <= 0;
-					RES_write_data_in <= 0;
 					RES_read_en 	<= 0;
 					RES_read_address <= 0;
+					Start			<= 0;
 
 					write_A_counter <= 0;
 					write_B_counter <= 0;
@@ -226,6 +209,8 @@ module myip_v1_0
 				Compute:
 				begin
 					// Coprocessor function to be implemented (matrix multiply) should be here. Right now, nothing happens here.
+					if (pstate != Compute) Start <= 1'b1;
+					else Start <= 1'b0;
 					if (Done) state		<= Write_Outputs;
 					// Possible to save a cycle by asserting M_AXIS_TVALID and presenting M_AXIS_TDATA just before going into
 					// Write_Outputs state. However, need to adjust write_counter limits accordingly
@@ -241,7 +226,7 @@ module myip_v1_0
 
 					if (pstate == Write_Wait) begin
 						M_AXIS_TVALID	<= 1;
-						M_AXIS_TDATA	<= RES_read_data_out;
+						M_AXIS_TDATA	<= {24'b0, RES_read_data_out};
 
 						if (M_AXIS_TREADY == 1)
 						begin
@@ -257,17 +242,13 @@ module myip_v1_0
 							end
 						end
 					end
-
-
-					// Coprocessor function (adding 1 to sum in each iteration = adding iteration count to sum) happens here (partly)
-
 				end
 
 				Write_Wait:
 				begin
 					state	  		<= Write_Outputs;
 					M_AXIS_TVALID	<= 0;
-					Res_read_en <= 0;
+					RES_read_en <= 0;
 				end
 			endcase
 		end

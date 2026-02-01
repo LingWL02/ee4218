@@ -56,10 +56,10 @@ module matrix_multiply
 		RES_write_address = 0;
 		RES_write_data_in = 0;
 
+		Done = 0;
 		temp = 0;
 	end
 
-	assign Done = Start; // dummy code. Change as appropriate.
 	always_ff @(posedge clk) begin
 		case (state)
 			IDLE: begin
@@ -77,6 +77,7 @@ module matrix_multiply
 				RES_write_en <= 1;
 				RES_write_address <= temp;
 				RES_write_data_in <= 8'hF0 + temp;
+				temp <= temp + 1;
 
 				if (temp == 1'b1) begin
 					state <= IDLE;
