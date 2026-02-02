@@ -127,7 +127,7 @@ module myip_v1_0
    // consistent with the sequence they are written and read in the driver's hw_acc.c file
 
    // NOTE wait reg;
-   	reg temp;
+   	reg end_write;
 
 	always_ff @(posedge ACLK)
 	begin
@@ -159,7 +159,7 @@ module myip_v1_0
 			state        		<= Idle;
 			pstate	   			<= Idle;
 
-			temp				<= 0;
+			end_write				<= 0;
         end
 		else
 		begin
@@ -178,7 +178,7 @@ module myip_v1_0
 			M_AXIS_TVALID 		<= 0;
 			M_AXIS_TLAST  		<= 0;
 
-			temp 				<= 0;
+			end_write 				<= 0;
 
 			pstate <= state;
 
@@ -273,8 +273,8 @@ module myip_v1_0
 						state				<= Write_Wait;
 						if (write_counter == NUMBER_OF_OUTPUT_WORDS-1)
 						begin
-							temp 			<= 1;
-							if (temp)
+							end_write 			<= 1;
+							if (end_write)
 							begin
 								state			<= Idle;
 								// M_AXIS_TLAST, though optional in AXIS, is necessary in practice as AXI Stream FIFO and AXI DMA expects it.
@@ -290,7 +290,7 @@ module myip_v1_0
 
 				Write_Wait:
 				begin
-					temp <= temp;
+					end_write <= end_write;
 					state <= Write_Outputs;
 				end
 			endcase
