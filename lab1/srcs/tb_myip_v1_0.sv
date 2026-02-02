@@ -122,7 +122,7 @@ module tb_myip_v1_0(
 					result_memory[word_cnt+test_case_cnt*NUMBER_OF_OUTPUT_WORDS] = M_AXIS_TDATA;
 					word_cnt = word_cnt+1;
 				end
-				#100;
+				@(posedge ACLK);
 			end						// receive loop
 			M_AXIS_TREADY = 1'b0;	// not ready to receive data from the co-processor anymore.
 		end							// next test vector
