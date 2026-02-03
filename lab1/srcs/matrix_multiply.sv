@@ -44,75 +44,161 @@ module matrix_multiply
 
 	localparam N_WORDS_A = 2**A_depth_bits;
 	localparam N_WORDS_B = 2**B_depth_bits;
+	localparam N_WORDS_RES = 2**RES_depth_bits;
+
+	localparam mac_out_width = (2*width)+B_depth_bits;
+	localparam iter_width = $clog2(N_WORDS_RES);
 
 	// implement the logic to read A_RAM, read B_RAM, do the multiplication and write the results to RES_RAM
 	// Note: A_RAM and B_RAM are to be read synchronously. Read the wiki for more details.
-	reg [width-1:0] A_local_mem [0:2**A_depth_bits-1];
-	reg [width-1:0] B_local_mem [0:2**B_depth_bits-1];
 
-	reg [5:0] pstate;
-	reg [5:0] state;
-	reg [5:0] state_lr;
+	reg 	[/*TODO*/:0]		state;
+	reg 	[iter_width:0] 	iter;
+	reg	 	iter_end;
+
+	reg 					A_read_en_dly;
+	reg 					B_read_en_dly;
+
+	// MAC module wires
+	reg mac_en;
+	reg mac_clear;
+	reg [width-1:0] mac_a;
+	reg [width-1:0] mac_b;
+	wire [mac_out_width:0] mac_out;
+	wire mac_done;
 
 	// One-hot encoded states
-	localparam IDLE      = 6'b000001;
-	localparam WAIT      = 6'b000010;
-	localparam LOAD_A    = 6'b000100;
-	localparam LOAD_B    = 6'b001000;
-	localparam COMPUTE   = 6'b010000;
-	localparam WRITE_RES = 6'b100000;
+	localparam IDLE      = 1
+	localparam COMPUTE   = 2
 
 	always_ff @(posedge clk) begin
-		if (!aresetn) begin
-			state <= IDLE;
-			pstate <= IDLE;
-			state_lr <= IDLE;
-
-			Done <= 0;
-			A_read_en <= 0;
-			A_read_address <= 0;
-			B_read_en <= 0;
-			B_read_address <= 0;
-			RES_write_en <= 0;
-			RES_write_address <= 0;
-			RES_write_data_in <= 0;
-
+		if (!aresetn)
+		begin
+			mac_en <= 1'b0;
+			mac_clear <= 1'b0;
+			mac_a <= width{1'b0};
+			mac_b <= width{1'b0};
 		end
 		else
 		begin
-			pstate <= state;
+			mac_en <= 1'b0;
+			mac_clear <= 1'b1;
+			if (A_read_en_dly & B_read_en_dly)
+			begin
+				mac_en <= 1'b1;
+				mac_clear <= 1'b0;
+				mac_a <= A_read_data_out;
+				mac_b <= B_read_data_out;
+			end
+		end
+	end
 
-			Done <= 0;
-			A_read_en <= 0;
-			A_read_address <= 0;
-			B_read_en <= 0;
-			B_read_address <= 0;
-			RES_write_en <= 0;
-			RES_write_address <= 0;
-			RES_write_data_in <= 0;
+	always_ff @(posedge clk) begin
+		if (!aresetn)
+		begin
+			Done <= 1'b0;
+			A_read_en <= 1'b0;
+			A_read_address <= A_depth_bits{1'b0};
+			B_read_en <= 1'b0;
+			B_read_address <= B_depth_bits{1'b0};
+			RES_write_en <= 1'b0;
+			RES_write_address <= RES_depth_bits{1'b0};
+			RES_write_data_in <= width{1'b0};
+
+			state <= IDLE;
+			iter <= 1'b0;
+
+			A_read_en_dly <= 1'b0;
+			B_read_en_dly <= 1'b0;
+		end
+		else
+		begin
+			Done <= 1'b0;
+			A_read_en <= 1'b0;
+			A_read_address <= 1'b0;
+			B_read_en <= 1'b0;
+			B_read_address <= 1'b0;
+			RES_write_en <= 1'b0;
+			RES_write_address <= 1'b0;
+			RES_write_data_in <= 1'b0;
+
+			A_read_en_dly <= A_read_en;
+			A_read_address_dly <= A_read_address;
+			B_read_en_dly <= B_read_en;
+			B_read_address_dly <= B_read_address;
 
 			case (state)
-				IDLE: if (Start) state <= LOAD_A;
-				LOAD_A: begin
-				end
-				LOAD_B: begin
-				end
-				WAIT: state <= state_lr;
-				COMPUTE: begin
-					RES_write_en <= 1;
-					RES_write_address <= temp;
-					RES_write_data_in <= 8'hF0 + temp;
-					temp <= temp + 1;
+				IDLE:
+				begin
+					iter <= iter_width{1'b0};
+					iter_end <= 1'b0;
 
-					if (temp == 1'b1) begin
-						state <= IDLE;
-						Done <= 1'b1;
+					if (Start)
+					begin
+						state <= COMPUTE;
+						A_read_en <= 1'b1;
+						A_read_address <= 1'b0;
+
+						B_read_en <= 1'b1;
+						B_read_address <= 1'b0;
 					end
 				end
+
+				COMPUTE:
+				begin
+					if (iter_end & mac_done)
+					begin
+						RES_write_en <= 1'b1;
+						RES_write_address <= iter;
+						RES_write_data_in <= mac_out[width-1:0];
+
+						if (iter == (N_WORDS_RES - 1))
+						begin
+							state <= IDLE;
+							Done <= 1'b1;
+						end
+						else
+						begin
+							iter <= iter + 1'b1;
+							iter_end <= 1'b0;
+
+							A_read_en <= 1'b1;
+							A_read_address <= A_read_address + 1'b1;
+
+							B_read_en <= 1'b1;
+							B_read_address <= 1'b0;
+						end
+					end
+					else
+					begin
+						if (B_read_address == (N_WORDS_B - 1)) iter_end <= 1'b1;
+						A_read_en <= 1'b1;
+						A_read_address <= A_read_address + 1'b1;
+
+						B_read_en <= 1'b1;
+						B_read_address <= B_read_address + 1'b1;
+					end
+				end
+				default: state <= IDLE;
 			endcase
 		end
 	end
 
+	// MAC module instantiation
+	mac
+	#(
+		.width(width),
+		.n(B_depth_bits)
+	)
+	mac_donalds
+	(
+		.clk(clk),
+		.aresetn(aresetn),
+		.en(mac_en),
+		.clear(mac_clear),
+		.a(mac_a),
+		.b(mac_b),
+		.mac_out(mac_out),
+		.done(mac_done)
+	);
 endmodule
-
-

@@ -178,9 +178,8 @@ module myip_v1_0
 			M_AXIS_TVALID 		<= 0;
 			M_AXIS_TLAST  		<= 0;
 
-			end_write 				<= 0;
-
-			pstate <= state;
+			end_write 			<= 0;
+			pstate 				<= state;
 
 			case (state)
 
@@ -188,12 +187,6 @@ module myip_v1_0
 				begin
 					read_counter 		<= 0;
 					write_counter 		<= 0;
-					S_AXIS_TREADY 		<= 0;
-					M_AXIS_TVALID 		<= 0;
-					M_AXIS_TLAST  		<= 0;
-					RES_read_en 		<= 0;
-					RES_read_address 	<= 0;
-					Start				<= 0;
 
 					A_write_counter 	<= 0;
 					B_write_counter 	<= 0;
