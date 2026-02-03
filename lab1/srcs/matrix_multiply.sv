@@ -42,12 +42,12 @@ module matrix_multiply
 		output reg [width-1:0]          RES_write_data_in           // matrix_multiply_0 -> RES_RAM
 	);
 
-	localparam N_WORDS_A = 2**A_depth_bits;
-	localparam N_WORDS_B = 2**B_depth_bits;
-	localparam N_WORDS_RES = 2**RES_depth_bits;
+	localparam N_WORDS_A 	= 2**A_depth_bits;
+	localparam N_WORDS_B 	= 2**B_depth_bits;
+	localparam N_WORDS_RES 	= 2**RES_depth_bits;
 
-	localparam mac_out_width = width + B_depth_bits;
-	localparam iter_width = $clog2(N_WORDS_RES);
+	localparam mac_out_width 	= width + B_depth_bits;
+	localparam iter_width 		= $clog2(N_WORDS_RES);
 
 	// implement the logic to read A_RAM, read B_RAM, do the multiplication and write the results to RES_RAM
 	// Note: A_RAM and B_RAM are to be read synchronously. Read the wiki for more details.
@@ -81,14 +81,14 @@ module matrix_multiply
 		end
 		else
 		begin
-			mac_en <= 1'b0;
-			mac_clear <= 1'b1;
+			mac_en 		<= 1'b0;
+			mac_clear 	<= 1'b1;
 			if (A_read_en_dly & B_read_en_dly)
 			begin
-				mac_en <= 1'b1;
-				mac_clear <= 1'b0;
-				mac_a <= A_read_data_out;
-				mac_b <= B_read_data_out;
+				mac_en 		<= 1'b1;
+				mac_clear 	<= 1'b0;
+				mac_a 		<= A_read_data_out;
+				mac_b 		<= B_read_data_out;
 			end
 		end
 	end
@@ -105,8 +105,8 @@ module matrix_multiply
 			RES_write_address 	<= {RES_depth_bits{1'b0}};
 			RES_write_data_in 	<= {width{1'b0}};
 
-			state <= IDLE;
-			iter <= 1'b0;
+			state 	<= IDLE;
+			iter 	<= 1'b0;
 
 			A_read_en_dly <= 1'b0;
 			B_read_en_dly <= 1'b0;
@@ -128,23 +128,23 @@ module matrix_multiply
 			case (state)
 				IDLE:
 				begin
-					iter <= {iter_width{1'b0}};
-					iter_end <= 1'b0;
+					iter 		<= {iter_width{1'b0}};
+					iter_end 	<= 1'b0;
 
 					if (Start)
 					begin
-						state <= COMPUTE;
-						A_read_en <= 1'b1;
-						A_read_address <= {A_depth_bits{1'b0}};
+						state 			<= COMPUTE;
+						A_read_en 		<= 1'b1;
+						A_read_address 	<= {A_depth_bits{1'b0}};
 
-						B_read_en <= 1'b1;
-						B_read_address <= {B_depth_bits{1'b0}};
+						B_read_en 		<= 1'b1;
+						B_read_address 	<= {B_depth_bits{1'b0}};
 					end
 				end
 
 				COMPUTE:
 				begin
-					// Preserve current addresses, act as counters
+					// Latch current addresses, act as counters
 					A_read_address <= A_read_address;
 					B_read_address <= B_read_address;
 
@@ -156,19 +156,19 @@ module matrix_multiply
 
 						if (iter == (N_WORDS_RES - 1))
 						begin
-							state <= IDLE;
-							Done <= 1'b1;
+							state 	<= IDLE;
+							Done 	<= 1'b1;
 						end
 						else
 						begin
-							iter <= iter + 1'b1;
-							iter_end <= 1'b0;
+							iter 		<= iter + 1'b1;
+							iter_end 	<= 1'b0;
 
-							A_read_en <= 1'b1;
-							A_read_address <= A_read_address + 1'b1;
+							A_read_en 		<= 1'b1;
+							A_read_address 	<= A_read_address + 1'b1;
 
-							B_read_en <= 1'b1;
-							B_read_address <= 1'b0;
+							B_read_en 		<= 1'b1;
+							B_read_address 	<= 1'b0;
 						end
 					end
 					else if (~iter_end)
@@ -176,11 +176,11 @@ module matrix_multiply
 						if (B_read_address == (N_WORDS_B - 1)) iter_end <= 1'b1;
 						else
 						begin
-							A_read_en <= 1'b1;
-							A_read_address <= A_read_address + 1'b1;
+							A_read_en 		<= 1'b1;
+							A_read_address 	<= A_read_address + 1'b1;
 
-							B_read_en <= 1'b1;
-							B_read_address <= B_read_address + 1'b1;
+							B_read_en 		<= 1'b1;
+							B_read_address 	<= B_read_address + 1'b1;
 						end
 					end
 				end
