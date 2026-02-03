@@ -4,8 +4,8 @@ module mac
     parameter n = 2,
     parameter fixed_point = 8,
     localparam axb_width = 2*width,
-    localparam axbfp_width = axb_width-fixed_point;
-    localparam out_width = axbfp_width+n,
+    localparam axbfp_width = axb_width-fixed_point,
+    localparam out_width = axbfp_width+n
 )
 (
     input clk,
@@ -16,7 +16,7 @@ module mac
     input [width-1:0] b,
     output reg [out_width-1:0] out,
     output reg done
-)
+);
 
 wire    [axb_width-1:0]     axb = a * b;
 reg     [axbfp_width-1:0]   axbfp_mul;
@@ -59,7 +59,7 @@ always_ff @(posedge clk) begin
         else
         begin
             done            <= en_mul & ~en;
-            if (en_mul) out <= out + {n{1'b0}, axbfp_mul};
+            if (en_mul) out <= out + {{n{1'b0}}, axbfp_mul};
         end
     end
 end

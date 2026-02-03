@@ -46,15 +46,15 @@ module matrix_multiply
 	localparam N_WORDS_B = 2**B_depth_bits;
 	localparam N_WORDS_RES = 2**RES_depth_bits;
 
-	localparam mac_out_width = (2*width)+B_depth_bits;
+	localparam mac_out_width = width + B_depth_bits;
 	localparam iter_width = $clog2(N_WORDS_RES);
 
 	// implement the logic to read A_RAM, read B_RAM, do the multiplication and write the results to RES_RAM
 	// Note: A_RAM and B_RAM are to be read synchronously. Read the wiki for more details.
 
-	reg 	[/*TODO*/:0]		state;
+	reg 	[1:0]			state;
 	reg 	[iter_width:0] 	iter;
-	reg	 	iter_end;
+	reg	 					iter_end;
 
 	reg 					A_read_en_dly;
 	reg 					B_read_en_dly;
@@ -64,20 +64,20 @@ module matrix_multiply
 	reg mac_clear;
 	reg [width-1:0] mac_a;
 	reg [width-1:0] mac_b;
-	wire [mac_out_width:0] mac_out;
+	wire [mac_out_width-1:0] mac_out;
 	wire mac_done;
 
 	// One-hot encoded states
-	localparam IDLE      = 1
-	localparam COMPUTE   = 2
+	localparam IDLE      = 2'b01;
+	localparam COMPUTE   = 2'b10;
 
 	always_ff @(posedge clk) begin
 		if (!aresetn)
 		begin
-			mac_en <= 1'b0;
-			mac_clear <= 1'b0;
-			mac_a <= width{1'b0};
-			mac_b <= width{1'b0};
+			mac_en 		<= 1'b0;
+			mac_clear 	<= 1'b0;
+			mac_a 		<= {width{1'b0}};
+			mac_b 		<= {width{1'b0}};
 		end
 		else
 		begin
@@ -96,14 +96,14 @@ module matrix_multiply
 	always_ff @(posedge clk) begin
 		if (!aresetn)
 		begin
-			Done <= 1'b0;
-			A_read_en <= 1'b0;
-			A_read_address <= A_depth_bits{1'b0};
-			B_read_en <= 1'b0;
-			B_read_address <= B_depth_bits{1'b0};
-			RES_write_en <= 1'b0;
-			RES_write_address <= RES_depth_bits{1'b0};
-			RES_write_data_in <= width{1'b0};
+			Done 				<= 1'b0;
+			A_read_en 			<= 1'b0;
+			A_read_address 		<= {A_depth_bits{1'b0}};
+			B_read_en 			<= 1'b0;
+			B_read_address 		<= {B_depth_bits{1'b0}};
+			RES_write_en 		<= 1'b0;
+			RES_write_address 	<= {RES_depth_bits{1'b0}};
+			RES_write_data_in 	<= {width{1'b0}};
 
 			state <= IDLE;
 			iter <= 1'b0;
@@ -113,39 +113,41 @@ module matrix_multiply
 		end
 		else
 		begin
-			Done <= 1'b0;
-			A_read_en <= 1'b0;
-			A_read_address <= 1'b0;
-			B_read_en <= 1'b0;
-			B_read_address <= 1'b0;
-			RES_write_en <= 1'b0;
-			RES_write_address <= 1'b0;
-			RES_write_data_in <= 1'b0;
+			Done 				<= 1'b0;
+			A_read_en 			<= 1'b0;
+			A_read_address 		<= {A_depth_bits{1'b0}};
+			B_read_en 			<= 1'b0;
+			B_read_address 		<= {B_depth_bits{1'b0}};
+			RES_write_en 		<= 1'b0;
+			RES_write_address 	<= {RES_depth_bits{1'b0}};
+			RES_write_data_in 	<= {width{1'b0}};
 
 			A_read_en_dly <= A_read_en;
-			A_read_address_dly <= A_read_address;
 			B_read_en_dly <= B_read_en;
-			B_read_address_dly <= B_read_address;
 
 			case (state)
 				IDLE:
 				begin
-					iter <= iter_width{1'b0};
+					iter <= {iter_width{1'b0}};
 					iter_end <= 1'b0;
 
 					if (Start)
 					begin
 						state <= COMPUTE;
 						A_read_en <= 1'b1;
-						A_read_address <= 1'b0;
+						A_read_address <= {A_depth_bits{1'b0}};
 
 						B_read_en <= 1'b1;
-						B_read_address <= 1'b0;
+						B_read_address <= {B_depth_bits{1'b0}};
 					end
 				end
 
 				COMPUTE:
 				begin
+					// Preserve current addresses, act as counters
+					A_read_address <= A_read_address;
+					B_read_address <= B_read_address;
+
 					if (iter_end & mac_done)
 					begin
 						RES_write_en <= 1'b1;
@@ -169,14 +171,17 @@ module matrix_multiply
 							B_read_address <= 1'b0;
 						end
 					end
-					else
+					else if (~iter_end)
 					begin
 						if (B_read_address == (N_WORDS_B - 1)) iter_end <= 1'b1;
-						A_read_en <= 1'b1;
-						A_read_address <= A_read_address + 1'b1;
+						else
+						begin
+							A_read_en <= 1'b1;
+							A_read_address <= A_read_address + 1'b1;
 
-						B_read_en <= 1'b1;
-						B_read_address <= B_read_address + 1'b1;
+							B_read_en <= 1'b1;
+							B_read_address <= B_read_address + 1'b1;
+						end
 					end
 				end
 				default: state <= IDLE;
@@ -188,7 +193,8 @@ module matrix_multiply
 	mac
 	#(
 		.width(width),
-		.n(B_depth_bits)
+		.n(B_depth_bits),
+		.fixed_point(width)
 	)
 	mac_donalds
 	(
@@ -198,7 +204,7 @@ module matrix_multiply
 		.clear(mac_clear),
 		.a(mac_a),
 		.b(mac_b),
-		.mac_out(mac_out),
+		.out(mac_out),
 		.done(mac_done)
 	);
 endmodule
