@@ -355,6 +355,7 @@ module myip_v1_0
 	) matrix_multiply_0
 	(
 		.clk(ACLK),
+		.aresetn(ARESETN),
 		.Start(Start),
 		.Done(Done),
 

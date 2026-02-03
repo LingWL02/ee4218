@@ -24,67 +24,93 @@ module matrix_multiply
 		parameter RES_depth_bits = 1
 	)
 	(
-		input clk,
-		input Start,									// myip_v1_0 -> matrix_multiply_0.
-		output reg Done,									// matrix_multiply_0 -> myip_v1_0. Possibly reg.
+		input                           clk,                        // Clock signal
+		input                           aresetn,                    // Active low reset
+		input                           Start,                      // myip_v1_0 -> matrix_multiply_0
+		output reg                      Done,                       // matrix_multiply_0 -> myip_v1_0
 
-		output A_read_en,  								// matrix_multiply_0 -> A_RAM. Possibly reg.
-		output [A_depth_bits-1:0] A_read_address, 		// matrix_multiply_0 -> A_RAM. Possibly reg.
-		input [width-1:0] A_read_data_out,				// A_RAM -> matrix_multiply_0.
+		output reg                      A_read_en,                  // matrix_multiply_0 -> A_RAM
+		output reg [A_depth_bits-1:0]   A_read_address,             // matrgix_multiply_0 -> A_RAM
+		input      [width-1:0]          A_read_data_out,            // A_RAM -> matrix_multiply_0
 
-		output B_read_en, 								// matrix_multiply_0 -> B_RAM. Possibly reg.
-		output [B_depth_bits-1:0] B_read_address, 		// matrix_multiply_0 -> B_RAM. Possibly reg.
-		input [width-1:0] B_read_data_out,				// B_RAM -> matrix_multiply_0.
+		output reg                      B_read_en,                  // matrix_multiply_0 -> B_RAM
+		output reg [B_depth_bits-1:0]   B_read_address,             // matrix_multiply_0 -> B_RAM
+		input      [width-1:0]          B_read_data_out,            // B_RAM -> matrix_multiply_0
 
-		output reg 						RES_write_en, 							// matrix_multiply_0 -> RES_RAM. Possibly reg.
-		output reg [RES_depth_bits-1:0] RES_write_address, 	// matrix_multiply_0 -> RES_RAM. Possibly reg.
-		output reg [width-1:0] 			RES_write_data_in 			// matrix_multiply_0 -> RES_RAM. Possibly reg.
+		output reg                      RES_write_en,               // matrix_multiply_0 -> RES_RAM
+		output reg [RES_depth_bits-1:0] RES_write_address,          // matrix_multiply_0 -> RES_RAM
+		output reg [width-1:0]          RES_write_data_in           // matrix_multiply_0 -> RES_RAM
 	);
+
+	localparam N_WORDS_A = 2**A_depth_bits;
+	localparam N_WORDS_B = 2**B_depth_bits;
 
 	// implement the logic to read A_RAM, read B_RAM, do the multiplication and write the results to RES_RAM
 	// Note: A_RAM and B_RAM are to be read synchronously. Read the wiki for more details.
-	reg temp;
+	reg [width-1:0] A_local_mem [0:2**A_depth_bits-1];
+	reg [width-1:0] B_local_mem [0:2**B_depth_bits-1];
 
-	reg state;
+	reg [5:0] pstate;
+	reg [5:0] state;
+	reg [5:0] state_lr;
 
-	localparam IDLE = 1'b0;
-	localparam BUSY = 1'b1;
-
-	initial begin  // TODO add reset? simulation only
-		state = IDLE;
-		RES_write_en = 0;
-		RES_write_address = 0;
-		RES_write_data_in = 0;
-
-		Done = 0;
-		temp = 0;
-	end
+	// One-hot encoded states
+	localparam IDLE      = 6'b000001;
+	localparam WAIT      = 6'b000010;
+	localparam LOAD_A    = 6'b000100;
+	localparam LOAD_B    = 6'b001000;
+	localparam COMPUTE   = 6'b010000;
+	localparam WRITE_RES = 6'b100000;
 
 	always_ff @(posedge clk) begin
-		case (state)
-			IDLE: begin
-				temp <= 0;
-				RES_write_en <= 0;
-				RES_write_address <= 0;
-				RES_write_data_in <= 0;
-				Done <= 0;
+		if (!aresetn) begin
+			state <= IDLE;
+			pstate <= IDLE;
+			state_lr <= IDLE;
 
-				if (Start) begin
-					state <= BUSY;
-				end
-			end
-			BUSY: begin
-				RES_write_en <= 1;
-				RES_write_address <= temp;
-				RES_write_data_in <= 8'hF0 + temp;
-				temp <= temp + 1;
+			Done <= 0;
+			A_read_en <= 0;
+			A_read_address <= 0;
+			B_read_en <= 0;
+			B_read_address <= 0;
+			RES_write_en <= 0;
+			RES_write_address <= 0;
+			RES_write_data_in <= 0;
 
-				if (temp == 1'b1) begin
-					state <= IDLE;
-					Done <= 1'b1;
+		end
+		else
+		begin
+			pstate <= state;
+
+			Done <= 0;
+			A_read_en <= 0;
+			A_read_address <= 0;
+			B_read_en <= 0;
+			B_read_address <= 0;
+			RES_write_en <= 0;
+			RES_write_address <= 0;
+			RES_write_data_in <= 0;
+
+			case (state)
+				IDLE: if (Start) state <= LOAD_A;
+				LOAD_A: begin
 				end
-			end
-		endcase
+				LOAD_B: begin
+				end
+				WAIT: state <= state_lr;
+				COMPUTE: begin
+					RES_write_en <= 1;
+					RES_write_address <= temp;
+					RES_write_data_in <= 8'hF0 + temp;
+					temp <= temp + 1;
+
+					if (temp == 1'b1) begin
+						state <= IDLE;
+						Done <= 1'b1;
+					end
+				end
+			endcase
+		end
 	end
 
 endmodule
