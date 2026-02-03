@@ -58,7 +58,7 @@ always_ff @(posedge clk) begin
         if (clear_mul) out  <= 1'b0;
         else
         begin
-            done            <= en_mul & ~en;
+            done            <= ~clear_mul & clear;
             if (en_mul) out <= out + {{n{1'b0}}, axbfp_mul};
         end
     end
