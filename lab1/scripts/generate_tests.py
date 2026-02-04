@@ -1,4 +1,7 @@
 import random
+import os
+
+script_dir = os.path.dirname(os.path.realpath(__file__))
 
 # ----------------------------
 # Parameters
@@ -40,7 +43,7 @@ for _ in range(num_tests):
 # ----------------------------
 # Write test_input.mem
 # ----------------------------
-with open("test_input.mem", "w") as f:
+with open(f"{script_dir}/test_input.mem", "w") as f:
     for idx, (A, B, _) in enumerate(tests, start=1):
         f.write(f"// first input vector ({idx})\n")
         for row in A:
@@ -54,7 +57,7 @@ with open("test_input.mem", "w") as f:
 # ----------------------------
 # Write test_result_expected.mem
 # ----------------------------
-with open("test_result_expected.mem", "w") as f:
+with open(f"{script_dir}/test_result_expected.mem", "w") as f:
     for idx, (_, _, RES) in enumerate(tests, start=1):
         f.write(f"// output vector ({idx})\n")
         for val in RES:
