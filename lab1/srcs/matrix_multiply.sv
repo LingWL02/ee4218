@@ -18,29 +18,30 @@
 // those outputs which are assigned in an always block of matrix_multiply shoud be changes to reg (such as output reg Done).
 
 module matrix_multiply
-	#(	parameter width = 8, 			// width is the number of bits per location
-		parameter A_depth_bits = 3, 	// depth is the number of locations (2^number of address bits)
-		parameter B_depth_bits = 2,
-		parameter RES_depth_bits = 1
-	)
-	(
-		input                           clk,                        // Clock signal
-		input                           aresetn,                    // Active low reset
-		input                           Start,                      // myip_v1_0 -> matrix_multiply_0
-		output reg                      Done,                       // matrix_multiply_0 -> myip_v1_0
+#(
+	parameter width = 8, 			// width is the number of bits per location
+	parameter A_depth_bits = 3, 	// depth is the number of locations (2^number of address bits)
+	parameter B_depth_bits = 2,
+	parameter RES_depth_bits = 1
+)
+(
+	input                           clk,                        // Clock signal
+	input                           aresetn,                    // Active low reset
+	input                           Start,                      // myip_v1_0 -> matrix_multiply_0
+	output reg                      Done,                       // matrix_multiply_0 -> myip_v1_0
 
-		output reg                      A_read_en,                  // matrix_multiply_0 -> A_RAM
-		output reg [A_depth_bits-1:0]   A_read_address,             // matrgix_multiply_0 -> A_RAM
-		input      [width-1:0]          A_read_data_out,            // A_RAM -> matrix_multiply_0
+	output reg                      A_read_en,                  // matrix_multiply_0 -> A_RAM
+	output reg [A_depth_bits-1:0]   A_read_address,             // matrgix_multiply_0 -> A_RAM
+	input      [width-1:0]          A_read_data_out,            // A_RAM -> matrix_multiply_0
 
-		output reg                      B_read_en,                  // matrix_multiply_0 -> B_RAM
-		output reg [B_depth_bits-1:0]   B_read_address,             // matrix_multiply_0 -> B_RAM
-		input      [width-1:0]          B_read_data_out,            // B_RAM -> matrix_multiply_0
+	output reg                      B_read_en,                  // matrix_multiply_0 -> B_RAM
+	output reg [B_depth_bits-1:0]   B_read_address,             // matrix_multiply_0 -> B_RAM
+	input      [width-1:0]          B_read_data_out,            // B_RAM -> matrix_multiply_0
 
-		output reg                      RES_write_en,               // matrix_multiply_0 -> RES_RAM
-		output reg [RES_depth_bits-1:0] RES_write_address,          // matrix_multiply_0 -> RES_RAM
-		output reg [width-1:0]          RES_write_data_in           // matrix_multiply_0 -> RES_RAM
-	);
+	output reg                      RES_write_en,               // matrix_multiply_0 -> RES_RAM
+	output reg [RES_depth_bits-1:0] RES_write_address,          // matrix_multiply_0 -> RES_RAM
+	output reg [width-1:0]          RES_write_data_in           // matrix_multiply_0 -> RES_RAM
+);
 
 	localparam N_WORDS_A 	= 2**A_depth_bits;
 	localparam N_WORDS_B 	= 2**B_depth_bits;

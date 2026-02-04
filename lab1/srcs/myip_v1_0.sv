@@ -32,20 +32,25 @@
 */
 
 module myip_v1_0
-	(
-		// DO NOT EDIT BELOW THIS LINE ////////////////////
-		ACLK,
-		ARESETN,
-		S_AXIS_TREADY,
-		S_AXIS_TDATA,
-		S_AXIS_TLAST,
-		S_AXIS_TVALID,
-		M_AXIS_TVALID,
-		M_AXIS_TDATA,
-		M_AXIS_TLAST,
-		M_AXIS_TREADY
-		// DO NOT EDIT ABOVE THIS LINE ////////////////////
-	);
+# (
+	parameter m = 2,
+	parameter n = 4,
+	parameter width = 8
+)
+(
+	// DO NOT EDIT BELOW THIS LINE ////////////////////
+	ACLK,
+	ARESETN,
+	S_AXIS_TREADY,
+	S_AXIS_TDATA,
+	S_AXIS_TLAST,
+	S_AXIS_TVALID,
+	M_AXIS_TVALID,
+	M_AXIS_TDATA,
+	M_AXIS_TLAST,
+	M_AXIS_TREADY
+	// DO NOT EDIT ABOVE THIS LINE ////////////////////
+);
 
 	input					ACLK;    // Synchronous clock
 	input					ARESETN; // System reset, active low
@@ -60,18 +65,22 @@ module myip_v1_0
 	output	reg				M_AXIS_TLAST;   // Optional data out qualifier
 	input					M_AXIS_TREADY;  // Connected slave device is ready to accept data out
 
-//----------------------------------------
-// Implementation Section
-//----------------------------------------
+	//----------------------------------------
+	// Implementation Section
+	//----------------------------------------
+	// Total number of input data.
+	localparam INPUT_WORDS_A = m*n;
+	localparam INPUT_WORDS_B = n;
+	localparam NUMBER_OF_OUTPUT_WORDS = m;
+	localparam NUMBER_OF_INPUT_WORDS  = INPUT_WORDS_A + INPUT_WORDS_B;
 
-// RAM parameters for assignment 1
-	localparam A_depth_bits = 3;  	// 8 elements (A is a 2x4 matrix)
-	localparam B_depth_bits = 2; 	// 4 elements (B is a 4x1 matrix)
-	localparam RES_depth_bits = 1;	// 2 elements (RES is a 2x1 matrix)
-	localparam width = 8;			// all 8-bit data
+	// RAM parameters for assignment 1
+	localparam A_depth_bits = $clog2(INPUT_WORDS_A);  	// 1024 elements (A is a 32x32 matrix)
+	localparam B_depth_bits = $clog2(INPUT_WORDS_B); 	// 32 elements (B is a 32x1 matrix)
+	localparam RES_depth_bits = $clog2(NUMBER_OF_OUTPUT_WORDS);	// 32 elements (RES is a 2x1 matrix)
 
-// wires (or regs) to connect to RAMs and matrix_multiply_0 for assignment 1
-// those which are assigned in an always block of myip_v1_0 shoud be changes to reg.
+	// wires (or regs) to connect to RAMs and matrix_multiply_0 for assignment 1
+	// those which are assigned in an always block of myip_v1_0 shoud be changes to reg.
 	reg								A_write_en;				// myip_v1_0 -> A_RAM. To be assigned within myip_v1_0. Possibly reg.
 	reg		[A_depth_bits-1:0] 		A_write_address;		// myip_v1_0 -> A_RAM. To be assigned within myip_v1_0. Possibly reg.
 	reg		[width-1:0]				A_write_data_in;		// myip_v1_0 -> A_RAM. To be assigned within myip_v1_0. Possibly reg.
@@ -95,16 +104,6 @@ module myip_v1_0
 	reg		Start; 								// myip_v1_0 -> matrix_multiply_0. To be assigned within myip_v1_0. Possibly reg.
 	wire	Done;								// matrix_multiply_0 -> myip_v1_0.
 
-
-	// Total number of input data.
-	localparam INPUT_WORDS_A = 2**A_depth_bits;
-	localparam INPUT_WORDS_B = 2**B_depth_bits;
-	localparam NUMBER_OF_INPUT_WORDS  = INPUT_WORDS_A + INPUT_WORDS_B;
-
-
-	// Total number of output data
-	localparam NUMBER_OF_OUTPUT_WORDS = 2**RES_depth_bits;
-
 	// Define the states of state machine (one hot encoding)
 	localparam Write_Wait  = 5'b10000;
 	localparam Idle  = 5'b01000;
@@ -121,7 +120,7 @@ module myip_v1_0
 	reg [$clog2(NUMBER_OF_INPUT_WORDS) - 1:0] 	read_counter;
 	reg [A_depth_bits:0] 						A_write_counter;  // NOTE Extra bit to prevent overflow
 	reg [B_depth_bits:0] 						B_write_counter;
-	reg [$clog2(NUMBER_OF_OUTPUT_WORDS) - 1:0] 	write_counter;
+	reg [RES_depth_bits - 1:0] 	write_counter;
    // CAUTION:
    // The sequence in which data are read in and written out should be
    // consistent with the sequence they are written and read in the driver's hw_acc.c file

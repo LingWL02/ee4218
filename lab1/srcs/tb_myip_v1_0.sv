@@ -33,23 +33,29 @@ module tb_myip_v1_0(
     wire                         M_AXIS_TLAST;   // Optional data out qualifier
     reg                          M_AXIS_TREADY;  // Connected slave device is ready to accept data out
 
-    myip_v1_0 U1 (
-                .ACLK(ACLK),
-                .ARESETN(ARESETN),
-                .S_AXIS_TREADY(S_AXIS_TREADY),
-                .S_AXIS_TDATA(S_AXIS_TDATA),
-                .S_AXIS_TLAST(S_AXIS_TLAST),
-                .S_AXIS_TVALID(S_AXIS_TVALID),
-                .M_AXIS_TVALID(M_AXIS_TVALID),
-                .M_AXIS_TDATA(M_AXIS_TDATA),
-                .M_AXIS_TLAST(M_AXIS_TLAST),
-                .M_AXIS_TREADY(M_AXIS_TREADY)
-	);
-
-	localparam NUMBER_OF_INPUT_WORDS  = 12;  // length of an input vector
-	localparam NUMBER_OF_OUTPUT_WORDS  = 2;  // length of an input vector
+	localparam m = 32;
+	localparam n = 32;
+	localparam NUMBER_OF_INPUT_WORDS  = (m*n) + n;  // length of an input vector
+	localparam NUMBER_OF_OUTPUT_WORDS  = m;  // length of an input vector
 	localparam NUMBER_OF_TEST_VECTORS  = 10;  // number of such test vectors (cases)
 	localparam width  = 8;  // width of an input vector
+
+	myip_v1_0 #(
+		.m(m),
+		.n(n),
+		.width(width)
+	) U1 (
+		.ACLK(ACLK),
+		.ARESETN(ARESETN),
+		.S_AXIS_TREADY(S_AXIS_TREADY),
+		.S_AXIS_TDATA(S_AXIS_TDATA),
+		.S_AXIS_TLAST(S_AXIS_TLAST),
+		.S_AXIS_TVALID(S_AXIS_TVALID),
+		.M_AXIS_TVALID(M_AXIS_TVALID),
+		.M_AXIS_TDATA(M_AXIS_TDATA),
+		.M_AXIS_TLAST(M_AXIS_TLAST),
+		.M_AXIS_TREADY(M_AXIS_TREADY)
+	);
 
 	reg [width-1:0] test_input_memory [0:NUMBER_OF_TEST_VECTORS*NUMBER_OF_INPUT_WORDS-1]; // 4 inputs * 2
 	reg [width-1:0] test_result_expected_memory [0:NUMBER_OF_TEST_VECTORS*NUMBER_OF_OUTPUT_WORDS-1]; // 4 outputs *2

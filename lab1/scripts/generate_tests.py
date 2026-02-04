@@ -6,8 +6,8 @@ script_dir = Path(__file__).resolve().parent.parent
 # ----------------------------
 # Parameters
 # ----------------------------
-m = 2
-n = 4
+m = 32
+n = 32
 num_tests = 10        # number of A/B pairs
 MAX_VAL = 0xFF       # allow full 8-bit range for stress testing
 
