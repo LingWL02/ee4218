@@ -73,17 +73,24 @@ module matrix_multiply
 	localparam COMPUTE   = 2'b10;
 
 	always_ff @(posedge clk) begin
-		if (!aresetn)
+		if (~aresetn)
 		begin
 			mac_en 		<= 1'b0;
-			mac_clear 	<= 1'b0;
+			mac_clear 	<= 1'b1;
 			mac_a 		<= {width{1'b0}};
 			mac_b 		<= {width{1'b0}};
+
+			A_read_en_dly <= 1'b0;
+			B_read_en_dly <= 1'b0;
 		end
 		else
 		begin
 			mac_en 		<= 1'b0;
 			mac_clear 	<= 1'b1;
+
+			A_read_en_dly <= A_read_en;
+			B_read_en_dly <= B_read_en;
+
 			if (A_read_en_dly & B_read_en_dly)
 			begin
 				mac_en 		<= 1'b1;
@@ -95,7 +102,7 @@ module matrix_multiply
 	end
 
 	always_ff @(posedge clk) begin
-		if (!aresetn)
+		if (~aresetn)
 		begin
 			Done 				<= 1'b0;
 			A_read_en 			<= 1'b0;
@@ -108,9 +115,6 @@ module matrix_multiply
 
 			state 	<= IDLE;
 			iter 	<= 1'b0;
-
-			A_read_en_dly <= 1'b0;
-			B_read_en_dly <= 1'b0;
 		end
 		else
 		begin
@@ -122,9 +126,6 @@ module matrix_multiply
 			RES_write_en 		<= 1'b0;
 			RES_write_address 	<= {RES_depth_bits{1'b0}};
 			RES_write_data_in 	<= {width{1'b0}};
-
-			A_read_en_dly <= A_read_en;
-			B_read_en_dly <= B_read_en;
 
 			case (state)
 				IDLE:
