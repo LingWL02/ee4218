@@ -192,18 +192,23 @@ module myip_v1_0
 							B_write_address		<= read_counter - 8 ; // 2 bits for addressing 4 locations
 							B_write_data_in		<= S_AXIS_TDATA[7:0]; // only 8 bits used
 						end
-						if (read_counter == NUMBER_OF_INPUT_WORDS -1)
-						begin
-							state       	<= Compute;
-							S_AXIS_TREADY 	<= 0;
-							A_write_en		<= 0;
-							B_write_en		<= 0;
-							Start			<= 1; // start matrix multiplication
-						end
-						else
-						begin
-							read_counter	<= read_counter + 1;
-						end
+						// else
+						// begin // TODO: this does not happen because T_DATA_VALID is 0 S_AXIS_TLAST is 0
+						// 	state       	<= Compute;
+						// 	S_AXIS_TREADY 	<= 0;
+						// 	A_write_en		<= 0;
+						// 	B_write_en		<= 0;
+						// 	Start			<= 1; // start matrix multiplication
+						// end
+						read_counter	<= read_counter + 1;
+					end
+					else if (read_counter == NUMBER_OF_INPUT_WORDS) // all inputs received
+					begin
+						state       	<= Compute;
+						S_AXIS_TREADY 	<= 0;
+						A_write_en		<= 0;
+						B_write_en		<= 0;
+						Start			<= 1; // start matrix multiplication
 					end
 				end
 
