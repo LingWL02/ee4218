@@ -48,7 +48,7 @@ module tb_myip_v1_0(
 
 	localparam NUMBER_OF_INPUT_WORDS  = 12;  // length of an input vector
 	localparam NUMBER_OF_OUTPUT_WORDS  = 2;  // length of an input vector
-	localparam NUMBER_OF_TEST_VECTORS  = 2;  // number of such test vectors (cases)
+	localparam NUMBER_OF_TEST_VECTORS  = 10;  // number of such test vectors (cases)
 	localparam width  = 8;  // width of an input vector
 
 	reg [width-1:0] test_input_memory [0:NUMBER_OF_TEST_VECTORS*NUMBER_OF_INPUT_WORDS-1]; // 4 inputs * 2

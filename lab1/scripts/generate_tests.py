@@ -1,7 +1,7 @@
+from pathlib import Path
 import random
-import os
 
-script_dir = os.path.dirname(os.path.realpath(__file__))
+script_dir = Path(__file__).resolve().parent.parent
 
 # ----------------------------
 # Parameters
@@ -25,8 +25,8 @@ def gen_vector(length):
 def compute_res(A, B):
     res = []
     for i in range(len(A)):
-        acc = sum(A[i][j] * B[j] for j in range(len(B)))
-        res.append((acc >> 8) & 0xFF)  # divide by 256, keep 8 bits
+        acc = sum(((A[i][j] * B[j]) >> 8) for j in range(len(B)))  # divide by 256,
+        res.append(acc & 0xFF)  # keep 8 bits
     return res
 
 # ----------------------------
@@ -43,7 +43,7 @@ for _ in range(num_tests):
 # ----------------------------
 # Write test_input.mem
 # ----------------------------
-with open(f"{script_dir}/test_input.mem", "w") as f:
+with open(f"{script_dir}/srcs/test_input.mem", "w") as f:
     for idx, (A, B, _) in enumerate(tests, start=1):
         f.write(f"// first input vector ({idx})\n")
         for row in A:
@@ -57,7 +57,7 @@ with open(f"{script_dir}/test_input.mem", "w") as f:
 # ----------------------------
 # Write test_result_expected.mem
 # ----------------------------
-with open(f"{script_dir}/test_result_expected.mem", "w") as f:
+with open(f"{script_dir}/srcs/test_result_expected.mem", "w") as f:
     for idx, (_, _, RES) in enumerate(tests, start=1):
         f.write(f"// output vector ({idx})\n")
         for val in RES:

@@ -1,28 +1,140 @@
 // first input vector (1)
-01
-02
-03
-04
-05
-06
-07
-08
-// second input vector (1)
-01
-02
-03
-04
-// first input vector (2)
-01
-00
-03
-09
-A4
+44
+20
+82
+3C
+FD
+E6
 F1
-FF
-08
+C2
+// second input vector (1)
+6B
+30
+F9
+0E
+// first input vector (2)
+C7
+DD
+01
+E4
+88
+75
+34
+A2
 // second input vector (2)
-07
-FE
 0F
-EE
+0B
+0D
+04
+// first input vector (3)
+C3
+6E
+D8
+0E
+71
+E0
+FD
+77
+// second input vector (3)
+B0
+76
+70
+EB
+// first input vector (4)
+94
+0B
+D5
+33
+5F
+97
+3D
+AA
+// second input vector (4)
+D8
+61
+9B
+91
+// first input vector (5)
+FF
+C9
+11
+F5
+7C
+CE
+D4
+58
+// second input vector (5)
+BB
+BF
+2C
+E0
+// first input vector (6)
+37
+53
+C9
+BD
+FA
+0F
+F0
+16
+// second input vector (6)
+9D
+C9
+57
+56
+// first input vector (7)
+74
+06
+66
+76
+CF
+B0
+B4
+EB
+// second input vector (7)
+89
+02
+C4
+42
+// first input vector (8)
+69
+DA
+1C
+F6
+BA
+66
+D3
+F8
+// second input vector (8)
+B6
+D4
+B1
+00
+// first input vector (9)
+A9
+EA
+0E
+75
+5A
+5C
+2E
+82
+// second input vector (9)
+10
+24
+2A
+08
+// first input vector (10)
+E7
+07
+8F
+7F
+89
+38
+5E
+B0
+// second input vector (10)
+94
+23
+55
+51
