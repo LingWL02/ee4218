@@ -1,10 +1,28 @@
-//first input vector
+// first input vector (1)
 01
 02
 03
 04
-//second input vector
+05
+06
+07
+08
+// second input vector (1)
+01
 02
 03
 04
-05
+// first input vector (2)
+01
+00
+03
+09
+A4
+F1
+FF
+08
+// second input vector (2)
+07
+FE
+0F
+EE

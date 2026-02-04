@@ -189,10 +189,10 @@ module myip_v1_0
 						begin
 							A_write_en			<= 0;
 							B_write_en			<= 1;
-							B_write_address		<= read_counter[B_depth_bits-1:0] - 8; // 2 bits for addressing 4 locations
+							B_write_address		<= read_counter - 8 ; // 2 bits for addressing 4 locations
 							B_write_data_in		<= S_AXIS_TDATA[7:0]; // only 8 bits used
 						end
-						if (read_counter == NUMBER_OF_INPUT_WORDS-1)
+						if (read_counter == NUMBER_OF_INPUT_WORDS -1)
 						begin
 							state       	<= Compute;
 							S_AXIS_TREADY 	<= 0;
