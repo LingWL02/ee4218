@@ -47,6 +47,7 @@ module matrix_multiply
 	localparam Idle  = 4'b1000;
 	localparam Run = 4'b0100;
 	localparam Write = 4'b0010;
+    localparam Finish  = 4'b0001;
 	// localparam Write_Outputs  = 4'b0001;
 
     reg [3:0] cycle_count;
@@ -93,38 +94,53 @@ module matrix_multiply
                     // Latch current RAM outputs for next multiply
                     a_val_prev     <= a_val;
                     b_val_prev     <= b_val;
+                    a_val     <= A_read_data_out;
+                    b_val     <= B_read_data_out;
                     idx_prev       <= idx;
                     res_index_prev <= res_index;
-
-                    // Set up next read
-                    A_read_en      <= 1;
-                    B_read_en      <= 1;
-                    A_read_address <= res_index * 4 + idx; // row-major order
-                    B_read_address <= idx;
+                    if (idx < 4) begin
+                        A_read_en      <= 1;
+                        B_read_en      <= 1;
+                        A_read_address <= res_index * 4 + idx; // row-major order
+                        B_read_address <= idx;
+                    end else begin
+                        A_read_en      <= 0;
+                        B_read_en      <= 0;
+                    end
+                    // // Set up next read
+                    // A_read_en      <= 1;
+                    // B_read_en      <= 1;
+                    // A_read_address <= res_index * 4 + idx; // row-major order
+                    // B_read_address <= idx;
 
                     // Store current outputs for next cycle
-                    if (cycle_count == 0) begin
-                        a_val <= 0;
-                        b_val <= 0;
-                    end else begin
-                        a_val <= A_read_data_out;
-                        b_val <= B_read_data_out;
-                    end
+                    //TODO: check this logic may be wrong as it keep reseting a_val and b_val to 0
+                    // if (cycle_count == 0) begin
+                    //     a_val <= 0;
+                    //     b_val <= 0;
+                    // end else begin
+                    //     a_val <= A_read_data_out;
+                    //     b_val <= B_read_data_out;
+                    // end
 
                     // Multiply and accumulate previous values (skip on first cycle)
-                    if (cycle_count > 0) begin
+                    if (cycle_count > 1) begin
                         if (res_index_prev == 0)
                             sum1 <= sum1 + (a_val_prev * b_val_prev);
                         else
                             sum2 <= sum2 + (a_val_prev * b_val_prev);
                     end
 
+                    // idx <= idx + 1;
+                    // cycle_count <= cycle_count + 1;
+
                     // Advance idx and check if row is done
-                    if (idx == 3 && cycle_count > 0) begin
+                    if (idx > 3 && cycle_count > 1) begin
                         idx <= 0;
                         cycle_count <= 0;
                         state <= Write;
-                    end else begin
+                    end 
+                    else begin
                         idx <= idx + 1;
                         cycle_count <= cycle_count + 1;
                     end
@@ -150,8 +166,8 @@ module matrix_multiply
                         end
                         
                         if (res_index == 1) begin
-                            Done  <= 1;
-                            state <= Idle;
+                            // Done  <= 1;
+                            state <= Finish;
                             RES_write_en <= 0;
                         end else begin
                             res_index <= res_index + 1;
@@ -160,6 +176,10 @@ module matrix_multiply
                             RES_write_en <= 0;
                         end
                     end
+                end
+                Finish: begin
+                    Done <= 1;
+                    state <= Idle;
                 end
         endcase
     end
