@@ -152,9 +152,9 @@ module matrix_multiply
 
 					if (iter_end & mac_done)
 					begin
-						RES_write_en <= 1'b1;
-						RES_write_address <= iter;
-						RES_write_data_in <= mac_out[width-1:0];
+						RES_write_en 		<= 1'b1;
+						RES_write_address 	<= iter;
+						RES_write_data_in 	<= mac_out[width-1:0];
 
 						if (iter == (N_WORDS_RES - 1))
 						begin
