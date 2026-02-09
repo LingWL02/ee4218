@@ -208,19 +208,16 @@ module myip_v1_0
 					S_AXIS_TREADY 	<= 1'b1;
 					B_write_address <= B_write_address;
 
-					if (S_AXIS_TVALID)
+					if (B_write_address == (INPUT_WORDS_B - 1))
 					begin
-						if (B_write_address == (INPUT_WORDS_B - 1))
-						begin
-							state <= COMPUTE;
-							Start <= 1'b1;
-						end
-						else
-						begin
-							B_write_en 		<= 1'b1;
-							B_write_address <= B_write_address + 1'b1;
-							B_write_data_in <= S_AXIS_TDATA[width-1:0];
-						end
+						state <= COMPUTE;
+						Start <= 1'b1;
+					end
+					else if (S_AXIS_TVALID)
+					begin
+						B_write_en 		<= 1'b1;
+						B_write_address <= B_write_address + 1'b1;
+						B_write_data_in <= S_AXIS_TDATA[width-1:0];
 					end
 				end
 
