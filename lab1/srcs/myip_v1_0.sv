@@ -105,15 +105,18 @@ module myip_v1_0
 	wire	Done;								// matrix_multiply_0 -> myip_v1_0.
 
 	// Define the states of state machine (one hot encoding)
-	localparam IDLE          = 5'b00001;
-	localparam READ_INPUTS_A = 5'b00010;
-	localparam READ_INPUTS_B = 5'b00100;
-	localparam COMPUTE       = 5'b01000;
-	localparam WRITE_OUTPUTS = 5'b10000;
-	reg [4:0] state;
+	localparam IDLE          = 6'b000001;
+	localparam READ_INPUTS_A = 6'b000010;
+	localparam READ_INPUTS_B = 6'b000100;
+	localparam COMPUTE       = 6'b001000;
+	localparam WRITE_OUTPUTS = 6'b010000;
+	localparam LAST          = 6'b100000;
+	reg [5:0] state;
 
-	reg RES_read_en_dly;
-	reg [RES_depth_bits-1:0] RES_read_address_dly;
+	wire M_AXIS_WE = M_AXIS_TREADY | ~M_AXIS_TVALID;
+
+	reg 							RES_read_en_dly;
+	reg 	[RES_depth_bits-1:0] 	RES_read_address_dly;
 
 	always_ff @(posedge ACLK)
 	begin
@@ -125,9 +128,7 @@ module myip_v1_0
 		begin
 			// CAUTION: make sure your reset polarity is consistent with the system reset polarity
 			S_AXIS_TREADY 		 <= 1'b0;
-			M_AXIS_TLAST  		 <= 1'b0;
-			M_AXIS_TVALID 		 <= 1'b0;
-			M_AXIS_TDATA       	 <= {32{1'b0}};
+
 			A_write_en 			 <= 1'b0;
 			A_write_address 	 <= {A_depth_bits{1'b0}};
 			A_write_data_in 	 <= {width{1'b0}};
@@ -146,10 +147,11 @@ module myip_v1_0
 		else
 		begin
 			// NOTE explicit latch prevention
-			S_AXIS_TREADY 		 <= 1'b0;
-			M_AXIS_TLAST  		 <= 1'b0;
-			M_AXIS_TVALID 		 <= 1'b0;
-			M_AXIS_TDATA       	 <= {32{1'b0}};
+			S_AXIS_TREADY 		 	<= 1'b0;
+			M_AXIS_TDATA 			<= 32'b0;
+			M_AXIS_TLAST 			<= 1'b0;
+			M_AXIS_TVALID 			<= 1'b0;
+
 			A_write_en 			 <= 1'b0;
 			A_write_address 	 <= {A_depth_bits{1'b0}};
 			A_write_data_in 	 <= {width{1'b0}};
@@ -161,7 +163,7 @@ module myip_v1_0
 			Start				 <= 1'b0;
 
 			RES_read_en_dly 		<= RES_read_en;
-			RES_read_address_dly <= RES_read_address;
+			RES_read_address_dly 	<= RES_read_address;
 
 			case (state)
 
@@ -169,7 +171,7 @@ module myip_v1_0
 				begin
 					if (S_AXIS_TVALID)
 					begin
-					S_AXIS_TREADY 	 <= 1'b1;
+					S_AXIS_TREADY 	 	<= 1'b1;
 
 					state       	 <= READ_INPUTS_A;
 
@@ -183,20 +185,23 @@ module myip_v1_0
 				begin
 					S_AXIS_TREADY 	<= 1'b1;
 					A_write_address <= A_write_address;
-					if (A_write_address == (INPUT_WORDS_A - 1))
-					begin
-						state <= READ_INPUTS_B;
 
-						B_write_en 		<= 1'b1;
-						B_write_address <= 1'b0;
-						B_write_data_in <= S_AXIS_TDATA[width-1:0];
-					end
-					else
+					if (S_AXIS_TVALID)
 					begin
-						if (S_AXIS_TVALID)
+						if (A_write_address == (INPUT_WORDS_A - 1))
+						begin
+							state <= READ_INPUTS_B;
+
+							A_write_address <= {A_depth_bits{1'b0}};
+
+							B_write_en 		<= 1'b1;
+							B_write_address <= {B_depth_bits{1'b0}};
+							B_write_data_in <= S_AXIS_TDATA[width-1:0];
+						end
+						else
 						begin
 							A_write_en 		<= 1'b1;
-							A_write_address <= A_write_address + 1;
+							A_write_address <= A_write_address + 1'b1;
 							A_write_data_in <= S_AXIS_TDATA[width-1:0];
 						end
 					end
@@ -209,17 +214,16 @@ module myip_v1_0
 
 					if (B_write_address == (INPUT_WORDS_B - 1))
 					begin
+						B_write_address <= {B_depth_bits{1'b0}};
+
 						state <= COMPUTE;
 						Start <= 1'b1;
 					end
-					else
+					else if (S_AXIS_TVALID)
 					begin
-						if (S_AXIS_TVALID)
-						begin
-							B_write_en 		<= 1'b1;
-							B_write_address <= B_write_address + 1;
-							B_write_data_in <= S_AXIS_TDATA[width-1:0];
-						end
+						B_write_en 		<= 1'b1;
+						B_write_address <= B_write_address + 1'b1;
+						B_write_data_in <= S_AXIS_TDATA[width-1:0];
 					end
 				end
 
@@ -227,35 +231,63 @@ module myip_v1_0
 				begin
 					if (Done)
 					begin
-					state			 <= WRITE_OUTPUTS;
+					state				<= WRITE_OUTPUTS;
 
-					RES_read_en 		 <= 1'b1;
-					RES_read_address 	 <= {RES_depth_bits{1'b0}};
+					RES_read_en			<= 1'b1;
+					RES_read_address	<= {RES_depth_bits{1'b0}};
 					end
 				end
 
 				WRITE_OUTPUTS:
 				begin
-					M_AXIS_TVALID <= M_AXIS_TVALID;
-					M_AXIS_TDATA  <= M_AXIS_TDATA;
-					RES_read_en   <= 1'b1;
+					M_AXIS_TDATA 	<= M_AXIS_TDATA;
+					M_AXIS_TLAST 	<= M_AXIS_TLAST;
+					M_AXIS_TVALID 	<= M_AXIS_TVALID;
 
-					if (M_AXIS_TREADY);
+					RES_read_en			<= 1'b1;
+					RES_read_address	<= RES_read_address;
+
+					if (M_AXIS_WE)
 					begin
-						if (RES_read_address != (NUMBER_OF_OUTPUT_WORDS - 1)) RES_read_address <= RES_read_address + 1;
+						// WARNING DOES NOT WORK FOR BACKPRESSURE CASES
+						if (RES_read_address == (NUMBER_OF_OUTPUT_WORDS - 1))
+						begin
+							RES_read_en			<= 1'b0;
+							RES_read_address	<= {RES_depth_bits{1'b0}};
+						end
+						else RES_read_address 	<= RES_read_address + 1;
 
 						if (RES_read_en_dly)
 						begin
+							M_AXIS_TDATA 	<= {24'b0, RES_read_data_out};
 							M_AXIS_TVALID 	<= 1'b1;
-							M_AXIS_TDATA 	<= {{(32-width){1'b0}}, RES_read_data_out};
-							if (RES_read_address_dly == (NUMBER_OF_OUTPUT_WORDS - 1))
-							begin
-								M_AXIS_TLAST <= 1'b1;
-								state 		 <= IDLE;
-							end
+						end
+
+						if (RES_read_address_dly == (NUMBER_OF_OUTPUT_WORDS - 1))
+						begin
+							M_AXIS_TLAST 	<= 1'b1;
+
+							state 			<= LAST;
 						end
 					end
 				end
+
+				LAST:
+				begin
+					M_AXIS_TDATA 	<= M_AXIS_TDATA;
+					M_AXIS_TLAST 	<= M_AXIS_TLAST;
+					M_AXIS_TVALID 	<= M_AXIS_TVALID;
+
+					if (M_AXIS_WE) begin
+						M_AXIS_TDATA 	<= 32'b0;
+						M_AXIS_TLAST 	<= 1'b0;
+						M_AXIS_TVALID 	<= 1'b0;
+
+						state <= IDLE;
+					end
+				end
+
+				default: state <= IDLE;
 
 			endcase
 		end
