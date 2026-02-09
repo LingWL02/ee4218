@@ -98,9 +98,9 @@ module tb_myip_v1_0_edgecase(
             S_AXIS_TLAST = (word_cnt == NUMBER_OF_INPUT_WORDS-1) ? 1'b1 : 1'b0;
             
             // Randomly delay first TVALID assertion
-            random_value = $random % 100;
+            random_value = $urandom % 100;
             if (random_value < TVALID_DELAY_PROB) begin
-                delay_cycles = ($random % MAX_DELAY_CYCLES) + 1;
+                delay_cycles = ($urandom % MAX_DELAY_CYCLES) + 1;
                 $display("  Delaying initial S_AXIS_TVALID by %0d cycles", delay_cycles);
                 for(i=0; i<delay_cycles; i=i+1) @(posedge ACLK);
             end
@@ -115,7 +115,7 @@ module tb_myip_v1_0_edgecase(
                     // @(posedge ACLK);//TODO: dont use event control in synthesizable code
                     
                     // Randomly drop TVALID (simulate gaps in data availability)
-                    random_value = $random % 100;
+                    random_value = $urandom % 100;
                     if (random_value < TVALID_DELAY_PROB && word_cnt < NUMBER_OF_INPUT_WORDS) begin
                         delay_cycles = ($urandom % MAX_DELAY_CYCLES) + 1;
                         $display("  Dropping S_AXIS_TVALID for %0d cycles at word %0d", delay_cycles, word_cnt);
@@ -140,64 +140,64 @@ module tb_myip_v1_0_edgecase(
             S_AXIS_TVALID = 1'b0;
             S_AXIS_TLAST = 1'b0;
             
-        /// Output (no testing yet)
-		// Note: result_memory is not written at a clock edge, which is fine as it is just a testbench construct and not actual hardware
-			word_cnt = 0;
-			M_AXIS_TREADY = 1'b1;	// we are now ready to receive data
-			while(M_AXIS_TLAST | ~M_AXIS_TLAST_prev) // receive data until the falling edge of M_AXIS_TLAST
-			begin
-				if(M_AXIS_TVALID)
-				begin
-					result_memory[word_cnt+test_case_cnt*NUMBER_OF_OUTPUT_WORDS] = M_AXIS_TDATA;
-					word_cnt = word_cnt+1;
-				end
-				@(posedge ACLK);
-			end						// receive loop
-			M_AXIS_TREADY = 1'b0;	// not ready to receive data from the co-processor anymore.
-		end							// next test vector
+        // /// Output (no testing yet)
+		// // Note: result_memory is not written at a clock edge, which is fine as it is just a testbench construct and not actual hardware
+		// 	word_cnt = 0;
+		// 	M_AXIS_TREADY = 1'b1;	// we are now ready to receive data
+		// 	while(M_AXIS_TLAST | ~M_AXIS_TLAST_prev) // receive data until the falling edge of M_AXIS_TLAST
+		// 	begin
+		// 		if(M_AXIS_TVALID)
+		// 		begin
+		// 			result_memory[word_cnt+test_case_cnt*NUMBER_OF_OUTPUT_WORDS] = M_AXIS_TDATA;
+		// 			word_cnt = word_cnt+1;
+		// 		end
+		// 		@(posedge ACLK);
+		// 	end						// receive loop
+		// 	M_AXIS_TREADY = 1'b0;	// not ready to receive data from the co-processor anymore.
+		// end							// next test vector
 
 
-        // /// Output with random TREADY delays
-        //     word_cnt = 0;
+        /// Output with random TREADY delays
+            word_cnt = 0;
             
-        //     // Randomly delay initial TREADY assertion
-        //     random_value = $random % 100;
-        //     if (random_value < TREADY_DELAY_PROB) begin
-        //         delay_cycles = ($random % MAX_DELAY_CYCLES) + 1;
-        //         $display("  Delaying initial M_AXIS_TREADY by %0d cycles", delay_cycles);
-        //         for(i=0; i<delay_cycles; i=i+1) @(posedge ACLK); // TODO: dont use event control in synthesizable code
-        //     end
+            // Randomly delay initial TREADY assertion
+            random_value = $urandom % 100;
+            if (random_value < TREADY_DELAY_PROB) begin
+                delay_cycles = ($urandom % MAX_DELAY_CYCLES) + 1;
+                $display("  Delaying initial M_AXIS_TREADY by %0d cycles", delay_cycles);
+                for(i=0; i<delay_cycles; i=i+1) @(posedge ACLK); // TODO: dont use event control in synthesizable code
+            end
             
-        //     M_AXIS_TREADY = 1'b1;
+            M_AXIS_TREADY = 1'b1;
             
-        //     while(M_AXIS_TLAST | ~M_AXIS_TLAST_prev)
-        //     begin
-        //         if(M_AXIS_TVALID && M_AXIS_TREADY)
-        //         begin
-        //             result_memory[word_cnt+test_case_cnt*NUMBER_OF_OUTPUT_WORDS] = M_AXIS_TDATA;
-        //             word_cnt = word_cnt+1;
+            while(M_AXIS_TLAST | ~M_AXIS_TLAST_prev)
+            begin
+                if(M_AXIS_TVALID && M_AXIS_TREADY)
+                begin
+                    result_memory[word_cnt+test_case_cnt*NUMBER_OF_OUTPUT_WORDS] = M_AXIS_TDATA;
+                    word_cnt = word_cnt+1;
                     
-        //             @(posedge ACLK);
+                    @(posedge ACLK);
                     
-        //             // Randomly drop TREADY (simulate back-pressure)
-        //             random_value = $random % 100;
-        //             if (random_value < TREADY_DELAY_PROB && (M_AXIS_TLAST | ~M_AXIS_TLAST_prev)) begin
-        //                 delay_cycles = ($random % MAX_DELAY_CYCLES) + 1;
-        //                 $display("  Dropping M_AXIS_TREADY for %0d cycles at word %0d", delay_cycles, word_cnt);
-        //                 M_AXIS_TREADY = 1'b0;
-        //                 for(i=0; i<delay_cycles; i=i+1) @(posedge ACLK); // TODO: dont use event control in synthesizable code
-        //                 M_AXIS_TREADY = 1'b1;
-        //             end
-        //         end
-        //         else
-        //         begin
-        //             @(posedge ACLK);
-        //         end
-        //     end
+                    // Randomly drop TREADY (simulate back-pressure)
+                    random_value = $urandom % 100;
+                    if (random_value < TREADY_DELAY_PROB && (M_AXIS_TLAST | ~M_AXIS_TLAST_prev)) begin
+                        delay_cycles = ($urandom % MAX_DELAY_CYCLES) + 1;
+                        $display("  Dropping M_AXIS_TREADY for %0d cycles at word %0d", delay_cycles, word_cnt);
+                        M_AXIS_TREADY = 1'b0;
+                        for(i=0; i<delay_cycles; i=i+1) @(posedge ACLK); // TODO: dont use event control in synthesizable code
+                        M_AXIS_TREADY = 1'b1;
+                    end
+                end
+                else
+                begin
+                    @(posedge ACLK);
+                end
+            end
             
-        //     M_AXIS_TREADY = 1'b0;
-        //     $display("  Completed test vector %0d", test_case_cnt+1);
-        // end
+            M_AXIS_TREADY = 1'b0;
+            $display("  Completed test vector %0d", test_case_cnt+1);
+        end
 
         // Checking correctness of results
         $display("\n=== Verifying Results ===");

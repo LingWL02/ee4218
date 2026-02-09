@@ -243,13 +243,46 @@ module myip_v1_0
 				begin
 					// Coprocessor function to be implemented (matrix multiply) should be here. Right now, nothing happens here.
 					if (pstate != Compute) Start <= 1'b1;
-					if (Done) state		<= Write_Outputs;
+					if (Done)
+					begin
+						state		<= Write_Wait;
+						write_counter	<= 0;
+						RES_read_en		<= 1;
+						RES_read_address<= 0;
+					end 
+				end
+
 					// Possible to save a cycle by asserting M_AXIS_TVALID and presenting M_AXIS_TDATA just before going into
 					// Write_Outputs state. However, need to adjust write_counter limits accordingly
 					// Alternatively, M_AXIS_TVALID and M_AXIS_TDATA can be asserted combinationally to save a cycle.
-				end
 
 				Write_Outputs:
+				// begin
+				// 	// Keep M_AXIS_TVALID high and M_AXIS_TDATA stable until M_AXIS_TREADY
+				// 	M_AXIS_TVALID	<= 1;
+				// 	M_AXIS_TDATA	<= {24'b0, RES_read_data_out};
+				// 	M_AXIS_TLAST    <= (write_counter == NUMBER_OF_OUTPUT_WORDS-1);
+
+
+				// 	if (M_AXIS_TREADY == 1 && M_AXIS_TVALID == 1)  // Handshake complete
+				// 	begin
+				// 		if (write_counter == NUMBER_OF_OUTPUT_WORDS-1)
+				// 		begin
+				// 			// Last word transferred
+				// 			state			<= Idle;
+				// 			// M_AXIS_TLAST	<= 1;
+				// 			// M_AXIS_TVALID	<= 0;  // Deassert after last transfer
+				// 		end
+				// 		else
+				// 		begin
+				// 			// Prepare next word
+				// 			write_counter	<= write_counter + 1;
+				// 			RES_read_en		<= 1;
+				// 			RES_read_address<= write_counter + 1;  // Read NEXT address
+				// 		end
+				// 	end
+				// 	// If M_AXIS_TREADY is low, hold current state and data
+				// end
 				begin
 					// TODO might have to revise implementation
 
@@ -261,7 +294,7 @@ module myip_v1_0
 					if (M_AXIS_TREADY == 1)
 					begin
 						RES_read_en			<= 1;
-						RES_read_address	<= write_counter;
+						RES_read_address	<= write_counter + 1;
 						state				<= Write_Wait;
 						if (write_counter == NUMBER_OF_OUTPUT_WORDS-1)
 						begin
