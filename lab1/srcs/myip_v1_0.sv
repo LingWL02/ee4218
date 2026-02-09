@@ -183,20 +183,21 @@ module myip_v1_0
 				begin
 					S_AXIS_TREADY 	<= 1'b1;
 					A_write_address <= A_write_address;
-					if (A_write_address == (INPUT_WORDS_A - 1))
-					begin
-						state <= READ_INPUTS_B;
 
-						B_write_en 		<= 1'b1;
-						B_write_address <= 1'b0;
-						B_write_data_in <= S_AXIS_TDATA[width-1:0];
-					end
-					else
+					if (S_AXIS_TVALID)
 					begin
-						if (S_AXIS_TVALID)
+						if (A_write_address == (INPUT_WORDS_A - 1))
+						begin
+							state <= READ_INPUTS_B;
+
+							B_write_en 		<= 1'b1;
+							B_write_address <= 1'b0;
+							B_write_data_in <= S_AXIS_TDATA[width-1:0];
+						end
+						else
 						begin
 							A_write_en 		<= 1'b1;
-							A_write_address <= A_write_address + 1;
+							A_write_address <= A_write_address + 1'b1;
 							A_write_data_in <= S_AXIS_TDATA[width-1:0];
 						end
 					end
@@ -207,17 +208,17 @@ module myip_v1_0
 					S_AXIS_TREADY 	<= 1'b1;
 					B_write_address <= B_write_address;
 
-					if (B_write_address == (INPUT_WORDS_B - 1))
+					if (S_AXIS_TVALID)
 					begin
-						state <= COMPUTE;
-						Start <= 1'b1;
-					end
-					else
-					begin
-						if (S_AXIS_TVALID)
+						if (B_write_address == (INPUT_WORDS_B - 1))
+						begin
+							state <= COMPUTE;
+							Start <= 1'b1;
+						end
+						else
 						begin
 							B_write_en 		<= 1'b1;
-							B_write_address <= B_write_address + 1;
+							B_write_address <= B_write_address + 1'b1;
 							B_write_data_in <= S_AXIS_TDATA[width-1:0];
 						end
 					end
