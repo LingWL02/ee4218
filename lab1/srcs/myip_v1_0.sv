@@ -69,14 +69,14 @@ module myip_v1_0
 	// Implementation Section
 	//----------------------------------------
 	// Total number of input data.
-	localparam INPUT_WORDS_A = m*n;
-	localparam INPUT_WORDS_B = n;
+	localparam INPUT_WORDS_A         = m*n;
+	localparam INPUT_WORDS_B         = n;
 	localparam NUMBER_OF_OUTPUT_WORDS = m;
 	localparam NUMBER_OF_INPUT_WORDS  = INPUT_WORDS_A + INPUT_WORDS_B;
 
 	// RAM parameters for assignment 1
-	localparam A_depth_bits = $clog2(INPUT_WORDS_A);  	// 1024 elements (A is a 32x32 matrix)
-	localparam B_depth_bits = $clog2(INPUT_WORDS_B); 	// 32 elements (B is a 32x1 matrix)
+	localparam A_depth_bits   = $clog2(INPUT_WORDS_A);  	// 1024 elements (A is a 32x32 matrix)
+	localparam B_depth_bits   = $clog2(INPUT_WORDS_B); 	// 32 elements (B is a 32x1 matrix)
 	localparam RES_depth_bits = $clog2(NUMBER_OF_OUTPUT_WORDS);	// 32 elements (RES is a 2x1 matrix)
 
 	// wires (or regs) to connect to RAMs and matrix_multiply_0 for assignment 1
@@ -105,28 +105,15 @@ module myip_v1_0
 	wire	Done;								// matrix_multiply_0 -> myip_v1_0.
 
 	// Define the states of state machine (one hot encoding)
-	localparam Write_Wait  = 5'b10000;
-	localparam Idle  = 5'b01000;
-	localparam Read_Inputs = 5'b00100;
-	localparam Compute = 5'b00010;
-	localparam Write_Outputs  = 5'b00001;
-
+	localparam IDLE          = 5'b00001;
+	localparam READ_INPUTS_A = 5'b00010;
+	localparam READ_INPUTS_B = 5'b00100;
+	localparam COMPUTE       = 5'b01000;
+	localparam WRITE_OUTPUTS = 5'b10000;
 	reg [4:0] state;
-	reg [4:0] pstate;
 
-	// Counters to store the number inputs read & outputs written.
-	// Could be done using the same counter if reads and writes are not overlapped (i.e., no dataflow optimization)
-	// Left as separate for ease of debugging
-	reg [$clog2(NUMBER_OF_INPUT_WORDS) - 1:0] 	read_counter;
-	reg [A_depth_bits:0] 						A_write_counter;  // NOTE Extra bit to prevent overflow
-	reg [B_depth_bits:0] 						B_write_counter;
-	reg [RES_depth_bits - 1:0] 	write_counter;
-   // CAUTION:
-   // The sequence in which data are read in and written out should be
-   // consistent with the sequence they are written and read in the driver's hw_acc.c file
-
-   // NOTE wait reg;
-   	reg end_write;
+	reg RES_read_en_dly;
+	reg [RES_depth_bits-1:0] RES_read_address_dly;
 
 	always_ff @(posedge ACLK)
 	begin
@@ -134,157 +121,142 @@ module myip_v1_0
 	// a Mealy machine that asserts S_AXIS_TREADY and captures S_AXIS_TDATA etc can save a clock cycle
 
 		/****** Synchronous reset (active low) ******/
-		if (!ARESETN)
+		if (~ARESETN)
 		begin
 			// CAUTION: make sure your reset polarity is consistent with the system reset polarity
-			read_counter 		<= 0;
-			write_counter 		<= 0;
-			S_AXIS_TREADY 		<= 0;
-			M_AXIS_TVALID 		<= 0;
-			M_AXIS_TLAST  		<= 0;
-			A_write_en 			<= 0;
-			A_write_address 	<= 0;
-			A_write_data_in 	<= 0;
-			B_write_en 			<= 0;
-			B_write_address 	<= 0;
-			B_write_data_in 	<= 0;
-			RES_read_en 		<= 0;
-			RES_read_address 	<= 0;
-			Start				<= 0;
+			S_AXIS_TREADY 		 <= 1'b0;
+			M_AXIS_TLAST  		 <= 1'b0;
+			M_AXIS_TVALID 		 <= 1'b0;
+			M_AXIS_TDATA       	 <= {32{1'b0}};
+			A_write_en 			 <= 1'b0;
+			A_write_address 	 <= {A_depth_bits{1'b0}};
+			A_write_data_in 	 <= {width{1'b0}};
+			B_write_en 			 <= 1'b0;
+			B_write_address 	 <= {B_depth_bits{1'b0}};
+			B_write_data_in 	 <= {width{1'b0}};
+			RES_read_en 		 <= 1'b0;
+			RES_read_address 	 <= {RES_depth_bits{1'b0}};
+			Start				 <= 1'b0;
 
-			A_write_counter 	<= 0;
-			B_write_counter 	<= 0;
+			state       		 <= IDLE;
 
-			state        		<= Idle;
-			pstate	   			<= Idle;
-
-			end_write				<= 0;
+			RES_read_en_dly 		<= 1'b0;
+			RES_read_address_dly <= {RES_depth_bits{1'b0}};
         end
 		else
 		begin
 			// NOTE explicit latch prevention
-			A_write_en 			<= 0;
-			A_write_address 	<= 0;
-			A_write_data_in 	<= 0;
-			B_write_en 			<= 0;
-			B_write_address 	<= 0;
-			B_write_data_in 	<= 0;
-			RES_read_en 		<= 0;
-			RES_read_address 	<= 0;
-			Start				<= 0;
+			S_AXIS_TREADY 		 <= 1'b0;
+			M_AXIS_TLAST  		 <= 1'b0;
+			M_AXIS_TVALID 		 <= 1'b0;
+			M_AXIS_TDATA       	 <= {32{1'b0}};
+			A_write_en 			 <= 1'b0;
+			A_write_address 	 <= {A_depth_bits{1'b0}};
+			A_write_data_in 	 <= {width{1'b0}};
+			B_write_en 			 <= 1'b0;
+			B_write_address 	 <= {B_depth_bits{1'b0}};
+			B_write_data_in 	 <= {width{1'b0}};
+			RES_read_en 		 <= 1'b0;
+			RES_read_address 	 <= {RES_depth_bits{1'b0}};
+			Start				 <= 1'b0;
 
-			S_AXIS_TREADY 		<= 0;
-			M_AXIS_TVALID 		<= 0;
-			M_AXIS_TLAST  		<= 0;
-
-			end_write 			<= 0;
-			pstate 				<= state;
+			RES_read_en_dly 		<= RES_read_en;
+			RES_read_address_dly <= RES_read_address;
 
 			case (state)
 
-				Idle:
+				IDLE:
 				begin
-					read_counter 		<= 0;
-					write_counter 		<= 0;
-
-					A_write_counter 	<= 0;
-					B_write_counter 	<= 0;
-
-					if (S_AXIS_TVALID == 1)
+					if (S_AXIS_TVALID)
 					begin
-						state       	<= Read_Inputs;
-						S_AXIS_TREADY 	<= 1;
+					S_AXIS_TREADY 	 <= 1'b1;
 
-						// start receiving data once you go into Read_Inputs
-						read_counter	<= 1;
+					state       	 <= READ_INPUTS_A;
 
-						A_write_en 		<= 1;
-						A_write_address <= A_write_counter;
-						A_write_data_in <= S_AXIS_TDATA[width-1:0];
-						A_write_counter <= 1;
+					A_write_en 		 <= 1'b1;
+					A_write_address  <= {A_depth_bits{1'b0}};
+					A_write_data_in  <= S_AXIS_TDATA[width-1:0];
 					end
 				end
 
-				Read_Inputs:
+				READ_INPUTS_A:
 				begin
-					S_AXIS_TREADY 	<= 1;
-
-					if (S_AXIS_TVALID == 1)
+					S_AXIS_TREADY 	<= 1'b1;
+					A_write_address <= A_write_address;
+					if (A_write_address == (INPUT_WORDS_A - 1))
 					begin
-						if (A_write_counter < INPUT_WORDS_A)
+						state <= READ_INPUTS_B;
+
+						B_write_en 		<= 1'b1;
+						B_write_address <= 1'b0;
+						B_write_data_in <= S_AXIS_TDATA[width-1:0];
+					end
+					else
+					begin
+						if (S_AXIS_TVALID)
 						begin
-							A_write_en 		<= 1;
-							A_write_address <= A_write_counter;
+							A_write_en 		<= 1'b1;
+							A_write_address <= A_write_address + 1;
 							A_write_data_in <= S_AXIS_TDATA[width-1:0];
-							A_write_counter <= A_write_counter + 1;
-						end
-
-						else if (B_write_counter < INPUT_WORDS_B)
-						begin
-							B_write_en 		<= 1;
-							B_write_address <= B_write_counter;
-							B_write_data_in <= S_AXIS_TDATA[width-1:0];
-							B_write_counter <= B_write_counter + 1;
-						end
-
-						if (read_counter == NUMBER_OF_INPUT_WORDS-1)
-						begin
-							state      		<= Compute;
-							S_AXIS_TREADY 	<= 0;
-						end
-						else
-						begin
-							read_counter 	<= read_counter + 1;
 						end
 					end
 				end
 
-				Compute:
+				READ_INPUTS_B:
 				begin
-					// Coprocessor function to be implemented (matrix multiply) should be here. Right now, nothing happens here.
-					if (pstate != Compute) Start <= 1'b1;
-					if (Done) state		<= Write_Outputs;
-					// Possible to save a cycle by asserting M_AXIS_TVALID and presenting M_AXIS_TDATA just before going into
-					// Write_Outputs state. However, need to adjust write_counter limits accordingly
-					// Alternatively, M_AXIS_TVALID and M_AXIS_TDATA can be asserted combinationally to save a cycle.
-				end
+					S_AXIS_TREADY 	<= 1'b1;
+					B_write_address <= B_write_address;
 
-				Write_Outputs:
-				begin
-					// TODO might have to revise implementation
-
-					if (pstate == Write_Wait | pstate == Write_Outputs) begin
-						M_AXIS_TVALID	<= 1;
-						M_AXIS_TDATA	<= {24'b0, RES_read_data_out};
-					end
-
-					if (M_AXIS_TREADY == 1)
+					if (B_write_address == (INPUT_WORDS_B - 1))
 					begin
-						RES_read_en			<= 1;
-						RES_read_address	<= write_counter;
-						state				<= Write_Wait;
-						if (write_counter == NUMBER_OF_OUTPUT_WORDS-1)
+						state <= COMPUTE;
+						Start <= 1'b1;
+					end
+					else
+					begin
+						if (S_AXIS_TVALID)
 						begin
-							end_write 			<= 1;
-							if (end_write)
+							B_write_en 		<= 1'b1;
+							B_write_address <= B_write_address + 1;
+							B_write_data_in <= S_AXIS_TDATA[width-1:0];
+						end
+					end
+				end
+
+				COMPUTE:
+				begin
+					if (Done)
+					begin
+					state			 <= WRITE_OUTPUTS;
+
+					RES_read_en 		 <= 1'b1;
+					RES_read_address 	 <= {RES_depth_bits{1'b0}};
+					end
+				end
+
+				WRITE_OUTPUTS:
+				begin
+					M_AXIS_TVALID <= M_AXIS_TVALID;
+					M_AXIS_TDATA  <= M_AXIS_TDATA;
+					RES_read_en   <= 1'b1;
+
+					if (M_AXIS_TREADY);
+					begin
+						if (RES_read_address != (NUMBER_OF_OUTPUT_WORDS - 1)) RES_read_address <= RES_read_address + 1;
+
+						if (RES_read_en_dly)
+						begin
+							M_AXIS_TVALID 	<= 1'b1;
+							M_AXIS_TDATA 	<= {{(32-width){1'b0}}, RES_read_data_out};
+							if (RES_read_address_dly == (NUMBER_OF_OUTPUT_WORDS - 1))
 							begin
-								state			<= Idle;
-								// M_AXIS_TLAST, though optional in AXIS, is necessary in practice as AXI Stream FIFO and AXI DMA expects it.
-								M_AXIS_TLAST	<= 1;
+								M_AXIS_TLAST <= 1'b1;
+								state 		 <= IDLE;
 							end
 						end
-						else
-						begin
-							write_counter	<= write_counter + 1;
-						end
 					end
 				end
 
-				Write_Wait:
-				begin
-					end_write <= end_write;
-					state <= Write_Outputs;
-				end
 			endcase
 		end
 	end
