@@ -96,7 +96,7 @@ module myip_v1_0
 	wire							RES_write_en;			// matrix_multiply_0 -> RES_RAM.
 	wire	[RES_depth_bits-1:0]	RES_write_address;		// matrix_multiply_0 -> RES_RAM.
 	wire	[width-1:0] 			RES_write_data_in;		// matrix_multiply_0 -> RES_RAM.
-	reg								RES_read_en;  			// myip_v1_0 -> RES_RAM. To be assigned within myip_v1_0. Possibly reg.
+	wire							RES_read_en;  			// myip_v1_0 -> RES_RAM. To be assigned within myip_v1_0. Possibly reg.
 	reg		[RES_depth_bits-1:0] 	RES_read_address;		// myip_v1_0 -> RES_RAM. To be assigned within myip_v1_0. Possibly reg.
 	wire	[width-1:0] 			RES_read_data_out;		// RES_RAM -> myip_v1_0
 
@@ -113,10 +113,14 @@ module myip_v1_0
 	localparam LAST          = 6'b100000;
 	reg [5:0] state;
 
-	wire M_AXIS_WE = M_AXIS_TREADY | ~M_AXIS_TVALID;
+	wire M_AXIS_WE = (M_AXIS_TREADY | ~M_AXIS_TVALID);
+	assign RES_read_en = M_AXIS_WE & (state == WRITE_OUTPUTS);
 
 	reg 							RES_read_en_dly;
 	reg 	[RES_depth_bits-1:0] 	RES_read_address_dly;
+
+
+	reg RABAK_REG;
 
 	always_ff @(posedge ACLK)
 	begin
@@ -135,7 +139,6 @@ module myip_v1_0
 			B_write_en 			 <= 1'b0;
 			B_write_address 	 <= {B_depth_bits{1'b0}};
 			B_write_data_in 	 <= {width{1'b0}};
-			RES_read_en 		 <= 1'b0;
 			RES_read_address 	 <= {RES_depth_bits{1'b0}};
 			Start				 <= 1'b0;
 
@@ -143,6 +146,8 @@ module myip_v1_0
 
 			RES_read_en_dly 		<= 1'b0;
 			RES_read_address_dly <= {RES_depth_bits{1'b0}};
+
+			RABAK_REG <= 1'b0;
         end
 		else
 		begin
@@ -158,12 +163,13 @@ module myip_v1_0
 			B_write_en 			 <= 1'b0;
 			B_write_address 	 <= {B_depth_bits{1'b0}};
 			B_write_data_in 	 <= {width{1'b0}};
-			RES_read_en 		 <= 1'b0;
 			RES_read_address 	 <= {RES_depth_bits{1'b0}};
 			Start				 <= 1'b0;
 
 			RES_read_en_dly 		<= RES_read_en;
 			RES_read_address_dly 	<= RES_read_address;
+
+			RABAK_REG <= 1'b0;
 
 			case (state)
 
@@ -233,8 +239,8 @@ module myip_v1_0
 					begin
 					state				<= WRITE_OUTPUTS;
 
-					RES_read_en			<= 1'b1;
 					RES_read_address	<= {RES_depth_bits{1'b0}};
+					RABAK_REG				<= 1'b0;
 					end
 				end
 
@@ -244,24 +250,25 @@ module myip_v1_0
 					M_AXIS_TLAST 	<= M_AXIS_TLAST;
 					M_AXIS_TVALID 	<= M_AXIS_TVALID;
 
-					RES_read_en			<= 1'b1;
 					RES_read_address	<= RES_read_address;
+
+					RABAK_REG <= RABAK_REG;
 
 					if (M_AXIS_WE)
 					begin
 						// WARNING DOES NOT WORK FOR BACKPRESSURE CASES
 						if (RES_read_address == (NUMBER_OF_OUTPUT_WORDS - 1))
 						begin
-							RES_read_en			<= 1'b0;
 							RES_read_address	<= {RES_depth_bits{1'b0}};
 						end
 						else RES_read_address 	<= RES_read_address + 1;
 
-						if (RES_read_en_dly)
+						if (RABAK_REG)  //  RABAK FIX
 						begin
 							M_AXIS_TDATA 	<= {24'b0, RES_read_data_out};
 							M_AXIS_TVALID 	<= 1'b1;
 						end
+						else RABAK_REG <= 1'b1;
 
 						if (RES_read_address_dly == (NUMBER_OF_OUTPUT_WORDS - 1))
 						begin
