@@ -59,6 +59,7 @@
 #include "stdlib.h"
 #include "xtmrctr.h"
 #include "xuartps.h"
+#include "stdio.h"
 
 #ifdef XPAR_UARTNS550_0_BASEADDR
 #include "xuartns550_l.h"       /* to use uartns550 */
@@ -112,7 +113,7 @@ int RxReceive(XLlFifo *InstancePtr, u32 *DestinationAddr, int Words);
 
 /* UART/RealTerm Functions */
 int ReceiveCSVData(u32 *BufferA, int TotalElements);
-void SendCSVResults(u32 *RES);
+void SendCSVResults(u32 *RES, int TotalElements);
 
 /* Utility Functions */
 void MergeArrays(u32 *dest, u32 *A, int sizeA, u32 *B, int sizeB);
@@ -144,6 +145,7 @@ u32 DestinationBuffer[TOTAL_ELEMENTS];		//received from FPGA, right now its in l
 ******************************************************************************/
 int main()
 {
+	int Status;
 	//TODO
     // xil_printf("Ready! Please use RealTerm -> 'Send File' to send A.csv\r\n");
     // ReceiveCSVData(MatrixA, MatrixA_Size);
@@ -159,8 +161,13 @@ int main()
 	// 	SourceBuffer[MatrixA_Size + i] = MatrixB[i];
 	// }
 
-	RunMatrixAssignment(&FifoInstance, XPAR_XLLFIFO_0_BASEADDR);
-	return XST_SUCCESS;
+	Status = RunMatrixAssignment(&FifoInstance, XPAR_XLLFIFO_0_BASEADDR);
+	if (Status != XST_SUCCESS) {
+		xil_printf("Failed to execute\n\r");
+		xil_printf("--- Exiting main() ---\n\r");
+		return XST_FAILURE;
+	}
+	return Status;
 }
 
 /*****************************************************************************/
@@ -298,6 +305,9 @@ int RunMatrixAssignment(XLlFifo *InstancePtr, UINTPTR BaseAddress)
 	// }
 	// Error = 0;
 
+	SendCSVResults(DestinationBuffer, MATRIX_A_ROWS * MATRIX_B_COLS);
+
+	return Status;
 
 	/* Compare the data send with the data received */
 	// xil_printf(" Comparing data ...\n\r");
@@ -579,8 +589,33 @@ int performMatrixMultiplication(u32 *data, int A_rows, int A_cols, int B_cols) {
 
 	// Copy result back to DestinationBuffer for sending back to RealTerm
 	for (int i = 0; i < A_rows * B_cols; i++) {
-		DestinationBuffer[i] = RES[i];
+		DestinationBuffer[i] = RES[i] / 256; 
 	}
 	
 	return XST_SUCCESS;
+}
+
+/*****************************************************************************/
+/**
+ * SendCSVResults routine. It will send the results of matrix multiplication back to RealTerm in CSV format.
+ *
+ * @param	data is the pointer to the result data that needs to be sent back.
+ * @param	size is the number of elements in the result data.
+ * @return
+ *		None
+ * @note		The results will be sent back as a single line of CSV, with values separated by commas and ending with a newline character.
+ *******************************************************************************/
+void SendCSVResults(u32 *data, int size) {
+	// Send the results back to RealTerm in CSV format
+	for (int i = 0; i < size; i++) {
+		char buffer[12]; // Buffer to hold string representation of number
+		sprintf(buffer, "%d", data[i]);
+		for (char *p = buffer; *p != '\0'; p++) {
+			XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, *p);
+		}
+		if (i < size - 1) {
+			XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, ','); // Send comma between values
+		}
+	}
+	XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, '\n'); // Newline at the end
 }
