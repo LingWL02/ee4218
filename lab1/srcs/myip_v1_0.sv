@@ -204,7 +204,7 @@ module myip_v1_0
 							B_write_address <= {B_depth_bits{1'b0}};
 							B_write_data_in <= S_AXIS_TDATA[width-1:0];
 						end
-						else if (read_counter < 12) // next 4 words go to B_RAM
+						else
 						begin
 							A_write_en 		<= 1'b1;
 							A_write_address <= A_write_address + 1'b1;
