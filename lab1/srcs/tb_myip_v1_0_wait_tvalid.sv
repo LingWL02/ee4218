@@ -4,6 +4,7 @@
 ----------------------------------------------------------------------------------
 --	(c) Rajesh C Panicker, NUS
 --  Description : Self-checking testbench for Matrix Multiplication AXI Stream Coprocessor.
+--  Modified : v2 - M_AXIS_TREADY is not asserted until M_AXIS_TVALID has been high for a few cycles.
 --	License terms :
 --	You are free to use this code as long as you
 --		(i) DO NOT post a modified version of this on any public repository;
@@ -16,7 +17,7 @@
 */
 
 
-module tb_myip_v1_0(
+module tb_myip_v1_0_wait_tvalid(
 
     );
 
@@ -40,6 +41,8 @@ module tb_myip_v1_0(
 	localparam NUMBER_OF_TEST_VECTORS  = 10;  // number of such test vectors (cases)
 	localparam width  = 8;  // width of an input vector
 
+	localparam TREADY_DELAY_CYCLES = 3; // number of cycles to wait after TVALID before asserting TREADY
+
 	myip_v1_0 #(
 		.m(m),
 		.n(n),
@@ -62,6 +65,7 @@ module tb_myip_v1_0(
 	reg [width-1:0] result_memory [0:NUMBER_OF_TEST_VECTORS*NUMBER_OF_OUTPUT_WORDS-1]; // same size as test_result_expected_memory
 
 	integer word_cnt, test_case_cnt;
+	integer tvalid_wait_cnt;
 	reg success = 1'b1;
 	reg M_AXIS_TLAST_prev = 1'b0;
 
@@ -119,8 +123,20 @@ module tb_myip_v1_0(
 
 		/// Output
 		// Note: result_memory is not written at a clock edge, which is fine as it is just a testbench construct and not actual hardware
+		// v2: Wait for M_AXIS_TVALID to be asserted for a few cycles before asserting M_AXIS_TREADY
 			word_cnt = 0;
-			M_AXIS_TREADY = 1'b1;	// we are now ready to receive data
+			M_AXIS_TREADY = 1'b0;	// do NOT assert TREADY yet
+
+			// Wait until TVALID goes high
+			while(!M_AXIS_TVALID)
+				@(posedge ACLK);
+
+			// TVALID is now high, wait a few more cycles before asserting TREADY
+			for(tvalid_wait_cnt = 0; tvalid_wait_cnt < TREADY_DELAY_CYCLES; tvalid_wait_cnt = tvalid_wait_cnt + 1)
+				@(posedge ACLK);
+
+			M_AXIS_TREADY = 1'b1;	// we are now ready to receive data (after delayed assertion)
+
 			while(M_AXIS_TLAST | ~M_AXIS_TLAST_prev) // receive data until the falling edge of M_AXIS_TLAST
 			begin
 				if(M_AXIS_TVALID)
