@@ -487,7 +487,7 @@ int ReceiveCSVData(u32 *Buffer, int TotalElements) {
                 Buffer[count] = atoi(msg);
                 count++;
                 msg_idx = 0;
-                
+
                 // Print progress every 64 values
                 if (count % 64 == 0) {
                     xil_printf("Progress: %d/%d values received\r\n", count, TotalElements);
@@ -505,7 +505,7 @@ int ReceiveCSVData(u32 *Buffer, int TotalElements) {
     }
 
     xil_printf("CSV data reception complete. %d values received.\r\n", count);
-	
+
 	if (count != TotalElements) {
         xil_printf("ERROR: Expected %d elements but received %d!\r\n", TotalElements, count);
         xil_printf("Please check your CSV file and resend.\r\n");
@@ -516,7 +516,7 @@ int ReceiveCSVData(u32 *Buffer, int TotalElements) {
 		return XST_SUCCESS;
     }
 
-	
+
 	// DEBUG: After CSV data reception is complete
 	// xil_printf("Sanity check: First 5 elements:\r\n");
 	// for (int i = 0; i < 5; i++) {
@@ -589,9 +589,9 @@ int performMatrixMultiplication(u32 *data, int A_rows, int A_cols, int B_cols) {
 
 	// Copy result back to DestinationBuffer for sending back to RealTerm
 	for (int i = 0; i < A_rows * B_cols; i++) {
-		DestinationBuffer[i] = RES[i] / 256; 
+		DestinationBuffer[i] = RES[i] / 256;
 	}
-	
+
 	return XST_SUCCESS;
 }
 
