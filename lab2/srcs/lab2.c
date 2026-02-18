@@ -57,9 +57,13 @@ XTmrCtr TmrCtrInstance; /* The instance of the Tmrctr Device */
 #undef DEBUG
 
 #ifndef SDT
-int RunMatrixAssignment(XLlFifo *FifoInstancePtr, u16 FifoDeviceId, XTmrCtr* TmrCtrInstancePtr, u16 TmrCtrDeviceId);
+int RunMatrixAssignment(
+	XLlFifo *FifoInstancePtr, u16 FifoDeviceId, XTmrCtr *TmrCtrInstancePtr, u16 TmrCtrDeviceId, u8 TmrCtrNumber
+);
 #else
-int RunMatrixAssignment(XLlFifo *FifoInstancePtr, UINTPTR FifoBaseAddress, XTmrCtr* TmrCtrInstancePtr, UINTPTR TimerBaseAddress);
+int RunMatrixAssignment(
+	XLlFifo *FifoInstancePtr, UINTPTR FifoBaseAddress, XTmrCtr *TmrCtrInstancePtr, UINTPTR TmrCtrBaseAddress, u8 TmrCtrNumber
+);
 #endif
 
 int TimerSetup(XTmrCtr *TmrCtrInstancePtr, u16 TmrCtrDeviceId);
@@ -88,9 +92,9 @@ int main()
 
 	while (true) {
 		#ifndef SDT
-		Status = RunMatrixAssignment(&FifoInstance, FIFO_DEV_ID, &TmrCtrInstance, TMRCTR_DEVICE_ID);
+		Status = RunMatrixAssignment(&FifoInstance, FIFO_DEV_ID, &TmrCtrInstance, TMRCTR_DEVICE_ID, TIMER_COUNTER_0);
 		#else
-		Status = RunMatrixAssignment(&FifoInstance, XPAR_XLLFIFO_0_BASEADDR, &TmrCtrInstance, XTMRCTR_BASEADDRESS);
+		Status = RunMatrixAssignment(&FifoInstance, XPAR_XLLFIFO_0_BASEADDR, &TmrCtrInstance, XTMRCTR_BASEADDRESS, TIMER_COUNTER_0);
 		#endif
 		if (Status != XST_SUCCESS) {
 			xil_printf("Failed to execute\r\n");
@@ -103,9 +107,13 @@ int main()
 }
 
 #ifndef SDT
-int RunMatrixAssignment(XLlFifo *FifoInstancePtr, u16 FifoDeviceId, XTmrCtr *TmrCtrInstancePtr, u16 TmrCtrDeviceId)
+int RunMatrixAssignment(
+	XLlFifo *FifoInstancePtr, u16 FifoDeviceId, XTmrCtr *TmrCtrInstancePtr, u16 TmrCtrDeviceId, u8 TmrCtrNumber
+)
 #else
-int RunMatrixAssignment(XLlFifo *FifoInstancePtr, UINTPTR FifoBaseAddress, XTmrCtr *TmrCtrInstancePtr, UINTPTR TimerBaseAddress)
+int RunMatrixAssignment(
+	XLlFifo *FifoInstancePtr, UINTPTR FifoBaseAddress, XTmrCtr *TmrCtrInstancePtr, UINTPTR TmrCtrBaseAddress, u8 TmrCtrNumber
+)
 #endif
 {
 	XLlFifo_Config *FifoConfig;
@@ -148,6 +156,26 @@ int RunMatrixAssignment(XLlFifo *FifoInstancePtr, UINTPTR FifoBaseAddress, XTmrC
 	}
 
 	// Initialize Timer
+#ifndef SDT
+	Status = XTmrCtr_Initialize(TmrCtrInstancePtr, TmrCtrDeviceId);
+#else
+	Status = XTmrCtr_Initialize(TmrCtrInstancePtr, TmrCtrBaseAddress);
+#endif
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
+	/*
+	 * Perform a self-test to ensure that the hardware was built
+	 * correctly, use the 1st timer in the device (0)
+	 */
+	Status = XTmrCtr_SelfTest(TmrCtrInstancePtr, TmrCtrNumber);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
+
+	// Default timer settings (count up, no auto reload, interrupt disabled)
+	XTmrCtr_SetOptions(TmrCtrInstancePtr, TmrCtrNumber, 0);
+	XTmrCtr_SetResetValue(TmrCtrInstancePtr, TmrCtrNumber, 0);
 
 	xil_printf("Ready! Please use RealTerm -> 'Send File' to send A.csv\r\n");
     Status = ReceiveCSVData(MatrixA, MatrixA_Size);
