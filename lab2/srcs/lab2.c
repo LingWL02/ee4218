@@ -74,7 +74,7 @@ int TxSend(XLlFifo *FifoInstancePtr, u32 *SourceAddr, int Words, XTmrCtr *TmrCtr
 int RxReceive(XLlFifo *FifoInstancePtr, u32 *DestinationAddr, int Words, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber);
 
 int ReceiveCSVData(u32 *BufferA, int TotalElements);
-void SendCSVResults(u32 *RES, int TotalElements);
+void SendCSVResults(u32 *RES, int rows, int cols);
 
 void MergeArrays(u32 *dest, u32 *A, int sizeA, u32 *B, int sizeB);
 int performMatrixMultiplication(u32 *data, int A_rows, int A_cols, int B_cols, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber);
@@ -215,7 +215,7 @@ int RunMatrixAssignment(
 	}
 	xil_printf("Matrix multiplication completed successfully!, output is a %dx%d matrix\r\n", MATRIX_A_ROWS, MATRIX_B_COLS);
 
-	SendCSVResults(DestinationBuffer, MATRIX_A_ROWS * MATRIX_B_COLS);
+	SendCSVResults(DestinationBuffer, MATRIX_A_ROWS, MATRIX_B_COLS);
 
 	return Status;
 }
@@ -380,18 +380,20 @@ int performMatrixMultiplication(u32 *data, int A_rows, int A_cols, int B_cols, X
 }
 
 
-void SendCSVResults(u32 *data, int size)
+void SendCSVResults(u32 *data, int rows, int cols)
 {
-	for (int i = 0; i < size; i++) {
-		char buffer[12];
-		sprintf(buffer, "%d", data[i]);
-		for (char *p = buffer; *p != '\0'; p++) {
-			XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, *p);
+	for (int i = 0; i < rows; i++) {
+		for (int j = 0; j < cols; j++) {
+			char buffer[12];
+			sprintf(buffer, "%d", data[i * cols + j]);
+			for (char *p = buffer; *p != '\0'; p++) {
+				XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, *p);
+			}
+			if (j < cols - 1) {
+				XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, ',');
+			}
 		}
-		if (i < size - 1) {
-			XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, ',');
-		}
+		XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, '\r');
+		XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, '\n');
 	}
-	XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, '\r');
-	XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, '\n');
 }
