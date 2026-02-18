@@ -40,9 +40,9 @@ u32 MatrixB[MatrixB_Size];
 #undef DEBUG
 
 #ifndef SDT
-int RunMatrixAssignment(XLlFifo *InstancePtr, u16 DeviceId);
+int RunMatrixAssignment(XLlFifo *InstancePtr, u16 FifoDeviceId);
 #else
-int RunMatrixAssignment(XLlFifo *InstancePtr, UINTPTR BaseAddress);
+int RunMatrixAssignment(XLlFifo *InstancePtr, UINTPTR FifoBaseAddress);
 #endif
 
 int TimerSetup(XTmrCtr *TimerInstancePtr, u16 TimerDeviceId);
@@ -70,7 +70,11 @@ int main()
 	int Status = XST_SUCCESS;
 
 	while (true) {
+		#ifndef SDT
+		Status = RunMatrixAssignment(&FifoInstance, FIFO_DEV_ID);
+		#else
 		Status = RunMatrixAssignment(&FifoInstance, XPAR_XLLFIFO_0_BASEADDR);
+		#endif
 		if (Status != XST_SUCCESS) {
 			xil_printf("Failed to execute\r\n");
 			xil_printf("--- Exiting main() ---\r\n");
@@ -82,12 +86,12 @@ int main()
 }
 
 #ifndef SDT
-int RunMatrixAssignment(XLlFifo *InstancePtr, u16 DeviceId)
+int RunMatrixAssignment(XLlFifo *InstancePtr, u16 FifoDeviceId)
 #else
-int RunMatrixAssignment(XLlFifo *InstancePtr, UINTPTR BaseAddress)
+int RunMatrixAssignment(XLlFifo *InstancePtr, UINTPTR FifoBaseAddress)
 #endif
 {
-	XLlFifo_Config *Config;
+	XLlFifo_Config *FifoConfig;
 	int Status;
 	Status = XST_SUCCESS;
 
@@ -98,18 +102,18 @@ int RunMatrixAssignment(XLlFifo *InstancePtr, UINTPTR BaseAddress)
 #endif
 
 #ifndef SDT
-	Config = XLlFfio_LookupConfig(DeviceId);
+	FifoConfig = XLlFfio_LookupConfig(FifoDeviceId);
 #else
-	Config = XLlFfio_LookupConfig(BaseAddress);
+	FifoConfig = XLlFfio_LookupConfig(FifoBaseAddress);
 #endif
-	if (!Config) {
+	if (!FifoConfig) {
 #ifndef SDT
-		xil_printf("No config found for %d\r\n", DeviceId);
+		xil_printf("No config found for %d\r\n", FifoDeviceId);
 #endif
 		return XST_FAILURE;
 	}
 
-	Status = XLlFifo_CfgInitialize(InstancePtr, Config, Config->BaseAddress);
+	Status = XLlFifo_CfgInitialize(InstancePtr, FifoConfig, FifoConfig->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		xil_printf("Initialization failed\r\n");
 		return Status;
