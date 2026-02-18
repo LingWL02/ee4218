@@ -4,83 +4,13 @@
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
-#include "xparameters.h"
-#include "xil_exception.h"
-#include "xstreamer.h"
-#include "xil_cache.h"
-#include "xllfifo.h"
-#include "xstatus.h"
-#include "stdlib.h"
-#include "xtmrctr.h"
-#include "xuartps.h"
-#include "stdio.h"
-#include "stdbool.h"
-
-#ifdef XPAR_UARTNS550_0_BASEADDR
-#include "xuartns550_l.h"
-#endif
-
-#ifndef SDT
-#define FIFO_DEV_ID	   	XPAR_AXI_FIFO_0_DEVICE_ID
-#endif
-
-#define WORD_SIZE 4
-
-#define MATRIX_A_ROWS 64
-#define MATRIX_A_COLS 8
-#define MATRIX_B_ROWS 8
-#define MATRIX_B_COLS 1
-
-#define TOTAL_ELEMENTS (MATRIX_A_ROWS * MATRIX_A_COLS) + (MATRIX_B_ROWS * MATRIX_B_COLS)
-#define MatrixA_Size (MATRIX_A_COLS * MATRIX_A_ROWS)
-#define MatrixB_Size (MATRIX_B_COLS * MATRIX_B_ROWS)
-u32 MatrixA[MatrixA_Size];
-u32 MatrixB[MatrixB_Size];
-
-// Timer related definitions
-/*
- * The following constants map to the XPAR parameters created in the
- * xparameters.h file. They are only defined here such that a user can easily
- * change all the needed parameters in one place.
-*/
-#ifndef SDT
-#define TMRCTR_DEVICE_ID	XPAR_TMRCTR_0_DEVICE_ID
-#else
-#define XTMRCTR_BASEADDRESS	XPAR_XTMRCTR_0_BASEADDR
-#endif
-/*
- * The 1st counter
- */
-#define TIMER_COUNTER_0	 0
-XTmrCtr TmrCtrInstance; /* The instance of the Tmrctr Device */
-
-#undef DEBUG
-
-#ifndef SDT
-int RunMatrixAssignment(
-	XLlFifo *FifoInstancePtr, u16 FifoDeviceId, XTmrCtr *TmrCtrInstancePtr, u16 TmrCtrDeviceId, u8 TmrCtrNumber
-);
-#else
-int RunMatrixAssignment(
-	XLlFifo *FifoInstancePtr, UINTPTR FifoBaseAddress, XTmrCtr *TmrCtrInstancePtr, UINTPTR TmrCtrBaseAddress, u8 TmrCtrNumber
-);
-#endif
-
-int TimerSetup(XTmrCtr *TmrCtrInstancePtr, u16 TmrCtrDeviceId);
-
-void MatrixMultiply(u32 *A, u32 *B, u32 *RES);
-
-int TxSend(XLlFifo *FifoInstancePtr, u32 *SourceAddr, int Words, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber);
-int RxReceive(XLlFifo *FifoInstancePtr, u32 *DestinationAddr, int Words, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber);
-
-int ReceiveCSVData(u32 *BufferA, int TotalElements);
-void SendCSVResults(u32 *RES, int rows, int cols);
-
-void MergeArrays(u32 *dest, u32 *A, int sizeA, u32 *B, int sizeB);
-int performMatrixMultiplication(u32 *data, int A_rows, int A_cols, int B_cols, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber);
+#include "lab2.h"
 
 XLlFifo FifoInstance;
+XTmrCtr TmrCtrInstance;
 
+u32 MatrixA[MatrixA_Size];
+u32 MatrixB[MatrixB_Size];
 u32 SourceBuffer[TOTAL_ELEMENTS];
 u32 DestinationBuffer[TOTAL_ELEMENTS];
 
@@ -89,12 +19,13 @@ char TERMINATE_TOKEN[] = "TERMINATE";
 int main()
 {
 	int Status = XST_SUCCESS;
+	Stats stats = {0, 0, 0};
 
 	while (true) {
 		#ifndef SDT
-		Status = RunMatrixAssignment(&FifoInstance, FIFO_DEV_ID, &TmrCtrInstance, TMRCTR_DEVICE_ID, TIMER_COUNTER_0);
+		Status = RunMatrixAssignment(&FifoInstance, FIFO_DEV_ID, &TmrCtrInstance, TMRCTR_DEVICE_ID, TIMER_COUNTER_0, &stats);
 		#else
-		Status = RunMatrixAssignment(&FifoInstance, XPAR_XLLFIFO_0_BASEADDR, &TmrCtrInstance, XTMRCTR_BASEADDRESS, TIMER_COUNTER_0);
+		Status = RunMatrixAssignment(&FifoInstance, XPAR_XLLFIFO_0_BASEADDR, &TmrCtrInstance, XTMRCTR_BASEADDRESS, TIMER_COUNTER_0, &stats);
 		#endif
 		if (Status != XST_SUCCESS) {
 			xil_printf("Failed to execute\r\n");
@@ -108,11 +39,11 @@ int main()
 
 #ifndef SDT
 int RunMatrixAssignment(
-	XLlFifo *FifoInstancePtr, u16 FifoDeviceId, XTmrCtr *TmrCtrInstancePtr, u16 TmrCtrDeviceId, u8 TmrCtrNumber
+	XLlFifo *FifoInstancePtr, u16 FifoDeviceId, XTmrCtr *TmrCtrInstancePtr, u16 TmrCtrDeviceId, u8 TmrCtrNumber, Stats *stats
 )
 #else
 int RunMatrixAssignment(
-	XLlFifo *FifoInstancePtr, UINTPTR FifoBaseAddress, XTmrCtr *TmrCtrInstancePtr, UINTPTR TmrCtrBaseAddress, u8 TmrCtrNumber
+	XLlFifo *FifoInstancePtr, UINTPTR FifoBaseAddress, XTmrCtr *TmrCtrInstancePtr, UINTPTR TmrCtrBaseAddress, u8 TmrCtrNumber, Stats *stats
 )
 #endif
 {
@@ -178,13 +109,13 @@ int RunMatrixAssignment(
 	XTmrCtr_SetResetValue(TmrCtrInstancePtr, TmrCtrNumber, 0);
 
 	xil_printf("Ready! Please use RealTerm -> 'Send File' to send A.csv\r\n");
-    Status = ReceiveCSVData(MatrixA, MatrixA_Size);
+    Status = ReceiveCSVData(MatrixA, MatrixA_Size, stats);
     if (Status != XST_SUCCESS) {
         xil_printf("Failed to receive Matrix A\r\n");
         return XST_FAILURE;
     }
     xil_printf("Matrix A Received. Now please send B.csv\r\n");
-    Status = ReceiveCSVData(MatrixB, MatrixB_Size);
+    Status = ReceiveCSVData(MatrixB, MatrixB_Size, stats);
     if (Status != XST_SUCCESS) {
         xil_printf("Failed to receive Matrix B\r\n");
         return XST_FAILURE;
@@ -196,18 +127,18 @@ int RunMatrixAssignment(
 	}
 
 
-	Status = TxSend(FifoInstancePtr, SourceBuffer, TOTAL_ELEMENTS, TmrCtrInstancePtr, TmrCtrNumber);
+	Status = TxSend(FifoInstancePtr, SourceBuffer, TOTAL_ELEMENTS, TmrCtrInstancePtr, TmrCtrNumber, stats);
 	if (Status != XST_SUCCESS){
 		xil_printf("Transmission of Data failed\r\n");
 		return XST_FAILURE;
 	}
 
-	Status = RxReceive(FifoInstancePtr, DestinationBuffer, TOTAL_ELEMENTS, TmrCtrInstancePtr, TmrCtrNumber);
+	Status = RxReceive(FifoInstancePtr, DestinationBuffer, TOTAL_ELEMENTS, TmrCtrInstancePtr, TmrCtrNumber, stats);
 	if (Status != XST_SUCCESS){
 		xil_printf("Receiving data failed");
 		return XST_FAILURE;
 	}
-	Status = performMatrixMultiplication(DestinationBuffer, MATRIX_A_ROWS, MATRIX_A_COLS, MATRIX_B_COLS, TmrCtrInstancePtr, TmrCtrNumber);
+	Status = performMatrixMultiplication(DestinationBuffer, MATRIX_A_ROWS, MATRIX_A_COLS, MATRIX_B_COLS, TmrCtrInstancePtr, TmrCtrNumber, stats);
 
 	if (Status != XST_SUCCESS) {
 		xil_printf("Matrix multiplication failed\r\n");
@@ -221,7 +152,7 @@ int RunMatrixAssignment(
 }
 
 
-int TxSend(XLlFifo *FifoInstancePtr, u32  *SourceAddr, int Words, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber)
+int TxSend(XLlFifo *FifoInstancePtr, u32  *SourceAddr, int Words, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber, Stats *stats)
 {
 	int i;
 	xil_printf("Transmitting Data ...\r\n");
@@ -243,13 +174,14 @@ int TxSend(XLlFifo *FifoInstancePtr, u32  *SourceAddr, int Words, XTmrCtr *TmrCt
 
 	u32 TxElapsed = XTmrCtr_GetValue(TmrCtrInstancePtr, TmrCtrNumber);
 	XTmrCtr_Stop(TmrCtrInstancePtr, TmrCtrNumber);
+	stats->TxElapsed = TxElapsed;
 	xil_printf("TxSend elapsed: %u cycles\r\n", TxElapsed);
 
 	return XST_SUCCESS;
 }
 
 
-int RxReceive (XLlFifo *FifoInstancePtr, u32* DestinationAddr, int Words, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber)
+int RxReceive (XLlFifo *FifoInstancePtr, u32* DestinationAddr, int Words, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber, Stats *stats)
 {
 	int Status;
 	u32 RxWord;
@@ -270,6 +202,7 @@ int RxReceive (XLlFifo *FifoInstancePtr, u32* DestinationAddr, int Words, XTmrCt
 
 	u32 RxElapsed = XTmrCtr_GetValue(TmrCtrInstancePtr, TmrCtrNumber);
 	XTmrCtr_Stop(TmrCtrInstancePtr, TmrCtrNumber);
+	stats->RxElapsed = RxElapsed;
 	xil_printf("RxReceive elapsed: %u cycles\r\n", RxElapsed);
 
 	Status = XLlFifo_IsRxDone(FifoInstancePtr);
@@ -282,7 +215,7 @@ int RxReceive (XLlFifo *FifoInstancePtr, u32* DestinationAddr, int Words, XTmrCt
 }
 
 
-int ReceiveCSVData(u32 *Buffer, int TotalElements)
+int ReceiveCSVData(u32 *Buffer, int TotalElements, Stats *stats)
 {
     char msg[20];
     int msg_idx = 0;
@@ -304,6 +237,7 @@ int ReceiveCSVData(u32 *Buffer, int TotalElements)
 
 				if (strcmp(msg, TERMINATE_TOKEN) == 0) {
 					xil_printf("Termination command received. Stopping reception.\r\n");
+					SendStats(stats);
 					return XST_FAILURE;
 				}
                 Buffer[count] = atoi(msg);
@@ -347,7 +281,7 @@ void MergeArrays(u32 *dest, u32 *A, int sizeA, u32 *B, int sizeB)
 }
 
 
-int performMatrixMultiplication(u32 *data, int A_rows, int A_cols, int B_cols, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber)
+int performMatrixMultiplication(u32 *data, int A_rows, int A_cols, int B_cols, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber, Stats *stats)
 {
 	u32 *A = data;
 	u32 *B = data + (A_rows * A_cols);
@@ -370,6 +304,7 @@ int performMatrixMultiplication(u32 *data, int A_rows, int A_cols, int B_cols, X
 
 	u32 MatMulElapsed = XTmrCtr_GetValue(TmrCtrInstancePtr, TmrCtrNumber);
 	XTmrCtr_Stop(TmrCtrInstancePtr, TmrCtrNumber);
+	stats->MatMulElapsed = MatMulElapsed;
 	xil_printf("MatMul elapsed: %u cycles\r\n", MatMulElapsed);
 
 	for (int i = 0; i < A_rows * B_cols; i++) {
@@ -377,6 +312,23 @@ int performMatrixMultiplication(u32 *data, int A_rows, int A_cols, int B_cols, X
 	}
 
 	return XST_SUCCESS;
+}
+
+
+void SendStats(Stats *stats)
+{
+	char buf[12];
+	const char *labels[] = {"STATS:TX=", ",RX=", ",MATMUL="};
+	u32 values[] = {stats->TxElapsed, stats->RxElapsed, stats->MatMulElapsed};
+	for (int l = 0; l < 3; l++) {
+		for (const char *p = labels[l]; *p != '\0'; p++)
+			XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, *p);
+		sprintf(buf, "%u", (unsigned int)values[l]);
+		for (char *p = buf; *p != '\0'; p++)
+			XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, *p);
+	}
+	XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, '\r');
+	XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, '\n');
 }
 
 
