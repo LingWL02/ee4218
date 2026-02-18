@@ -70,14 +70,14 @@ int TimerSetup(XTmrCtr *TmrCtrInstancePtr, u16 TmrCtrDeviceId);
 
 void MatrixMultiply(u32 *A, u32 *B, u32 *RES);
 
-int TxSend(XLlFifo *FifoInstancePtr, u32 *SourceAddr, int Words);
-int RxReceive(XLlFifo *FifoInstancePtr, u32 *DestinationAddr, int Words);
+int TxSend(XLlFifo *FifoInstancePtr, u32 *SourceAddr, int Words, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber);
+int RxReceive(XLlFifo *FifoInstancePtr, u32 *DestinationAddr, int Words, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber);
 
 int ReceiveCSVData(u32 *BufferA, int TotalElements);
 void SendCSVResults(u32 *RES, int TotalElements);
 
 void MergeArrays(u32 *dest, u32 *A, int sizeA, u32 *B, int sizeB);
-int performMatrixMultiplication(u32 *data, int A_rows, int A_cols, int B_cols);
+int performMatrixMultiplication(u32 *data, int A_rows, int A_cols, int B_cols, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber);
 
 XLlFifo FifoInstance;
 
@@ -196,18 +196,18 @@ int RunMatrixAssignment(
 	}
 
 
-	Status = TxSend(FifoInstancePtr, SourceBuffer, TOTAL_ELEMENTS);
+	Status = TxSend(FifoInstancePtr, SourceBuffer, TOTAL_ELEMENTS, TmrCtrInstancePtr, TmrCtrNumber);
 	if (Status != XST_SUCCESS){
 		xil_printf("Transmission of Data failed\r\n");
 		return XST_FAILURE;
 	}
 
-	Status = RxReceive(FifoInstancePtr, DestinationBuffer, TOTAL_ELEMENTS);
+	Status = RxReceive(FifoInstancePtr, DestinationBuffer, TOTAL_ELEMENTS, TmrCtrInstancePtr, TmrCtrNumber);
 	if (Status != XST_SUCCESS){
 		xil_printf("Receiving data failed");
 		return XST_FAILURE;
 	}
-	Status = performMatrixMultiplication(DestinationBuffer, MATRIX_A_ROWS, MATRIX_A_COLS, MATRIX_B_COLS);
+	Status = performMatrixMultiplication(DestinationBuffer, MATRIX_A_ROWS, MATRIX_A_COLS, MATRIX_B_COLS, TmrCtrInstancePtr, TmrCtrNumber);
 
 	if (Status != XST_SUCCESS) {
 		xil_printf("Matrix multiplication failed\r\n");
@@ -221,10 +221,13 @@ int RunMatrixAssignment(
 }
 
 
-int TxSend(XLlFifo *FifoInstancePtr, u32  *SourceAddr, int Words)
+int TxSend(XLlFifo *FifoInstancePtr, u32  *SourceAddr, int Words, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber)
 {
 	int i;
 	xil_printf("Transmitting Data ...\r\n");
+
+	XTmrCtr_Reset(TmrCtrInstancePtr, TmrCtrNumber);
+	XTmrCtr_Start(TmrCtrInstancePtr, TmrCtrNumber);
 
 	for (i=0 ; i < Words ; i++){
 		if( XLlFifo_iTxVacancy(FifoInstancePtr) ){
@@ -238,17 +241,25 @@ int TxSend(XLlFifo *FifoInstancePtr, u32  *SourceAddr, int Words)
 
 	}
 
+	u32 TxElapsed = XTmrCtr_GetValue(TmrCtrInstancePtr, TmrCtrNumber);
+	XTmrCtr_Stop(TmrCtrInstancePtr, TmrCtrNumber);
+	xil_printf("TxSend elapsed: %u cycles\r\n", TxElapsed);
+
 	return XST_SUCCESS;
 }
 
 
-int RxReceive (XLlFifo *FifoInstancePtr, u32* DestinationAddr, int Words)
+int RxReceive (XLlFifo *FifoInstancePtr, u32* DestinationAddr, int Words, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber)
 {
 	int Status;
 	u32 RxWord;
 	int count = 0;
 
 	xil_printf("Receiving data ...\r\n");
+
+	XTmrCtr_Reset(TmrCtrInstancePtr, TmrCtrNumber);
+	XTmrCtr_Start(TmrCtrInstancePtr, TmrCtrNumber);
+
 	while (count < Words) {
 		if(XLlFifo_iRxOccupancy(FifoInstancePtr)) {
 			RxWord = XLlFifo_RxGetWord(FifoInstancePtr);
@@ -256,6 +267,10 @@ int RxReceive (XLlFifo *FifoInstancePtr, u32* DestinationAddr, int Words)
 			count++;
 		}
 	}
+
+	u32 RxElapsed = XTmrCtr_GetValue(TmrCtrInstancePtr, TmrCtrNumber);
+	XTmrCtr_Stop(TmrCtrInstancePtr, TmrCtrNumber);
+	xil_printf("RxReceive elapsed: %u cycles\r\n", RxElapsed);
 
 	Status = XLlFifo_IsRxDone(FifoInstancePtr);
 	if(Status != TRUE){
@@ -332,7 +347,7 @@ void MergeArrays(u32 *dest, u32 *A, int sizeA, u32 *B, int sizeB)
 }
 
 
-int performMatrixMultiplication(u32 *data, int A_rows, int A_cols, int B_cols)
+int performMatrixMultiplication(u32 *data, int A_rows, int A_cols, int B_cols, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber)
 {
 	u32 *A = data;
 	u32 *B = data + (A_rows * A_cols);
@@ -342,6 +357,9 @@ int performMatrixMultiplication(u32 *data, int A_rows, int A_cols, int B_cols)
 		RES[i] = 0;
 	}
 
+	XTmrCtr_Reset(TmrCtrInstancePtr, TmrCtrNumber);
+	XTmrCtr_Start(TmrCtrInstancePtr, TmrCtrNumber);
+
 	for (int i = 0; i < A_rows; i++) {
 		for (int j = 0; j < B_cols; j++) {
 			for (int k = 0; k < A_cols; k++) {
@@ -349,6 +367,10 @@ int performMatrixMultiplication(u32 *data, int A_rows, int A_cols, int B_cols)
 			}
 		}
 	}
+
+	u32 MatMulElapsed = XTmrCtr_GetValue(TmrCtrInstancePtr, TmrCtrNumber);
+	XTmrCtr_Stop(TmrCtrInstancePtr, TmrCtrNumber);
+	xil_printf("MatMul elapsed: %u cycles\r\n", MatMulElapsed);
 
 	for (int i = 0; i < A_rows * B_cols; i++) {
 		DestinationBuffer[i] = RES[i] & 0xFF;
