@@ -37,20 +37,37 @@
 u32 MatrixA[MatrixA_Size];
 u32 MatrixB[MatrixB_Size];
 
+// Timer related definitions
+/*
+ * The following constants map to the XPAR parameters created in the
+ * xparameters.h file. They are only defined here such that a user can easily
+ * change all the needed parameters in one place.
+*/
+#ifndef SDT
+#define TMRCTR_DEVICE_ID	XPAR_TMRCTR_0_DEVICE_ID
+#else
+#define XTMRCTR_BASEADDRESS	XPAR_XTMRCTR_0_BASEADDR
+#endif
+/*
+ * The 1st counter
+ */
+#define TIMER_COUNTER_0	 0
+XTmrCtr TmrCtrInstance; /* The instance of the Tmrctr Device */
+
 #undef DEBUG
 
 #ifndef SDT
-int RunMatrixAssignment(XLlFifo *InstancePtr, u16 FifoDeviceId);
+int RunMatrixAssignment(XLlFifo *FifoInstancePtr, u16 FifoDeviceId, XTmrCtr* TmrCtrInstancePtr, u16 TmrCtrDeviceId);
 #else
-int RunMatrixAssignment(XLlFifo *InstancePtr, UINTPTR FifoBaseAddress);
+int RunMatrixAssignment(XLlFifo *FifoInstancePtr, UINTPTR FifoBaseAddress, XTmrCtr* TmrCtrInstancePtr, UINTPTR TimerBaseAddress);
 #endif
 
-int TimerSetup(XTmrCtr *TimerInstancePtr, u16 TimerDeviceId);
+int TimerSetup(XTmrCtr *TmrCtrInstancePtr, u16 TmrCtrDeviceId);
 
 void MatrixMultiply(u32 *A, u32 *B, u32 *RES);
 
-int TxSend(XLlFifo *InstancePtr, u32 *SourceAddr, int Words);
-int RxReceive(XLlFifo *InstancePtr, u32 *DestinationAddr, int Words);
+int TxSend(XLlFifo *FifoInstancePtr, u32 *SourceAddr, int Words);
+int RxReceive(XLlFifo *FifoInstancePtr, u32 *DestinationAddr, int Words);
 
 int ReceiveCSVData(u32 *BufferA, int TotalElements);
 void SendCSVResults(u32 *RES, int TotalElements);
@@ -71,9 +88,9 @@ int main()
 
 	while (true) {
 		#ifndef SDT
-		Status = RunMatrixAssignment(&FifoInstance, FIFO_DEV_ID);
+		Status = RunMatrixAssignment(&FifoInstance, FIFO_DEV_ID, &TmrCtrInstance, TMRCTR_DEVICE_ID);
 		#else
-		Status = RunMatrixAssignment(&FifoInstance, XPAR_XLLFIFO_0_BASEADDR);
+		Status = RunMatrixAssignment(&FifoInstance, XPAR_XLLFIFO_0_BASEADDR, &TmrCtrInstance, XTMRCTR_BASEADDRESS);
 		#endif
 		if (Status != XST_SUCCESS) {
 			xil_printf("Failed to execute\r\n");
@@ -86,9 +103,9 @@ int main()
 }
 
 #ifndef SDT
-int RunMatrixAssignment(XLlFifo *InstancePtr, u16 FifoDeviceId)
+int RunMatrixAssignment(XLlFifo *FifoInstancePtr, u16 FifoDeviceId, XTmrCtr *TmrCtrInstancePtr, u16 TmrCtrDeviceId)
 #else
-int RunMatrixAssignment(XLlFifo *InstancePtr, UINTPTR FifoBaseAddress)
+int RunMatrixAssignment(XLlFifo *FifoInstancePtr, UINTPTR FifoBaseAddress, XTmrCtr *TmrCtrInstancePtr, UINTPTR TimerBaseAddress)
 #endif
 {
 	XLlFifo_Config *FifoConfig;
@@ -101,6 +118,7 @@ int RunMatrixAssignment(XLlFifo *InstancePtr, UINTPTR FifoBaseAddress)
 
 #endif
 
+// Initialize Fifo
 #ifndef SDT
 	FifoConfig = XLlFfio_LookupConfig(FifoDeviceId);
 #else
@@ -113,21 +131,23 @@ int RunMatrixAssignment(XLlFifo *InstancePtr, UINTPTR FifoBaseAddress)
 		return XST_FAILURE;
 	}
 
-	Status = XLlFifo_CfgInitialize(InstancePtr, FifoConfig, FifoConfig->BaseAddress);
+	Status = XLlFifo_CfgInitialize(FifoInstancePtr, FifoConfig, FifoConfig->BaseAddress);
 	if (Status != XST_SUCCESS) {
 		xil_printf("Initialization failed\r\n");
 		return Status;
 	}
 
-	Status = XLlFifo_Status(InstancePtr);
-	XLlFifo_IntClear(InstancePtr,0xffffffff);
-	Status = XLlFifo_Status(InstancePtr);
+	Status = XLlFifo_Status(FifoInstancePtr);
+	XLlFifo_IntClear(FifoInstancePtr, 0xffffffff);
+	Status = XLlFifo_Status(FifoInstancePtr);
 	if(Status != 0x0) {
 		xil_printf("\n ERROR : Reset value of ISR0 : 0x%x\t"
 		    "Expected : 0x0\r\n",
-			    XLlFifo_Status(InstancePtr));
+			    XLlFifo_Status(FifoInstancePtr));
 		return XST_FAILURE;
 	}
+
+	// Initialize Timer
 
 	xil_printf("Ready! Please use RealTerm -> 'Send File' to send A.csv\r\n");
     Status = ReceiveCSVData(MatrixA, MatrixA_Size);
@@ -148,13 +168,13 @@ int RunMatrixAssignment(XLlFifo *InstancePtr, UINTPTR FifoBaseAddress)
 	}
 
 
-	Status = TxSend(InstancePtr, SourceBuffer, TOTAL_ELEMENTS);
+	Status = TxSend(FifoInstancePtr, SourceBuffer, TOTAL_ELEMENTS);
 	if (Status != XST_SUCCESS){
 		xil_printf("Transmission of Data failed\r\n");
 		return XST_FAILURE;
 	}
 
-	Status = RxReceive(InstancePtr, DestinationBuffer, TOTAL_ELEMENTS);
+	Status = RxReceive(FifoInstancePtr, DestinationBuffer, TOTAL_ELEMENTS);
 	if (Status != XST_SUCCESS){
 		xil_printf("Receiving data failed");
 		return XST_FAILURE;
@@ -173,20 +193,20 @@ int RunMatrixAssignment(XLlFifo *InstancePtr, UINTPTR FifoBaseAddress)
 }
 
 
-int TxSend(XLlFifo *InstancePtr, u32  *SourceAddr, int Words)
+int TxSend(XLlFifo *FifoInstancePtr, u32  *SourceAddr, int Words)
 {
 	int i;
 	xil_printf("Transmitting Data ...\r\n");
 
 	for (i=0 ; i < Words ; i++){
-		if( XLlFifo_iTxVacancy(InstancePtr) ){
-			XLlFifo_TxPutWord(InstancePtr, SourceAddr[i]);
+		if( XLlFifo_iTxVacancy(FifoInstancePtr) ){
+			XLlFifo_TxPutWord(FifoInstancePtr, SourceAddr[i]);
 		}
 	}
 
-	XLlFifo_iTxSetLen(InstancePtr, (Words * WORD_SIZE));
+	XLlFifo_iTxSetLen(FifoInstancePtr, (Words * WORD_SIZE));
 
-	while( !(XLlFifo_IsTxDone(InstancePtr)) ){
+	while( !(XLlFifo_IsTxDone(FifoInstancePtr)) ){
 
 	}
 
@@ -194,7 +214,7 @@ int TxSend(XLlFifo *InstancePtr, u32  *SourceAddr, int Words)
 }
 
 
-int RxReceive (XLlFifo *InstancePtr, u32* DestinationAddr, int Words)
+int RxReceive (XLlFifo *FifoInstancePtr, u32* DestinationAddr, int Words)
 {
 	int Status;
 	u32 RxWord;
@@ -202,14 +222,14 @@ int RxReceive (XLlFifo *InstancePtr, u32* DestinationAddr, int Words)
 
 	xil_printf("Receiving data ...\r\n");
 	while (count < Words) {
-		if(XLlFifo_iRxOccupancy(InstancePtr)) {
-			RxWord = XLlFifo_RxGetWord(InstancePtr);
+		if(XLlFifo_iRxOccupancy(FifoInstancePtr)) {
+			RxWord = XLlFifo_RxGetWord(FifoInstancePtr);
 			DestinationAddr[count] = RxWord;
 			count++;
 		}
 	}
 
-	Status = XLlFifo_IsRxDone(InstancePtr);
+	Status = XLlFifo_IsRxDone(FifoInstancePtr);
 	if(Status != TRUE){
 		xil_printf("Failing in receive complete ...\r\n");
 		return XST_FAILURE;
