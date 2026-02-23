@@ -1,3 +1,5 @@
+`timescale 1ns / 1ps
+
 module mac
 #(
     parameter width = 8,

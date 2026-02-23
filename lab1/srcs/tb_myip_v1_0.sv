@@ -18,8 +18,10 @@
 
 module tb_myip_v1_0;
 
-    parameter m = 2;
-	parameter n = 4;
+    parameter 	m = 32;
+	parameter 	n = 32;
+	localparam 	NUMBER_OF_TEST_VECTORS  = 10;  // number of such test vectors (cases)
+
     reg                          ACLK = 0;    // Synchronous clock
     reg                          ARESETN; // System reset, active low
     // slave in interface
@@ -52,7 +54,6 @@ module tb_myip_v1_0;
 
 	localparam NUMBER_OF_INPUT_WORDS  = m*n + n;  // length of an input vector
 	localparam NUMBER_OF_OUTPUT_WORDS  = m;  // length of an output vector
-	localparam NUMBER_OF_TEST_VECTORS  = 2;  // number of such test vectors (cases)
 	localparam width  = 8;  // width of an input vector
 
 	reg [width-1:0] test_input_memory [0:NUMBER_OF_TEST_VECTORS*NUMBER_OF_INPUT_WORDS-1]; // 4 inputs * 2

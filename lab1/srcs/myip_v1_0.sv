@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 /*
 ----------------------------------------------------------------------------------
 --	(c) Rajesh C Panicker, NUS
@@ -33,8 +34,8 @@
 
 module myip_v1_0
 # (
-	parameter m = 2,
-	parameter n = 4,
+	parameter m = 32,
+	parameter n = 32,
 	parameter width = 8
 )
 (
