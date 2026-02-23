@@ -105,13 +105,14 @@ module myip_v1_0
 	wire	Done;								// matrix_multiply_0 -> myip_v1_0.
 
 	// Define the states of state machine (one hot encoding)
-	localparam IDLE          = 6'b000001;
-	localparam READ_INPUTS_A = 6'b000010;
-	localparam READ_INPUTS_B = 6'b000100;
-	localparam COMPUTE       = 6'b001000;
-	localparam WRITE_OUTPUTS = 6'b010000;
-	localparam LAST          = 6'b100000;
-	reg [5:0] state;
+	localparam IDLE          = 7'b0000001;
+	localparam FIRST         = 7'b0000010;
+	localparam READ_INPUTS_A = 7'b0000100;
+	localparam READ_INPUTS_B = 7'b0001000;
+	localparam COMPUTE       = 7'b0010000;
+	localparam WRITE_OUTPUTS = 7'b0100000;
+	localparam LAST          = 7'b1000000;
+	reg [6:0] state;
 
 	wire M_AXIS_WE = (M_AXIS_TREADY | ~M_AXIS_TVALID);
 	assign RES_read_en = M_AXIS_WE & (state == WRITE_OUTPUTS);
@@ -174,8 +175,16 @@ module myip_v1_0
 				begin
 					if (S_AXIS_TVALID)
 					begin
-						S_AXIS_TREADY 	 	<= 1'b1;
+						S_AXIS_TREADY 	 <= 1'b1;
+						state       	 <= FIRST;
+					end
+				end
 
+				FIRST:
+				begin
+					S_AXIS_TREADY 	 <= 1'b1;
+					if (S_AXIS_TVALID)
+					begin
 						state       	 <= READ_INPUTS_A;
 
 						A_write_en 		 <= 1'b1;
