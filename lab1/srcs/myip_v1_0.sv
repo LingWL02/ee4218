@@ -1,3 +1,4 @@
+`timescale 1ns / 1ps
 /*
 ----------------------------------------------------------------------------------
 --	(c) Rajesh C Panicker, NUS
@@ -33,8 +34,8 @@
 
 module myip_v1_0
 # (
-	parameter m = 2,
-	parameter n = 4,
+	parameter m = 32,
+	parameter n = 32,
 	parameter width = 8
 )
 (
@@ -105,18 +106,18 @@ module myip_v1_0
 	wire	Done;								// matrix_multiply_0 -> myip_v1_0.
 
 	// Define the states of state machine (one hot encoding)
-	localparam IDLE          = 6'b000001;
-	localparam READ_INPUTS_A = 6'b000010;
-	localparam READ_INPUTS_B = 6'b000100;
-	localparam COMPUTE       = 6'b001000;
-	localparam WRITE_OUTPUTS = 6'b010000;
-	localparam LAST          = 6'b100000;
-	reg [5:0] state;
+	localparam IDLE          = 7'b0000001;
+	localparam FIRST         = 7'b0000010;
+	localparam READ_INPUTS_A = 7'b0000100;
+	localparam READ_INPUTS_B = 7'b0001000;
+	localparam COMPUTE       = 7'b0010000;
+	localparam WRITE_OUTPUTS = 7'b0100000;
+	localparam LAST          = 7'b1000000;
+	reg [6:0] state;
 
 	wire M_AXIS_WE = (M_AXIS_TREADY | ~M_AXIS_TVALID);
 	assign RES_read_en = M_AXIS_WE & (state == WRITE_OUTPUTS);
 
-	reg 							RES_read_en_dly;
 	reg 	[RES_depth_bits-1:0] 	RES_read_address_dly;
 
 
@@ -144,7 +145,6 @@ module myip_v1_0
 
 			state       		 <= IDLE;
 
-			RES_read_en_dly 		<= 1'b0;
 			RES_read_address_dly <= {RES_depth_bits{1'b0}};
 
 			RABAK_REG <= 1'b0;
@@ -166,7 +166,6 @@ module myip_v1_0
 			RES_read_address 	 <= {RES_depth_bits{1'b0}};
 			Start				 <= 1'b0;
 
-			RES_read_en_dly 		<= RES_read_en;
 			RES_read_address_dly 	<= RES_read_address;
 
 			RABAK_REG <= 1'b0;
@@ -177,13 +176,21 @@ module myip_v1_0
 				begin
 					if (S_AXIS_TVALID)
 					begin
-					S_AXIS_TREADY 	 	<= 1'b1;
+						S_AXIS_TREADY 	 <= 1'b1;
+						state       	 <= FIRST;
+					end
+				end
 
-					state       	 <= READ_INPUTS_A;
+				FIRST:
+				begin
+					S_AXIS_TREADY 	 <= 1'b1;
+					if (S_AXIS_TVALID)
+					begin
+						state       	 <= READ_INPUTS_A;
 
-					A_write_en 		 <= 1'b1;
-					A_write_address  <= {A_depth_bits{1'b0}};
-					A_write_data_in  <= S_AXIS_TDATA[width-1:0];
+						A_write_en 		 <= 1'b1;
+						A_write_address  <= {A_depth_bits{1'b0}};
+						A_write_data_in  <= S_AXIS_TDATA[width-1:0];
 					end
 				end
 
@@ -252,7 +259,7 @@ module myip_v1_0
 
 					RES_read_address	<= RES_read_address;
 
-					RABAK_REG <= RABAK_REG;
+					RABAK_REG <= RABAK_REG;  // One cycle delay
 
 					if (M_AXIS_WE)
 					begin
