@@ -87,8 +87,4 @@ void SendStats(Stats *stats);
 
 void MergeArrays(u32 *dest, u32 *A, int sizeA, u32 *B, int sizeB);
 
-int performMatrixMultiplication(u32 *data, int A_rows, int A_cols, int B_cols,
-                                XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber,
-                                Stats *stats);
-
 #endif /* LAB3_FIFO_H */
