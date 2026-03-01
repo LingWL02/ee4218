@@ -150,6 +150,7 @@ int RunMatrixAssignment(
 int TxSend(XLlFifo *FifoInstancePtr, u32  *SourceAddr, int Words, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber, Stats *stats)
 {
 	int i;
+	// Print before starting the timer to avoid affecting timing results, but still provide feedback to user
 	xil_printf("Transmitting Data ...\r\n");
 
 	XTmrCtr_Reset(TmrCtrInstancePtr, TmrCtrNumber);
@@ -171,7 +172,6 @@ int TxSend(XLlFifo *FifoInstancePtr, u32  *SourceAddr, int Words, XTmrCtr *TmrCt
 	// Do not stop the timer, we want to measure how long the MM takes as well.
 	// XTmrCtr_Stop(TmrCtrInstancePtr, TmrCtrNumber);
 	stats->TxElapsed = TxElapsed;
-	xil_printf("TxSend elapsed: %u cycles\r\n", TxElapsed);
 
 	return XST_SUCCESS;
 }
@@ -183,7 +183,6 @@ int RxReceive (XLlFifo *FifoInstancePtr, u32* DestinationAddr, int Words, XTmrCt
 	u32 RxWord;
 	int count = 0;
 
-	xil_printf("Receiving data ...\r\n");
 
 	// XTmrCtr_Reset(TmrCtrInstancePtr, TmrCtrNumber);
 	// XTmrCtr_Start(TmrCtrInstancePtr, TmrCtrNumber);
@@ -202,7 +201,13 @@ int RxReceive (XLlFifo *FifoInstancePtr, u32* DestinationAddr, int Words, XTmrCt
 	XTmrCtr_Stop(TmrCtrInstancePtr, TmrCtrNumber);
 	stats->MatMulElapsed = MatMulElapsed - stats->TxElapsed;
 	stats->RxElapsed = RxElapsed - MatMulElapsed;
-	xil_printf("RxReceive elapsed: %u cycles\r\n", RxElapsed);
+
+	// Minimal print statements to avoid affecting timing too much, but still provide feedback to user
+	// Therefore only print after all data is received, and include timing stats in the output
+	xil_printf("Receiving data ...\r\n");
+	xil_printf("TxSend elapsed: %u cycles\r\n", stats->TxElapsed);
+	xil_printf("MatMul elapsed: %u cycles\r\n", stats->MatMulElapsed);
+	xil_printf("RxReceive elapsed: %u cycles\r\n", stats->RxElapsed);
 
 	Status = XLlFifo_IsRxDone(FifoInstancePtr);
 	if(Status != TRUE){
