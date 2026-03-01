@@ -64,18 +64,17 @@ int RunMatrixAssignment(XLlFifo *FifoInstancePtr, XTmrCtr *TmrCtrInstancePtr, u8
         xil_printf("Failed to receive Matrix A\r\n");
         return XST_FAILURE;
     }
+
     xil_printf("Matrix A Received. Now please send B.csv\r\n");
     Status = ReceiveCSVData(MatrixB, MatrixB_Size, stats);
     if (Status != XST_SUCCESS) {
         xil_printf("Failed to receive Matrix B\r\n");
         return XST_FAILURE;
     }
-	if(Status == XST_SUCCESS){
-		xil_printf("All data received successfully!\r\n");
-		xil_printf("Merging data into SourceBuffer...\r\n");
-		MergeArrays(SourceBuffer, MatrixA, MatrixA_Size, MatrixB, MatrixB_Size);
-	}
 
+	xil_printf("All data received successfully!\r\n");
+	xil_printf("Merging data into SourceBuffer...\r\n");
+	MergeArrays(SourceBuffer, MatrixA, MatrixA_Size, MatrixB, MatrixB_Size);
 
 	Status = TxSend(FifoInstancePtr, SourceBuffer, FIFO_TX_ELEMENTS, TmrCtrInstancePtr, TmrCtrNumber, stats);
 	if (Status != XST_SUCCESS){

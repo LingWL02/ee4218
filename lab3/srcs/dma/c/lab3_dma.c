@@ -75,11 +75,10 @@ int RunMatrixAssignment(XAxiDma *DmaInstancePtr, XTmrCtr *TmrCtrInstancePtr, u8 
         xil_printf("Failed to receive Matrix B\r\n");
         return XST_FAILURE;
     }
-	if(Status == XST_SUCCESS){
-		xil_printf("All data received successfully!\r\n");
-		xil_printf("Merging data into SourceBuffer...\r\n");
-		MergeArrays(SourceBuffer, MatrixA, MatrixA_Size, MatrixB, MatrixB_Size);
-    }
+
+	xil_printf("All data received successfully!\r\n");
+	xil_printf("Merging data into SourceBuffer...\r\n");
+	MergeArrays(SourceBuffer, MatrixA, MatrixA_Size, MatrixB, MatrixB_Size);
 
     FlushDCaches(SourceBuffer, DestinationBuffer);
 
