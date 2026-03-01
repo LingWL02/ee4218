@@ -1,2 +1,4 @@
 **/vivado/**
 *.zip
+**/submission/**
+*.tmp
