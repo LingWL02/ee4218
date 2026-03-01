@@ -168,7 +168,8 @@ int TxSend(XLlFifo *FifoInstancePtr, u32  *SourceAddr, int Words, XTmrCtr *TmrCt
 	}
 
 	u32 TxElapsed = XTmrCtr_GetValue(TmrCtrInstancePtr, TmrCtrNumber);
-	XTmrCtr_Stop(TmrCtrInstancePtr, TmrCtrNumber);
+	// Do not stop the timer, we want to measure how long the MM takes as well.
+	// XTmrCtr_Stop(TmrCtrInstancePtr, TmrCtrNumber);
 	stats->TxElapsed = TxElapsed;
 	xil_printf("TxSend elapsed: %u cycles\r\n", TxElapsed);
 
@@ -184,11 +185,13 @@ int RxReceive (XLlFifo *FifoInstancePtr, u32* DestinationAddr, int Words, XTmrCt
 
 	xil_printf("Receiving data ...\r\n");
 
-	XTmrCtr_Reset(TmrCtrInstancePtr, TmrCtrNumber);
-	XTmrCtr_Start(TmrCtrInstancePtr, TmrCtrNumber);
+	// XTmrCtr_Reset(TmrCtrInstancePtr, TmrCtrNumber);
+	// XTmrCtr_Start(TmrCtrInstancePtr, TmrCtrNumber);
+	u32 MatMulElapsed = 0;
 
 	while (count < Words) {
 		if(XLlFifo_iRxOccupancy(FifoInstancePtr)) {
+			MatMulElapsed = XTmrCtr_GetValue(TmrCtrInstancePtr, TmrCtrNumber);
 			RxWord = XLlFifo_RxGetWord(FifoInstancePtr);
 			DestinationAddr[count] = RxWord;
 			count++;
@@ -197,8 +200,8 @@ int RxReceive (XLlFifo *FifoInstancePtr, u32* DestinationAddr, int Words, XTmrCt
 
 	u32 RxElapsed = XTmrCtr_GetValue(TmrCtrInstancePtr, TmrCtrNumber);
 	XTmrCtr_Stop(TmrCtrInstancePtr, TmrCtrNumber);
-	stats->RxElapsed = RxElapsed;
-	stats->MatMulElapsed = 0; // TODO Placeholder since we don't do matmul in software
+	stats->MatMulElapsed = MatMulElapsed - stats->TxElapsed;
+	stats->RxElapsed = RxElapsed - MatMulElapsed;
 	xil_printf("RxReceive elapsed: %u cycles\r\n", RxElapsed);
 
 	Status = XLlFifo_IsRxDone(FifoInstancePtr);
