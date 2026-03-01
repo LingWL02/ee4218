@@ -4,7 +4,7 @@
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
-#include "lab3.h"
+#include "lab3_fifo.h"
 
 XLlFifo FifoInstance;
 XTmrCtr TmrCtrInstance;

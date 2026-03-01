@@ -4,8 +4,8 @@
 * SPDX-License-Identifier: MIT
 ******************************************************************************/
 
-#ifndef LAB2_H
-#define LAB2_H
+#ifndef LAB3_FIFO_H
+#define LAB3_FIFO_H
 
 #include "xparameters.h"
 #include "xil_exception.h"
@@ -91,4 +91,4 @@ int performMatrixMultiplication(u32 *data, int A_rows, int A_cols, int B_cols,
                                 XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber,
                                 Stats *stats);
 
-#endif /* LAB2_H */
+#endif /* LAB3_FIFO_H */
