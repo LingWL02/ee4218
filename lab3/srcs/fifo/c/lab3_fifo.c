@@ -238,7 +238,7 @@ void SendStats(Stats *stats)
 	char buf[12];
 	const char *labels[] = {"STATS:TX=", ",RX=", ",MATMUL=", ",TOTAL="};
 	u32 values[] = {stats->TxElapsed, stats->RxElapsed, stats->MatMulElapsed, stats->TotalElapsed};
-	for (int l = 0; l < 3; l++) {
+	for (int l = 0; l < 4; l++) {
 		for (const char *p = labels[l]; *p != '\0'; p++)
 			XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, *p);
 		sprintf(buf, "%u", (unsigned int)values[l]);
