@@ -25,7 +25,7 @@ def main():
     # Save matrices to CSV files
     np.savetxt(os.path.join(output_dir, "A.csv"), A, delimiter=",", fmt="%d")
     np.savetxt(os.path.join(output_dir, "B.csv"), B, delimiter=",", fmt="%d")
-    np.savetxt(os.path.join(output_dir, "RES.csv"), RES, delimiter=",", fmt="%d")
+    np.savetxt(os.path.join(output_dir, "LABELS.csv"), RES, delimiter=",", fmt="%d")
 
     print(f"Matrices saved to {output_dir}")
 
