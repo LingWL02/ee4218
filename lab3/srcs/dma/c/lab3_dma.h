@@ -96,6 +96,7 @@ DEFAULT SET TO 0x01000000
 typedef struct {
     u32 TxElapsed;
     u32 RxElapsed;
+    u32 MatMulElapsed;
     u32 TotalElapsed;
 } Stats;
 

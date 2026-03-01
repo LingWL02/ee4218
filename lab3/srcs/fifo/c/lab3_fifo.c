@@ -19,14 +19,31 @@ char TERMINATE_TOKEN[] = "TERMINATE";
 int main()
 {
 	int Status = XST_SUCCESS;
-	Stats stats = {0, 0, 0};
+	Stats stats = {0, 0, 0, 0};
 
+#ifndef SDT
+	Status = InitFifo(&FifoInstance, FIFO_DEV_ID);
+#else
+	Status = InitFifo(&FifoInstance, XPAR_XLLFIFO_0_BASEADDR);
+#endif
+	if (Status != XST_SUCCESS) {
+		xil_printf("FIFO Initialization Failed\r\n");
+		return XST_FAILURE;
+	}
+
+#ifndef SDT
+	Status = InitTmrCtr(&TmrCtrInstance, TMRCTR_DEVICE_ID, TIMER_COUNTER_0);
+#else
+	Status = InitTmrCtr(&TmrCtrInstance, XTMRCTR_BASEADDRESS, TIMER_COUNTER_0);
+#endif
+	if (Status != XST_SUCCESS) {
+		xil_printf("Timer Initialization Failed\r\n");
+		return XST_FAILURE;
+	}
+
+	xil_printf("FIFO IP Implementation\r\n");
 	while (true) {
-		#ifndef SDT
-		Status = RunMatrixAssignment(&FifoInstance, FIFO_DEV_ID, &TmrCtrInstance, TMRCTR_DEVICE_ID, TIMER_COUNTER_0, &stats);
-		#else
-		Status = RunMatrixAssignment(&FifoInstance, XPAR_XLLFIFO_0_BASEADDR, &TmrCtrInstance, XTMRCTR_BASEADDRESS, TIMER_COUNTER_0, &stats);
-		#endif
+		Status = RunMatrixAssignment(&FifoInstance, &TmrCtrInstance, TIMER_COUNTER_0, &stats);
 		if (Status != XST_SUCCESS) {
 			xil_printf("Failed to execute\r\n");
 			xil_printf("--- Exiting main() ---\r\n");
@@ -37,76 +54,9 @@ int main()
 	return Status;
 }
 
-#ifndef SDT
-int RunMatrixAssignment(
-	XLlFifo *FifoInstancePtr, u16 FifoDeviceId, XTmrCtr *TmrCtrInstancePtr, u16 TmrCtrDeviceId, u8 TmrCtrNumber, Stats *stats
-)
-#else
-int RunMatrixAssignment(
-	XLlFifo *FifoInstancePtr, UINTPTR FifoBaseAddress, XTmrCtr *TmrCtrInstancePtr, UINTPTR TmrCtrBaseAddress, u8 TmrCtrNumber, Stats *stats
-)
-#endif
+int RunMatrixAssignment(XLlFifo *FifoInstancePtr, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber, Stats *stats)
 {
-	XLlFifo_Config *FifoConfig;
 	int Status;
-	Status = XST_SUCCESS;
-
-#ifdef XPAR_UARTNS550_0_BASEADDR
-
-	Uart550_Setup();
-
-#endif
-
-// Initialize Fifo
-#ifndef SDT
-	FifoConfig = XLlFfio_LookupConfig(FifoDeviceId);
-#else
-	FifoConfig = XLlFfio_LookupConfig(FifoBaseAddress);
-#endif
-	if (!FifoConfig) {
-#ifndef SDT
-		xil_printf("No config found for %d\r\n", FifoDeviceId);
-#endif
-		return XST_FAILURE;
-	}
-
-	Status = XLlFifo_CfgInitialize(FifoInstancePtr, FifoConfig, FifoConfig->BaseAddress);
-	if (Status != XST_SUCCESS) {
-		xil_printf("Initialization failed\r\n");
-		return Status;
-	}
-
-	Status = XLlFifo_Status(FifoInstancePtr);
-	XLlFifo_IntClear(FifoInstancePtr, 0xffffffff);
-	Status = XLlFifo_Status(FifoInstancePtr);
-	if(Status != 0x0) {
-		xil_printf("\n ERROR : Reset value of ISR0 : 0x%x\t"
-		    "Expected : 0x0\r\n",
-			    XLlFifo_Status(FifoInstancePtr));
-		return XST_FAILURE;
-	}
-
-	// Initialize Timer
-#ifndef SDT
-	Status = XTmrCtr_Initialize(TmrCtrInstancePtr, TmrCtrDeviceId);
-#else
-	Status = XTmrCtr_Initialize(TmrCtrInstancePtr, TmrCtrBaseAddress);
-#endif
-	if (Status != XST_SUCCESS) {
-		return XST_FAILURE;
-	}
-	/*
-	 * Perform a self-test to ensure that the hardware was built
-	 * correctly, use the 1st timer in the device (0)
-	 */
-	Status = XTmrCtr_SelfTest(TmrCtrInstancePtr, TmrCtrNumber);
-	if (Status != XST_SUCCESS) {
-		return XST_FAILURE;
-	}
-
-	// Default timer settings (count up, no auto reload, interrupt disabled)
-	XTmrCtr_SetOptions(TmrCtrInstancePtr, TmrCtrNumber, 0);
-	XTmrCtr_SetResetValue(TmrCtrInstancePtr, TmrCtrNumber, 0);
 
 	xil_printf("Ready! Please use RealTerm -> 'Send File' to send A.csv\r\n");
     Status = ReceiveCSVData(MatrixA, MatrixA_Size, stats);
@@ -151,7 +101,7 @@ int TxSend(XLlFifo *FifoInstancePtr, u32  *SourceAddr, int Words, XTmrCtr *TmrCt
 {
 	int i;
 	// Print before starting the timer to avoid affecting timing results, but still provide feedback to user
-	xil_printf("Transmitting Data ...\r\n");
+	xil_printf("Transmitting Data...\r\n");
 
 	XTmrCtr_Reset(TmrCtrInstancePtr, TmrCtrNumber);
 	XTmrCtr_Start(TmrCtrInstancePtr, TmrCtrNumber);
@@ -183,9 +133,6 @@ int RxReceive (XLlFifo *FifoInstancePtr, u32* DestinationAddr, int Words, XTmrCt
 	u32 RxWord;
 	int count = 0;
 
-
-	// XTmrCtr_Reset(TmrCtrInstancePtr, TmrCtrNumber);
-	// XTmrCtr_Start(TmrCtrInstancePtr, TmrCtrNumber);
 	u32 MatMulElapsed = 0;
 
 	while (count < Words) {
@@ -197,21 +144,23 @@ int RxReceive (XLlFifo *FifoInstancePtr, u32* DestinationAddr, int Words, XTmrCt
 		}
 	}
 
-	u32 RxElapsed = XTmrCtr_GetValue(TmrCtrInstancePtr, TmrCtrNumber);
+	u32 TotalElapsed = XTmrCtr_GetValue(TmrCtrInstancePtr, TmrCtrNumber);
 	XTmrCtr_Stop(TmrCtrInstancePtr, TmrCtrNumber);
 	stats->MatMulElapsed = MatMulElapsed - stats->TxElapsed;
-	stats->RxElapsed = RxElapsed - MatMulElapsed;
+	stats->RxElapsed = TotalElapsed - MatMulElapsed;
+	stats->TotalElapsed = TotalElapsed;
 
 	// Minimal print statements to avoid affecting timing too much, but still provide feedback to user
 	// Therefore only print after all data is received, and include timing stats in the output
-	xil_printf("Receiving data ...\r\n");
+	xil_printf("Receiving data...\r\n");
 	xil_printf("TxSend elapsed: %u cycles\r\n", stats->TxElapsed);
 	xil_printf("MatMul elapsed: %u cycles\r\n", stats->MatMulElapsed);
 	xil_printf("RxReceive elapsed: %u cycles\r\n", stats->RxElapsed);
+	xil_printf("Total elapsed: %u cycles\r\n", stats->TotalElapsed);
 
 	Status = XLlFifo_IsRxDone(FifoInstancePtr);
 	if(Status != TRUE){
-		xil_printf("Failing in receive complete ...\r\n");
+		xil_printf("Failing in receive complete...\r\n");
 		return XST_FAILURE;
 	}
 
@@ -288,8 +237,8 @@ void MergeArrays(u32 *dest, u32 *A, int sizeA, u32 *B, int sizeB)
 void SendStats(Stats *stats)
 {
 	char buf[12];
-	const char *labels[] = {"STATS:TX=", ",RX=", ",MATMUL="};
-	u32 values[] = {stats->TxElapsed, stats->RxElapsed, stats->MatMulElapsed};
+	const char *labels[] = {"STATS:TX=", ",RX=", ",MATMUL=", ",TOTAL="};
+	u32 values[] = {stats->TxElapsed, stats->RxElapsed, stats->MatMulElapsed, stats->TotalElapsed};
 	for (int l = 0; l < 3; l++) {
 		for (const char *p = labels[l]; *p != '\0'; p++)
 			XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, *p);
@@ -318,4 +267,81 @@ void SendCSVResults(u32 *data, int rows, int cols)
 		XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, '\r');
 		XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, '\n');
 	}
+}
+
+
+#ifndef SDT
+int InitFifo(XLlFifo *FifoInstancePtr, u16 FifoDeviceId)
+#else
+int InitFifo(XLlFifo *FifoInstancePtr, UINTPTR FifoBaseAddress)
+#endif
+{
+	XLlFifo_Config *FifoConfig;
+	int Status;
+
+#ifdef XPAR_UARTNS550_0_BASEADDR
+	Uart550_Setup();
+#endif
+
+#ifndef SDT
+	FifoConfig = XLlFfio_LookupConfig(FifoDeviceId);
+#else
+	FifoConfig = XLlFfio_LookupConfig(FifoBaseAddress);
+#endif
+	if (!FifoConfig) {
+#ifndef SDT
+		xil_printf("No config found for %d\r\n", FifoDeviceId);
+#endif
+		return XST_FAILURE;
+	}
+
+	Status = XLlFifo_CfgInitialize(FifoInstancePtr, FifoConfig, FifoConfig->BaseAddress);
+	if (Status != XST_SUCCESS) {
+		xil_printf("FIFO Initialization failed\r\n");
+		return Status;
+	}
+
+	XLlFifo_IntClear(FifoInstancePtr, 0xffffffff);
+	Status = XLlFifo_Status(FifoInstancePtr);
+	if (Status != 0x0) {
+		xil_printf("\n ERROR : Reset value of ISR0 : 0x%x\t Expected : 0x0\r\n",
+			XLlFifo_Status(FifoInstancePtr));
+		return XST_FAILURE;
+	}
+
+	return XST_SUCCESS;
+}
+
+
+#ifndef SDT
+int InitTmrCtr(XTmrCtr *TmrCtrInstancePtr, u16 TmrCtrDeviceId, u8 TmrCtrNumber)
+#else
+int InitTmrCtr(XTmrCtr *TmrCtrInstancePtr, UINTPTR TmrCtrBaseAddress, u8 TmrCtrNumber)
+#endif
+{
+	int Status;
+
+#ifndef SDT
+	Status = XTmrCtr_Initialize(TmrCtrInstancePtr, TmrCtrDeviceId);
+#else
+	Status = XTmrCtr_Initialize(TmrCtrInstancePtr, TmrCtrBaseAddress);
+#endif
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
+
+	// Default timer settings (count up, no auto reload, interrupt disabled)
+	XTmrCtr_SetOptions(TmrCtrInstancePtr, TmrCtrNumber, 0);
+	XTmrCtr_SetResetValue(TmrCtrInstancePtr, TmrCtrNumber, 0);
+
+	/*
+	 * Perform a self-test to ensure that the hardware was built
+	 * correctly, use the 1st timer in the device (0)
+	 */
+	Status = XTmrCtr_SelfTest(TmrCtrInstancePtr, TmrCtrNumber);
+	if (Status != XST_SUCCESS) {
+		return XST_FAILURE;
+	}
+
+	return XST_SUCCESS;
 }

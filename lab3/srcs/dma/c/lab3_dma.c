@@ -19,7 +19,7 @@ char TERMINATE_TOKEN[] = "TERMINATE";
 int main()
 {
 	int Status = XST_SUCCESS;
-	Stats stats = {0, 0, 0};
+	Stats stats = {0, 0, 0, 0};
 
 #ifdef XPAR_UARTNS550_0_BASEADDR
 	Uart550_Setup();
@@ -115,7 +115,7 @@ int TxSend(XAxiDma *DmaInstancePtr, u32  *SourceAddr, XTmrCtr *TmrCtrInstancePtr
     int Status;
     int TimeOut = POLL_TIMEOUT_COUNTER;
 	// Print before starting the timer to avoid affecting timing results, but still provide feedback to user
-	xil_printf("Transmitting Data ...\r\n");
+	xil_printf("Transmitting Data...\r\n");
 
 	XTmrCtr_Reset(TmrCtrInstancePtr, TmrCtrNumber);
 	XTmrCtr_Start(TmrCtrInstancePtr, TmrCtrNumber);
@@ -171,7 +171,7 @@ int RxReceive (XAxiDma *DmaInstancePtr, u32* DestinationAddr, XTmrCtr *TmrCtrIns
 
 	// Minimal print statements to avoid affecting timing too much, but still provide feedback to user
 	// Therefore only print after all data is received, and include timing stats in the output
-	xil_printf("Receiving data ...\r\n");
+	xil_printf("Receiving data...\r\n");
 	xil_printf("TxSend elapsed: %u cycles\r\n", stats->TxElapsed);
 	xil_printf("RxReceive elapsed: %u cycles\r\n", stats->RxElapsed);
 	xil_printf("Total elapsed: %u cycles\r\n", stats->TotalElapsed);

@@ -58,22 +58,23 @@ typedef struct {
     u32 TxElapsed;
     u32 RxElapsed;
     u32 MatMulElapsed;
+    u32 TotalElapsed;
 } Stats;
 
 /* ----- Function declarations ----- */
 #ifndef SDT
-int RunMatrixAssignment(
-    XLlFifo *FifoInstancePtr, u16 FifoDeviceId,
-    XTmrCtr *TmrCtrInstancePtr, u16 TmrCtrDeviceId,
-    u8 TmrCtrNumber, Stats *stats
-);
+int InitFifo(XLlFifo *FifoInstancePtr, u16 FifoDeviceId);
+int InitTmrCtr(XTmrCtr *TmrCtrInstancePtr, u16 TmrCtrDeviceId, u8 TmrCtrNumber);
 #else
+int InitFifo(XLlFifo *FifoInstancePtr, UINTPTR FifoBaseAddress);
+int InitTmrCtr(XTmrCtr *TmrCtrInstancePtr, UINTPTR TmrCtrBaseAddress, u8 TmrCtrNumber);
+#endif
+
 int RunMatrixAssignment(
-    XLlFifo *FifoInstancePtr, UINTPTR FifoBaseAddress,
-    XTmrCtr *TmrCtrInstancePtr, UINTPTR TmrCtrBaseAddress,
+    XLlFifo *FifoInstancePtr,
+    XTmrCtr *TmrCtrInstancePtr,
     u8 TmrCtrNumber, Stats *stats
 );
-#endif
 
 int TxSend(XLlFifo *FifoInstancePtr, u32 *SourceAddr, int Words,
            XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber, Stats *stats);
