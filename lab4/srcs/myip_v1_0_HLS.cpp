@@ -45,7 +45,7 @@ void myip_v1_0_HLS(hls::stream<AXIS>& S_AXIS, hls::stream<AXIS>& M_AXIS){
 	//int sum = 0;		 // using 32 bit precision
 	AXIS read_input, write_output;
 
-		myip_v1_0_HLS_for1:for(row_cnt = 0; row_cnt < ROW; row_cnt++){
+		myip_v1_0_HLS_for1:for(row_cnt = 0; row_cnt < ROWS; row_cnt++){
 			for (col_cnt = 0; col_cnt < COLS; col_cnt++){
 				read_input = S_AXIS.read();
 				A[row_cnt][col_cnt] = (int)read_input.data;
@@ -61,14 +61,14 @@ void myip_v1_0_HLS(hls::stream<AXIS>& S_AXIS, hls::stream<AXIS>& M_AXIS){
 			B[col_cnt] = (int)read_input.data;
 		}
 
-		// Matrix multiplication
-		for (int i = 0; i < ROWS; i++) {
-			int acc = 0;
-			for (int j = 0; j < COLS; j++) {
-				acc += A[i][j] * B[j];
-			}
-			RES[i] = acc / 256;
-		}
+        // Matrix multiplication
+        for (int i = 0; i < ROWS; i++) {
+            int acc = 0;
+            for (int j = 0; j < COLS; j++) {
+                acc += (A[i][j] * B[j]) / 256;
+            }
+            RES[i] = acc & 0xFF;
+        }
 
 		    // Stream out result
 		for (int i = 0; i < ROWS; i++) {
@@ -76,7 +76,7 @@ void myip_v1_0_HLS(hls::stream<AXIS>& S_AXIS, hls::stream<AXIS>& M_AXIS){
 			write_output.keep = 0xF;
 			write_output.strb = 0xF;
 			write_output.last = (i == ROWS - 1) ? 1 : 0;
-			M_AXIS.write(out_word);
+			M_AXIS.write(write_output);
 		}
 
 		// myip_v1_0_HLS_for3:for(word_cnt = 0; word_cnt < NUMBER_OF_OUTPUT_WORDS; word_cnt++){
