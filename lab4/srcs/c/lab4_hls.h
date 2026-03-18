@@ -115,7 +115,7 @@ int InitTmrCtr(XTmrCtr *TmrCtrInstancePtr, UINTPTR TmrCtrBaseAddress, u8 TmrCtrN
 void FlushDCaches(u32 *SourceAddr, u32 *DestinationAddr);
 
 int TxSend(
-    XAxiDma *DmaInstancePtr, u32  *SourceAddr, u32 *DestinationAddr, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber, Stats *stats
+    XAxiDma *DmaInstancePtr, u32  *SourceAddr, u32 *DestinationAddr, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber
 );
 
 int RxReceive (

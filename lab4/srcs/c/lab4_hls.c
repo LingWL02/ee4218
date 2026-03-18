@@ -98,7 +98,7 @@ int RunMatrixAssignment(XAxiDma *DmaInstancePtr, XTmrCtr *TmrCtrInstancePtr, u8 
 
     FlushDCaches(SourceBuffer, DestinationBuffer);
 
-	Status = TxSend(DmaInstancePtr, SourceBuffer, DestinationBuffer, TmrCtrInstancePtr, TmrCtrNumber, stats);
+	Status = TxSend(DmaInstancePtr, SourceBuffer, DestinationBuffer, TmrCtrInstancePtr, TmrCtrNumber);
 	if (Status != XST_SUCCESS){
 		xil_printf("Transmission of Data failed\r\n");
 		return XST_FAILURE;
@@ -125,10 +125,9 @@ void FlushDCaches(u32 *SourceAddr, u32 *DestinationAddr)
 }
 
 
-int TxSend(XAxiDma *DmaInstancePtr, u32  *SourceAddr, u32* DestinationAddr, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber, Stats *stats)
+int TxSend(XAxiDma *DmaInstancePtr, u32  *SourceAddr, u32* DestinationAddr, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber)
 {
     int Status;
-    int TimeOut = POLL_TIMEOUT_COUNTER;
 	// Print before starting the timer to avoid affecting timing results, but still provide feedback to user
 	xil_printf("Transmitting Data...\r\n");
 
@@ -154,10 +153,8 @@ int TxSend(XAxiDma *DmaInstancePtr, u32  *SourceAddr, u32* DestinationAddr, XTmr
 
 int RxReceive (XAxiDma *DmaInstancePtr, u32* DestinationAddr, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber, Stats *stats)
 {
-	int Status;
     int TimeOut = POLL_TIMEOUT_COUNTER;
 
-    u32 Elapsed = XTmrCtr_GetValue(TmrCtrInstancePtr, TmrCtrNumber);
 	bool txDone = false;
 	bool rxDone = false;
 
