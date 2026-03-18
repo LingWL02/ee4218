@@ -102,7 +102,9 @@ typedef struct {
 } Stats;
 
 /* ----- Function declarations ----- */
-int RunMatrixAssignment(XAxiDma *DmaInstancePtr, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber, Stats *stats);
+int RunMatrixAssignment(
+    XAxiDma *DmaInstancePtr, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber, Stats *stats, bool *no_fail
+);
 
 #ifndef SDT
 int InitDMA(XAxiDma *DmaInstancePtr, u16 DmaDeviceId);
@@ -122,7 +124,7 @@ int RxReceive (
     XAxiDma *DmaInstancePtr, u32 *DestinationAddr, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber, Stats *stats
 );
 
-int ReceiveCSVData(u32 *Buffer, int TotalElements, Stats *stats);
+int ReceiveCSVData(u32 *Buffer, int TotalElements, Stats *stats, bool *no_fail);
 void SendCSVResults(u32 *data, int rows, int cols);
 void SendStats(Stats *stats);
 

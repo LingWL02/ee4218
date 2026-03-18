@@ -21,6 +21,7 @@ int main()
 {
 	int Status = XST_SUCCESS;
 	Stats stats = {0, 0, 0, 0};
+	bool no_fail = false;
 
 #ifdef XPAR_UARTNS550_0_BASEADDR
 	Uart550_Setup();
@@ -62,9 +63,10 @@ int main()
 
 	while (true) {
 		xil_printf("Running on %s implementation...\r\n", alt ? "HLS" : "HDL");
-		Status = RunMatrixAssignment((alt ? &DmaInstance1 : &DmaInstance0), &TmrCtrInstance, TIMER_COUNTER_0, &stats);
+		Status = RunMatrixAssignment((alt ? &DmaInstance1 : &DmaInstance0), &TmrCtrInstance, TIMER_COUNTER_0, &stats, &no_fail);
 		if (Status != XST_SUCCESS) {
-			xil_printf("Failed to execute\r\n");
+			if (!no_fail)
+				xil_printf("Failed to execute\r\n");
 			xil_printf("--- Exiting main() ---\r\n");
 			return XST_FAILURE;
 		}
@@ -75,20 +77,22 @@ int main()
 }
 
 
-int RunMatrixAssignment(XAxiDma *DmaInstancePtr, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber, Stats *stats)
+int RunMatrixAssignment(XAxiDma *DmaInstancePtr, XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber, Stats *stats, bool *no_fail)
 {
 	int Status;
 
 	xil_printf("Ready! Please use RealTerm -> 'Send File' to send A.csv\r\n");
-    Status = ReceiveCSVData(MatrixA, MatrixA_Size, stats);
+    Status = ReceiveCSVData(MatrixA, MatrixA_Size, stats, no_fail);
     if (Status != XST_SUCCESS) {
-        xil_printf("Failed to receive Matrix A\r\n");
+		if (!no_fail)
+        	xil_printf("Failed to receive Matrix A\r\n");
         return XST_FAILURE;
     }
     xil_printf("Matrix A Received. Now please send B.csv\r\n");
-    Status = ReceiveCSVData(MatrixB, MatrixB_Size, stats);
+    Status = ReceiveCSVData(MatrixB, MatrixB_Size, stats, no_fail);
     if (Status != XST_SUCCESS) {
-        xil_printf("Failed to receive Matrix B\r\n");
+        if (!no_fail)
+			xil_printf("Failed to receive Matrix B\r\n");
         return XST_FAILURE;
     }
 
@@ -198,7 +202,7 @@ int RxReceive (XAxiDma *DmaInstancePtr, u32* DestinationAddr, XTmrCtr *TmrCtrIns
 }
 
 
-int ReceiveCSVData(u32 *Buffer, int TotalElements, Stats *stats)
+int ReceiveCSVData(u32 *Buffer, int TotalElements, Stats *stats, bool *no_fail)
 {
     char msg[20];
     int msg_idx = 0;
@@ -221,6 +225,7 @@ int ReceiveCSVData(u32 *Buffer, int TotalElements, Stats *stats)
 				if (strcmp(msg, TERMINATE_TOKEN) == 0) {
 					xil_printf("Termination command received. Stopping reception.\r\n");
 					SendStats(stats);
+					*no_fail = true;
 					return XST_FAILURE;
 				}
                 Buffer[count] = atoi(msg);
