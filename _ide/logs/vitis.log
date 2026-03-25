@@ -1,0 +1,571 @@
+15:27:10 INFO  : updated workspace path: C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218
+15:27:10 INFO  : Marking the target connection as default Local
+15:27:10 INFO  : Marking the target connection as default Linux Agent
+15:27:10 INFO  : Marking the target connection as default XRTServer
+15:27:10 INFO  : Marking the target connection as default LinuxEmulation
+15:27:10 INFO  : Marking the target connection as default QEMU
+15:27:11 INFO  : [INFO]: Initializing repositories
+15:27:11 INFO  : [INFO]: Successfully set the EmbeddedSW path, refer .repo.yaml for more details.
+15:27:11 INFO  : Successfully created repository data at C:\Users\dkhar\AppData\Local\Temp\rigel_lopper_dkhar576477185829226207
+15:27:11 INFO  : cmd.exe, /C, empyro.bat get_template_data -d C:\Users\dkhar\AppData\Local\Temp\rigel_lopper_dkhar17321797208826948418 -r C:\Users\dkhar\AppData\Local\Temp\rigel_lopper_dkhar576477185829226207\.repo.yaml
+15:27:13 INFO  : Embedded Template List generated successfully
+15:27:16 INFO  : cmd.exe, /C, empyro.bat repo -st   C:\Xilinx\2025.1\Vitis\data\embeddedsw
+15:27:23 INFO  : [INFO]: Initializing repositories
+15:27:23 INFO  : [INFO]: Successfully set the EmbeddedSW path, refer .repo.yaml for more details.
+15:27:23 INFO  : Successfully created repository data at C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218/_ide\.wsdata
+15:27:23 INFO  : cmd.exe, /C, empyro.bat get_template_data -d C:\Users\dkhar\AppData\Local\Temp\rigel_lopper_dkhar13041653791378556638 -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+15:27:25 INFO  : Embedded Template List generated successfully
+15:27:42 INFO  : Using sdt generation script from C:\Xilinx\2025.1\Vitis\vitis-server\scripts\platformutil.tcl
+15:27:42 INFO  : cmd.exe, /C, sdtgen.bat C:\Xilinx\2025.1\Vitis\vitis-server\scripts\platformutil.tcl C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab2\hw\lab2.xsa C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\.rigel_lopper_temp_platform\lab2\hw\sdt
+15:27:49 INFO  : -xsa C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab2\hw\lab2.xsa
+15:27:49 INFO  : -dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\.rigel_lopper_temp_platform\lab2\hw\sdt
+15:27:49 INFO  : -board_dts 
+15:27:49 INFO  : -include_dts 
+15:27:49 INFO  : -repo C:/Xilinx/2025.1/Vitis/data/system-device-tree-xlnx
+15:27:49 INFO  : -zocl disable
+15:27:49 ERROR : ERROR: [Common 17-1293] The path 'C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/.rigel_lopper_temp_platform/lab2/hw/sdt' already exists, is a directory, but is not writable.
+15:27:49 INFO  : 
+15:27:49 INFO  :     while executing
+15:27:49 INFO  : "hsi::open_hw_design "$xsa_path""
+15:27:49 INFO  :     (procedure "generate_sdt" line 90)
+15:27:49 INFO  :     invoked from within
+15:27:49 INFO  : "generate_sdt"
+15:27:49 INFO  :     (file "C:\Xilinx\2025.1\Vitis\vitis-server\scripts\platformutil.tcl" line 77)
+15:27:49 INFO  : SDT generated successfully
+15:27:49 ERROR : InValid Platform,System DTS File does not exist in 'C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\.rigel_lopper_temp_platform\lab2\hw\sdt\system-top.dts'.
+15:29:57 INFO  : Using sdt generation script from C:\Xilinx\2025.1\Vitis\vitis-server\scripts\platformutil.tcl
+15:29:57 INFO  : cmd.exe, /C, sdtgen.bat C:\Xilinx\2025.1\Vitis\vitis-server\scripts\platformutil.tcl C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab2\hw\lab2.xsa C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\.rigel_lopper_temp_platform\lab2\hw\sdt
+15:30:44 INFO  : -xsa C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab2\hw\lab2.xsa
+15:30:44 INFO  : -dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\.rigel_lopper_temp_platform\lab2\hw\sdt
+15:30:44 INFO  : -board_dts 
+15:30:44 INFO  : -include_dts 
+15:30:44 INFO  : -repo C:/Xilinx/2025.1/Vitis/data/system-device-tree-xlnx
+15:30:44 INFO  : -zocl disable
+15:30:44 INFO  : INFO: [Hsi 55-2053] elapsed time for repository (C:/Xilinx/2025.1/Vitis/data/embeddedsw) loading 0 seconds
+15:30:44 INFO  : hsi::open_hw_design: Time (s): cpu = 00:00:24 ; elapsed = 00:00:27 . Memory (MB): peak = 241.352 ; gain = 181.559
+15:30:44 INFO  : SDT generated successfully
+15:30:45 INFO  : Lopper command for cpu List generation: lopper.bat --enhanced --werror -f -O C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\.rigel_lopper -i lop-cpu-oslist.dts C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\.rigel_lopper_temp_platform\lab2\hw\sdt\system-top.dts
+15:30:45 INFO  : cmd.exe, /C, lopper.bat --enhanced --werror -f -O C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\.rigel_lopper -i lop-cpu-oslist.dts C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\.rigel_lopper_temp_platform\lab2\hw\sdt\system-top.dts
+15:31:10 INFO  : CPU List generated successfully
+15:31:18 INFO  : Platform platform creation started.
+15:31:18 INFO  : Lopper command for cpu List generation: lopper.bat --enhanced --werror -f -O C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\.rigel_lopper -i lop-cpu-oslist.dts C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\hw\sdt\system-top.dts
+15:31:18 INFO  : cmd.exe, /C, lopper.bat --enhanced --werror -f -O C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\.rigel_lopper -i lop-cpu-oslist.dts C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\hw\sdt\system-top.dts
+15:31:27 INFO  : CPU List generated successfully
+15:31:27 INFO  : SDT generated successfully.
+15:31:27 INFO  : created .gitignore file for the project C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform
+15:31:28 INFO  : ZYNQMP: Using the QEMU args from install at  : C:\Xilinx\2025.1\Vitis\data\emulation\platforms\zynqmp\sw\a53_linux\qemu\qemu_args.txt
+15:31:28 INFO  : ZYNQMP: Using the PMUQEMU args from install at  : C:\Xilinx\2025.1\Vitis\data\emulation\platforms\zynqmp\sw\a53_linux\qemu\pmu_args.txt
+15:31:28 INFO  : ZYNQMP: Using the QEMU args from install at  : C:\Xilinx\2025.1\Vitis\data\emulation\platforms\zynqmp\sw\a53_standalone\qemu\qemu_args.txt
+15:31:28 INFO  : ZYNQMP: Using the QEMU args from install at  : C:\Xilinx\2025.1\Vitis\data\emulation\platforms\zynqmp\sw\a53_standalone\qemu\qemu_args.txt
+15:31:28 INFO  : ZYNQMP: Using the PMUQEMU args from install at  : C:\Xilinx\2025.1\Vitis\data\emulation\platforms\zynqmp\sw\a53_standalone\qemu\pmu_args.txt
+15:31:28 INFO  : ZYNQMP: Using the PMUQEMU args from install at  : C:\Xilinx\2025.1\Vitis\data\emulation\platforms\zynqmp\sw\a53_standalone\qemu\pmu_args.txt
+15:31:28 INFO  : lopper command to generate BSP :empyro.bat create_bsp -w C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp -p psu_cortexa53_0 -o standalone -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\hw\sdt\system-top.dts -t empty_application -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+15:31:28 INFO  : lopper command to generate BSP :empyro.bat create_bsp -w C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp -p psu_cortexa53_0 -o standalone -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\hw\sdt\system-top.dts -t zynqmp_fsbl -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+15:31:28 INFO  : cmd.exe, /C, empyro.bat create_bsp -w C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp -p psu_cortexa53_0 -o standalone -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\hw\sdt\system-top.dts -t empty_application -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+15:31:28 INFO  : cmd.exe, /C, empyro.bat create_bsp -w C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp -p psu_cortexa53_0 -o standalone -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\hw\sdt\system-top.dts -t zynqmp_fsbl -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+15:33:24 INFO  : [INFO]: Starting domain creation
+15:33:24 INFO  : [INFO]: Generating Domain-specific DTS for psu_cortexa53_0
+15:33:24 INFO  : [INFO]: Generating required metadata from domain specific DT
+15:33:24 INFO  : [INFO]: Successfully created Domain at C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+15:33:24 INFO  : Successfully Generated Domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+15:33:24 INFO  : Domain standalone_psu_cortexa53_0 added successfully.
+15:33:28 INFO  : [INFO]: Starting domain creation
+15:33:28 INFO  : [INFO]: Generating Domain-specific DTS for psu_cortexa53_0
+15:33:28 INFO  : [INFO]: Generating required metadata from domain specific DT
+15:33:28 INFO  : [INFO]: Successfully created Domain at C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+15:33:28 INFO  : Successfully Generated Domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+15:33:28 INFO  : lopper command to create baremetal application :empyro.bat create_app --src_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl -t zynqmp_fsbl -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp -n fsbl -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+15:33:28 INFO  : cmd.exe, /C, empyro.bat validate_bsp -t zynqmp_fsbl -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+15:33:40 INFO  : Successfully validated template zynqmp_fsbl
+15:33:40 INFO  : cmd.exe, /C, empyro.bat create_app --src_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl -t zynqmp_fsbl -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp -n fsbl -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+15:33:56 INFO  : [INFO]: Generating Linker script for zynqmp_fsbl
+15:33:56 INFO  : [INFO]: Successfully Created Application sources at C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl
+15:33:56 INFO  : Successfully created Application C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl
+15:33:56 INFO  : Platform FSBL Boot domain added successfully.
+15:33:56 INFO  : Platform creation finished successfully.
+15:33:56 INFO  : Platform Quick Build initiated.
+15:33:56 INFO  : Generating Export directory
+15:33:57 INFO  : Generated platform metadata for creating application(s) based on platform platform.
+15:34:05 INFO  : cmd.exe, /C, lopper.bat -O  . C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\hw\sdt\system-top.dts -- baremetal_getsupported_comp_xlnx psu_cortexa53_0 C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+15:34:12 INFO  : Supported Library List generated.
+15:34:55 INFO  : Updating Examples in Driver C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+15:34:55 INFO  : cmd.exe, /C, empyro.bat load_example -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+15:35:26 INFO  : [INFO]: Loading Valid Example names for BSP
+15:35:26 INFO  : -- The C compiler identification is GNU 13.3.0
+15:35:26 INFO  : -- The CXX compiler identification is GNU 13.3.0
+15:35:26 INFO  : -- Detecting C compiler ABI info
+15:35:26 INFO  : -- Detecting C compiler ABI info - done
+15:35:26 INFO  : -- Check for working C compiler: C:/Xilinx/2025.1/Vitis/gnu/aarch64/nt/aarch64-none/bin/aarch64-none-elf-gcc.exe - skipped
+15:35:26 INFO  : -- Detecting C compile features
+15:35:26 INFO  : -- Detecting C compile features - done
+15:35:26 INFO  : -- Detecting CXX compiler ABI info
+15:35:26 INFO  : -- Detecting CXX compiler ABI info - done
+15:35:26 INFO  : -- Check for working CXX compiler: C:/Xilinx/2025.1/Vitis/gnu/aarch64/nt/aarch64-none/bin/aarch64-none-elf-g++.exe - skipped
+15:35:26 INFO  : -- Detecting CXX compile features
+15:35:26 INFO  : -- Detecting CXX compile features - done
+15:35:26 INFO  : -- Configuring done
+15:35:26 INFO  : -- Generating done
+15:35:26 INFO  : -- Build files have been written to: C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/psu_cortexa53_0/standalone_psu_cortexa53_0/bsp/libsrc/build_configs/exmetadata
+15:35:26 INFO  : [INFO]: Gathering examples metadata
+15:35:26 INFO  : [INFO]: Successfully loaded all the valid examples for the BSP
+15:35:26 INFO  : Updated Examples in Driver
+15:37:14 INFO  : lopper command to import example :empyro.bat create_example -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\export\platform\sw\standalone_psu_cortexa53_0 -e xuartps_hello_world_example.c -n psu_uart_1 -w C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\xuartps_hello_world_example -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+15:37:14 INFO  : cmd.exe, /C, empyro.bat create_example -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\export\platform\sw\standalone_psu_cortexa53_0 -e xuartps_hello_world_example.c -n psu_uart_1 -w C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\xuartps_hello_world_example -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+15:37:28 INFO  : [INFO]: Creating example xuartps_hello_world_example.c
+15:37:28 INFO  : [INFO]: Generating Linker script for xuartps_hello_world_example.c
+15:37:28 INFO  : [INFO]: Running CMake Configuration
+15:37:28 INFO  : [INFO]: Successfully created example sources at C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/xuartps_hello_world_example/src
+15:37:28 INFO  : Successfully imported example xuartps_hello_world_example.c on C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\xuartps_hello_world_example
+15:37:28 INFO  : created .gitignore file for the project C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\xuartps_hello_world_example
+15:37:28 INFO  : The hardware specification used by project 'C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\xuartps_hello_world_example' is out of sync with the platform. Resource files extracted from the hardware specification will be updated.
+15:37:28 INFO  : The updated bitstream files are copied from platform to folder 'C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\xuartps_hello_world_example\_ide\bitstream' in project 'C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\xuartps_hello_world_example'.
+15:37:28 INFO  : The updated ps init files are copied from platform to folder 'C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\xuartps_hello_world_example\_ide\psinit' in project 'C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\xuartps_hello_world_example'.
+15:38:27 INFO  : BSP build will be initiated for Domain standalone_psu_cortexa53_0
+15:38:27 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+15:38:27 INFO  : lopper command to reconfigure BSP :empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+15:38:27 INFO  : cmd.exe, /C, empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+15:38:27 INFO  : BSP build will be initiated for Domain zynqmp_fsbl
+15:38:27 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+15:38:27 INFO  : lopper command to reconfigure BSP :empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+15:38:27 INFO  : cmd.exe, /C, empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+15:38:30 INFO  : Domain reconfigured successfully
+15:38:30 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+15:38:30 INFO  : lopper command to build BSP :empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+15:38:30 INFO  : cmd.exe, /C, empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+15:38:30 INFO  : Domain reconfigured successfully
+15:38:30 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+15:38:30 INFO  : lopper command to build BSP :empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+15:38:30 INFO  : cmd.exe, /C, empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+15:39:36 INFO  : Domain build successfully
+15:39:39 INFO  : Domain build successfully
+15:39:39 INFO  : Generating Boot ELFs
+15:39:39 INFO  : lopper command to retarget baremetal application :empyro.bat retarget_app -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp -b C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+15:39:39 INFO  : cmd.exe, /C, empyro.bat retarget_app -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp -b C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+15:39:42 INFO  : [INFO]: Retargeting app
+15:39:42 INFO  : [INFO]: Updating link libraries based on new domain
+15:39:42 INFO  : Successfully retargeted Application C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl
+15:39:42 INFO  : lopper command to build baremetal application :empyro.bat build_app --src_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl --build_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+15:39:42 INFO  : cmd.exe, /C, empyro.bat build_app --src_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl --build_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+15:40:10 INFO  : Successfully building the baremetal applicationC:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+15:40:10 INFO  : Generating Export directory
+15:40:11 INFO  : Platform Build Finished successfully.
+15:40:11 INFO  : lopper command to retarget baremetal application :empyro.bat retarget_app -s c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\xuartps_hello_world_example\src -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\export\platform\sw\standalone_psu_cortexa53_0 -b c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\xuartps_hello_world_example\build
+15:40:11 INFO  : cmd.exe, /C, empyro.bat retarget_app -s c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\xuartps_hello_world_example\src -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\export\platform\sw\standalone_psu_cortexa53_0 -b c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\xuartps_hello_world_example\build
+15:40:13 INFO  : [INFO]: Retargeting app
+15:40:13 INFO  : [INFO]: Updating link libraries based on new domain
+15:40:13 INFO  : Successfully retargeted Application c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\xuartps_hello_world_example\src
+15:40:13 INFO  : cmd.exe, /C, empyro.bat build_app -s c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\xuartps_hello_world_example\src -b c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\xuartps_hello_world_example\build
+15:42:24 INFO  : XSDB server has started successfully from frontend.
+15:42:24 INFO  : It has taken  9secs.
+15:42:25 INFO  : Connection to XSDB Server established.
+15:42:25 INFO  : It has taken  1secs.
+15:42:25 INFO  : Done
+15:42:31 INFO  : connect -url tcp:127.0.0.1:3121
+15:43:06 INFO  : bpremove -all
+15:43:06 INFO  : source C:/Xilinx/2025.1/Vitis/scripts/vitis/util/zynqmp_utils.tcl
+15:43:16 ERROR : Failed to initialize the hardware Could not find ARM device on the board for connection 'Local'.
+Check if the target is in:
+1. Split JTAG - No operations are possible with ARM DAP.
+2. Non JTAG bootmode - Bootrom may need time to enable DAP.
+Please try again.
+
+
+Troubleshooting hints:
+1. Check whether board is connected to system properly.
+2. In case of zynq board, check whether Digilent/Xilinx cable switch settings are correct.
+3. If you are using Xilinx Platform Cable USB, ensure that status LED is green.
+15:47:22 INFO  : connect -url tcp:127.0.0.1:3121
+15:47:22 INFO  : bpremove -all
+15:47:22 INFO  : source C:/Xilinx/2025.1/Vitis/scripts/vitis/util/zynqmp_utils.tcl
+15:47:31 ERROR : Failed to initialize the hardware Could not find ARM device on the board for connection 'Local'.
+Check if the target is in:
+1. Split JTAG - No operations are possible with ARM DAP.
+2. Non JTAG bootmode - Bootrom may need time to enable DAP.
+Please try again.
+
+
+Troubleshooting hints:
+1. Check whether board is connected to system properly.
+2. In case of zynq board, check whether Digilent/Xilinx cable switch settings are correct.
+3. If you are using Xilinx Platform Cable USB, ensure that status LED is green.
+15:55:22 INFO  : cmd.exe, /C, empyro.bat validate_bsp -t empty_application -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\export\platform\sw\standalone_psu_cortexa53_0 -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+15:55:28 INFO  : Successfully validated template empty_application
+15:55:51 INFO  : lopper command to create baremetal application :empyro.bat create_app --src_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\src -t empty_application -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\export\platform\sw\standalone_psu_cortexa53_0 -n lab_2 -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+15:55:51 INFO  : cmd.exe, /C, empyro.bat validate_bsp -t empty_application -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\export\platform\sw\standalone_psu_cortexa53_0 -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+15:55:54 INFO  : Successfully validated template empty_application
+15:55:54 INFO  : cmd.exe, /C, empyro.bat create_app --src_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\src -t empty_application -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\export\platform\sw\standalone_psu_cortexa53_0 -n lab_2 -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+15:56:08 INFO  : [INFO]: Generating Linker script for empty_application
+15:56:08 INFO  : [INFO]: Successfully Created Application sources at C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/lab_2/src
+15:56:08 INFO  : Successfully created Application C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\src
+15:56:08 INFO  : created .gitignore file for the project C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2
+15:56:08 INFO  : The hardware specification used by project 'C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2' is out of sync with the platform. Resource files extracted from the hardware specification will be updated.
+15:56:08 INFO  : The updated bitstream files are copied from platform to folder 'C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\_ide\bitstream' in project 'C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2'.
+15:56:08 INFO  : The updated ps init files are copied from platform to folder 'C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\_ide\psinit' in project 'C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2'.
+15:56:15 INFO  : BSP build will be initiated for Domain standalone_psu_cortexa53_0
+15:56:15 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+15:56:15 INFO  : lopper command to reconfigure BSP :empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+15:56:15 INFO  : cmd.exe, /C, empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+15:56:15 INFO  : BSP build will be initiated for Domain zynqmp_fsbl
+15:56:15 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+15:56:15 INFO  : lopper command to reconfigure BSP :empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+15:56:15 INFO  : cmd.exe, /C, empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+15:56:18 INFO  : Domain reconfigured successfully
+15:56:18 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+15:56:18 INFO  : lopper command to build BSP :empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+15:56:18 INFO  : cmd.exe, /C, empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+15:56:18 INFO  : Domain reconfigured successfully
+15:56:18 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+15:56:18 INFO  : lopper command to build BSP :empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+15:56:18 INFO  : cmd.exe, /C, empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+15:56:22 INFO  : Domain build successfully
+15:56:25 INFO  : Domain build successfully
+15:56:25 INFO  : Generating Boot ELFs
+15:56:25 INFO  : lopper command to retarget baremetal application :empyro.bat retarget_app -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp -b C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+15:56:25 INFO  : cmd.exe, /C, empyro.bat retarget_app -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp -b C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+15:56:29 INFO  : [INFO]: Retargeting app
+15:56:29 INFO  : [INFO]: Updating link libraries based on new domain
+15:56:29 INFO  : Successfully retargeted Application C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl
+15:56:29 INFO  : lopper command to build baremetal application :empyro.bat build_app --src_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl --build_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+15:56:29 INFO  : cmd.exe, /C, empyro.bat build_app --src_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl --build_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+15:56:47 INFO  : Successfully building the baremetal applicationC:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+15:56:47 INFO  : Generating Export directory
+15:56:48 INFO  : Platform Build Finished successfully.
+15:56:48 INFO  : lopper command to retarget baremetal application :empyro.bat retarget_app -s c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\src -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\export\platform\sw\standalone_psu_cortexa53_0 -b c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\build
+15:56:48 INFO  : cmd.exe, /C, empyro.bat retarget_app -s c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\src -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\export\platform\sw\standalone_psu_cortexa53_0 -b c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\build
+15:56:50 INFO  : [INFO]: Retargeting app
+15:56:50 INFO  : [INFO]: Updating link libraries based on new domain
+15:56:50 INFO  : Successfully retargeted Application c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\src
+15:56:50 INFO  : cmd.exe, /C, empyro.bat build_app -s c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\src -b c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\build
+15:57:17 INFO  : connect -url tcp:127.0.0.1:3121
+15:57:17 INFO  : bpremove -all
+15:57:17 INFO  : source C:/Xilinx/2025.1/Vitis/scripts/vitis/util/zynqmp_utils.tcl
+15:57:17 INFO  : Context for 'APU' is selected.
+15:57:18 INFO  : System reset is completed.
+15:57:21 INFO  : 'after 3000' command is executed.
+15:57:21 INFO  : 'targets -set -filter {jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && level==0 && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-04724093-0"}' command is executed.
+15:57:26 INFO  : Device configured successfully with "C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/lab_2/_ide/bitstream/lab2.bit"
+15:57:26 INFO  : targets -set -nocase -filter {name =~"PSU*" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+15:57:26 INFO  : catch {disable_pmu_gate}
+15:57:26 INFO  : targets -set -nocase -filter {name =~"APU*" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+15:57:28 INFO  : loadhw -hw C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/export/platform/hw/lab2.xsa -mem-ranges [list {0x80000000 0xbfffffff} {0x400000000 0x5ffffffff} {0x1000000000 0x7fffffffff}]
+15:57:28 INFO  : configparams force-mem-access 1
+15:57:30 INFO  : targets -set -nocase -filter {name =~"APU*" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+15:57:30 INFO  : source C:/Xilinx/2025.1/Vitis/vitis-server/scripts/jtag_reg.tcl
+15:57:30 INFO  : Boot mode is read from the target.
+15:57:35 INFO  : Boot mode of the target is set to jtag.
+15:57:35 INFO  : targets -set -nocase -filter {name =~ "*A53*#0"}
+15:57:35 INFO  : rst -processor
+15:57:36 INFO  : dow C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/export/platform/sw/boot/fsbl.elf
+15:57:38 INFO  : set bp_57_36_fsbl_bp [bpadd -addr &XFsbl_Exit]
+15:57:38 INFO  : con -block -timeout 60
+15:57:38 INFO  : bpremove $bp_57_36_fsbl_bp
+15:57:38 INFO  : targets -set -nocase -filter {name =~ "*A53*#0" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+15:57:38 INFO  : rst -processor
+15:57:39 INFO  : dow C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/lab_2/build/lab_2.elf
+15:57:39 INFO  : con
+15:57:39 INFO  : configparams force-mem-access 0
+15:57:40 INFO  : Testing the connection for 127.0.0.1
+15:58:18 INFO  : connect -url tcp:127.0.0.1:3121
+15:58:18 INFO  : bpremove -all
+15:58:18 INFO  : source C:/Xilinx/2025.1/Vitis/scripts/vitis/util/zynqmp_utils.tcl
+15:58:18 INFO  : Context for 'APU' is selected.
+15:58:19 INFO  : System reset is completed.
+15:58:19 INFO  : disconnect
+15:58:22 INFO  : 'after 3000' command is executed.
+15:58:22 ERROR : Failed to initialize the hardware Invalid target. Use "connect" command to connect to hw_server/TCF agent
+15:58:42 INFO  : connect -url tcp:127.0.0.1:3121
+15:58:42 INFO  : bpremove -all
+15:58:42 INFO  : source C:/Xilinx/2025.1/Vitis/scripts/vitis/util/zynqmp_utils.tcl
+15:58:44 INFO  : Context for 'APU' is selected.
+15:58:44 INFO  : System reset is completed.
+15:58:47 INFO  : 'after 3000' command is executed.
+15:58:48 INFO  : 'targets -set -filter {jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && level==0 && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-04724093-0"}' command is executed.
+15:58:53 INFO  : Device configured successfully with "C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/lab_2/_ide/bitstream/lab2.bit"
+15:58:53 INFO  : targets -set -nocase -filter {name =~"PSU*" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+15:58:53 INFO  : catch {disable_pmu_gate}
+15:58:53 INFO  : targets -set -nocase -filter {name =~"APU*" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+15:58:54 ERROR : ERROR: [Common 17-1293] The path 'C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/export/platform/hw' already exists, is a directory, but is not writable.
+
+15:58:54 ERROR : Failed to initialize the hardware ERROR: [Common 17-1293] The path 'C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/export/platform/hw' already exists, is a directory, but is not writable.
+
+15:59:02 INFO  : connect -url tcp:127.0.0.1:3121
+15:59:02 INFO  : bpremove -all
+15:59:02 INFO  : source C:/Xilinx/2025.1/Vitis/scripts/vitis/util/zynqmp_utils.tcl
+15:59:02 INFO  : Context for 'APU' is selected.
+15:59:02 INFO  : System reset is completed.
+15:59:06 INFO  : 'after 3000' command is executed.
+15:59:06 INFO  : 'targets -set -filter {jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && level==0 && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-04724093-0"}' command is executed.
+15:59:10 INFO  : Device configured successfully with "C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/lab_2/_ide/bitstream/lab2.bit"
+15:59:11 INFO  : targets -set -nocase -filter {name =~"PSU*" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+15:59:11 INFO  : catch {disable_pmu_gate}
+15:59:11 INFO  : targets -set -nocase -filter {name =~"APU*" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+15:59:11 ERROR : ERROR: [Common 17-1293] The path 'C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/export/platform/hw' already exists, is a directory, but is not writable.
+
+15:59:11 ERROR : Failed to initialize the hardware ERROR: [Common 17-1293] The path 'C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/export/platform/hw' already exists, is a directory, but is not writable.
+
+15:59:31 INFO  : connect -url tcp:127.0.0.1:3121
+15:59:31 INFO  : bpremove -all
+15:59:31 INFO  : source C:/Xilinx/2025.1/Vitis/scripts/vitis/util/zynqmp_utils.tcl
+15:59:31 INFO  : Context for 'APU' is selected.
+15:59:31 INFO  : System reset is completed.
+15:59:34 INFO  : 'after 3000' command is executed.
+15:59:34 INFO  : 'targets -set -filter {jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && level==0 && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-04724093-0"}' command is executed.
+15:59:39 INFO  : Device configured successfully with "C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/lab_2/_ide/bitstream/lab2.bit"
+15:59:40 INFO  : targets -set -nocase -filter {name =~"PSU*" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+15:59:40 INFO  : catch {disable_pmu_gate}
+15:59:40 INFO  : targets -set -nocase -filter {name =~"APU*" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+15:59:40 ERROR : ERROR: [Common 17-1293] The path 'C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/export/platform/hw' already exists, is a directory, but is not writable.
+
+15:59:40 ERROR : Failed to initialize the hardware ERROR: [Common 17-1293] The path 'C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/export/platform/hw' already exists, is a directory, but is not writable.
+
+15:59:42 INFO  : connect -url tcp:127.0.0.1:3121
+15:59:42 INFO  : bpremove -all
+15:59:42 INFO  : source C:/Xilinx/2025.1/Vitis/scripts/vitis/util/zynqmp_utils.tcl
+15:59:42 INFO  : Context for 'APU' is selected.
+15:59:42 INFO  : System reset is completed.
+15:59:45 INFO  : 'after 3000' command is executed.
+15:59:46 INFO  : 'targets -set -filter {jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && level==0 && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-04724093-0"}' command is executed.
+15:59:50 INFO  : Device configured successfully with "C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/lab_2/_ide/bitstream/lab2.bit"
+15:59:51 INFO  : targets -set -nocase -filter {name =~"PSU*" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+15:59:51 INFO  : catch {disable_pmu_gate}
+15:59:51 INFO  : targets -set -nocase -filter {name =~"APU*" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+15:59:51 ERROR : ERROR: [Common 17-1293] The path 'C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/export/platform/hw' already exists, is a directory, but is not writable.
+
+15:59:51 ERROR : Failed to initialize the hardware ERROR: [Common 17-1293] The path 'C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/export/platform/hw' already exists, is a directory, but is not writable.
+
+16:00:58 INFO  : connect -url tcp:127.0.0.1:3121
+16:00:58 INFO  : bpremove -all
+16:00:58 INFO  : source C:/Xilinx/2025.1/Vitis/scripts/vitis/util/zynqmp_utils.tcl
+16:00:58 INFO  : Context for 'APU' is selected.
+16:00:58 INFO  : System reset is completed.
+16:01:01 INFO  : 'after 3000' command is executed.
+16:01:02 INFO  : 'targets -set -filter {jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && level==0 && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-04724093-0"}' command is executed.
+16:01:07 INFO  : Device configured successfully with "C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/lab_2/_ide/bitstream/lab2.bit"
+16:01:07 INFO  : targets -set -nocase -filter {name =~"PSU*" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+16:01:07 INFO  : catch {disable_pmu_gate}
+16:01:07 INFO  : targets -set -nocase -filter {name =~"APU*" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+16:01:07 ERROR : ERROR: [Common 17-1293] The path 'C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/export/platform/hw' already exists, is a directory, but is not writable.
+
+16:01:07 ERROR : Failed to initialize the hardware ERROR: [Common 17-1293] The path 'C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/export/platform/hw' already exists, is a directory, but is not writable.
+
+16:08:39 INFO  : connection terminated
+16:08:39 INFO  : connection terminated
+16:08:39 INFO  : scheduling shutdown timer for 2 seconds ...
+16:08:41 INFO  : Terminating Vitis C++ Server
+16:08:41 INFO  : Vitis C++ Server terminated
+16:10:52 INFO  : updated workspace path: C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218
+16:10:58 INFO  : [INFO]: Initializing repositories
+16:10:58 INFO  : [INFO]: Successfully set the EmbeddedSW path, refer .repo.yaml for more details.
+16:10:58 INFO  : Successfully created repository data at C:\Users\dkhar\AppData\Local\Temp\rigel_lopper_dkhar11325983749454996961
+16:10:58 INFO  : cmd.exe, /C, empyro.bat get_template_data -d C:\Users\dkhar\AppData\Local\Temp\rigel_lopper_dkhar129559848603309058 -r C:\Users\dkhar\AppData\Local\Temp\rigel_lopper_dkhar11325983749454996961\.repo.yaml
+16:10:59 INFO  : Embedded Template List generated successfully
+16:10:59 INFO  : cmd.exe, /C, empyro.bat get_template_data -d C:\Users\dkhar\AppData\Local\Temp\rigel_lopper_dkhar16585450843841570568 -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+16:11:01 INFO  : Embedded Template List generated successfully
+16:12:08 INFO  : BSP build will be initiated for Domain standalone_psu_cortexa53_0
+16:12:08 INFO  : BSP build will be initiated for Domain zynqmp_fsbl
+16:12:08 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:12:08 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:12:08 INFO  : lopper command to reconfigure BSP :empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:12:08 INFO  : lopper command to reconfigure BSP :empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:12:08 INFO  : cmd.exe, /C, empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:12:08 INFO  : cmd.exe, /C, empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:12:10 INFO  : Domain reconfigured successfully
+16:12:10 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:12:10 INFO  : lopper command to build BSP :empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:12:10 INFO  : cmd.exe, /C, empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:12:10 INFO  : Domain reconfigured successfully
+16:12:10 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:12:10 INFO  : lopper command to build BSP :empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:12:10 INFO  : cmd.exe, /C, empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:12:14 INFO  : Domain build successfully
+16:12:17 INFO  : Domain build successfully
+16:12:17 INFO  : Generating Boot ELFs
+16:12:17 INFO  : lopper command to retarget baremetal application :empyro.bat retarget_app -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp -b C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+16:12:17 INFO  : cmd.exe, /C, empyro.bat retarget_app -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp -b C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+16:12:19 INFO  : [INFO]: Retargeting app
+16:12:19 INFO  : [INFO]: Updating link libraries based on new domain
+16:12:19 INFO  : Successfully retargeted Application C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl
+16:12:19 INFO  : lopper command to build baremetal application :empyro.bat build_app --src_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl --build_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+16:12:19 INFO  : cmd.exe, /C, empyro.bat build_app --src_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl --build_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+16:12:38 INFO  : Successfully building the baremetal applicationC:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+16:12:38 INFO  : Generating Export directory
+16:12:39 INFO  : Platform Build Finished successfully.
+16:12:39 INFO  : lopper command to retarget baremetal application :empyro.bat retarget_app -s c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\src -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\export\platform\sw\standalone_psu_cortexa53_0 -b c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\build
+16:12:39 INFO  : cmd.exe, /C, empyro.bat retarget_app -s c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\src -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\export\platform\sw\standalone_psu_cortexa53_0 -b c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\build
+16:12:42 INFO  : [INFO]: Retargeting app
+16:12:42 INFO  : [INFO]: Updating link libraries based on new domain
+16:12:42 INFO  : Successfully retargeted Application c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\src
+16:12:42 INFO  : cmd.exe, /C, empyro.bat build_app -s c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\src -b c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\build
+16:14:01 INFO  : The updated bitstream files are copied from platform to folder 'C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\_ide\bitstream' in project 'C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2'.
+16:14:01 INFO  : The updated ps init files are copied from platform to folder 'C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2\_ide\psinit' in project 'C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab_2'.
+16:17:15 INFO  : cmd.exe, /C, empyro.bat get_template_data -d C:\Users\dkhar\AppData\Local\Temp\rigel_lopper_dkhar1908036003559112438 -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+16:17:15 INFO  : created .gitignore file for the project C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218
+16:17:15 INFO  : updated workspace path: C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218
+16:17:17 INFO  : Embedded Template List generated successfully
+16:17:17 INFO  : cmd.exe, /C, empyro.bat get_template_data -d C:\Users\dkhar\AppData\Local\Temp\rigel_lopper_dkhar14056752657024679259 -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+16:17:19 INFO  : Embedded Template List generated successfully
+16:19:16 INFO  : XSDB server has started successfully from frontend.
+16:19:16 INFO  : It has taken  6secs.
+16:19:17 INFO  : Connection to XSDB Server established.
+16:19:17 INFO  : It has taken  1secs.
+16:19:20 INFO  : connect -url tcp:127.0.0.1:3121
+16:19:20 INFO  : Done
+16:19:46 INFO  : bpremove -all
+16:19:46 INFO  : source C:/Xilinx/2025.1/Vitis/scripts/vitis/util/zynqmp_utils.tcl
+16:19:48 INFO  : Context for 'APU' is selected.
+16:19:48 INFO  : System reset is completed.
+16:19:51 INFO  : 'after 3000' command is executed.
+16:19:51 INFO  : 'targets -set -filter {jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && level==0 && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-04724093-0"}' command is executed.
+16:19:56 INFO  : Device configured successfully with "C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/lab_2/_ide/bitstream/lab2.bit"
+16:19:56 INFO  : targets -set -nocase -filter {name =~"PSU*" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+16:19:56 INFO  : catch {disable_pmu_gate}
+16:19:56 INFO  : targets -set -nocase -filter {name =~"APU*" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+16:19:58 INFO  : loadhw -hw C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/export/platform/hw/lab2.xsa -mem-ranges [list {0x80000000 0xbfffffff} {0x400000000 0x5ffffffff} {0x1000000000 0x7fffffffff}]
+16:19:58 INFO  : configparams force-mem-access 1
+16:19:58 INFO  : targets -set -nocase -filter {name =~"APU*" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+16:19:58 INFO  : source C:/Xilinx/2025.1/Vitis/vitis-server/scripts/jtag_reg.tcl
+16:19:59 INFO  : Boot mode is read from the target.
+16:19:59 INFO  : targets -set -nocase -filter {name =~ "*A53*#0"}
+16:19:59 INFO  : rst -processor
+16:20:00 INFO  : dow C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/export/platform/sw/boot/fsbl.elf
+16:20:01 INFO  : set bp_20_0_fsbl_bp [bpadd -addr &XFsbl_Exit]
+16:20:02 INFO  : con -block -timeout 60
+16:20:02 INFO  : bpremove $bp_20_0_fsbl_bp
+16:20:02 INFO  : targets -set -nocase -filter {name =~ "*A53*#0" && jtag_cable_name =~ "Xilinx X-MLCC-01 XFL12WIJITMUA" && jtag_device_ctx=="jsn-X-MLCC-01-XFL12WIJITMUA-5ba00477-0"}
+16:20:02 INFO  : rst -processor
+16:20:03 INFO  : dow C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/lab_2/build/lab_2.elf
+16:20:03 INFO  : con
+16:20:03 INFO  : configparams force-mem-access 0
+16:20:04 INFO  : Testing the connection for 127.0.0.1
+16:24:13 INFO  : cmd.exe, /C, empyro.bat validate_bsp -t empty_application -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\export\platform\sw\standalone_psu_cortexa53_0 -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+16:24:21 INFO  : Successfully validated template empty_application
+16:28:58 INFO  : HW XSA update started
+16:28:59 INFO  : Using sdt generation script from C:\Xilinx\2025.1\Vitis\vitis-server\scripts\platformutil.tcl
+16:28:59 INFO  : cmd.exe, /C, sdtgen.bat C:\Xilinx\2025.1\Vitis\vitis-server\scripts\platformutil.tcl C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab3\srcs\fifo\hw\lab3_fifo.xsa C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\hw\sdt
+16:29:42 INFO  : -xsa C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\lab3\srcs\fifo\hw\lab3_fifo.xsa
+16:29:42 INFO  : -dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\hw\sdt
+16:29:42 INFO  : -board_dts 
+16:29:42 INFO  : -include_dts 
+16:29:42 INFO  : -repo C:/Xilinx/2025.1/Vitis/data/system-device-tree-xlnx
+16:29:42 INFO  : -zocl disable
+16:29:42 INFO  : INFO: [Hsi 55-2053] elapsed time for repository (C:/Xilinx/2025.1/Vitis/data/embeddedsw) loading 1 seconds
+16:29:42 INFO  : hsi::open_hw_design: Time (s): cpu = 00:00:24 ; elapsed = 00:00:24 . Memory (MB): peak = 241.582 ; gain = 181.902
+16:29:42 INFO  : SDT generated successfully
+16:29:42 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:29:42 INFO  : lopper command to reconfigure BSP :empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:29:42 INFO  : cmd.exe, /C, empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:29:44 INFO  : Domain reconfigured successfully
+16:29:44 INFO  : lopper command to regenerate BSP :empyro.bat regen_bsp -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\hw\sdt\system-top.dts -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+16:29:44 INFO  : cmd.exe, /C, empyro.bat regen_bsp -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\hw\sdt\system-top.dts -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+16:31:33 INFO  : [INFO]: Regenerating bsp
+16:31:33 INFO  : [INFO]: Starting domain creation
+16:31:33 INFO  : [INFO]: Found HLS driver within SDT, copying the sources
+16:31:33 INFO  : [INFO]: Generating Domain-specific DTS for psu_cortexa53_0
+16:31:33 INFO  : [INFO]: Generating required metadata from domain specific DT
+16:31:33 INFO  : [INFO]: Successfully created Domain at C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:31:33 INFO  : -- Configuring done
+16:31:33 INFO  : -- Generating done
+16:31:33 INFO  : CMake Warning:
+16:31:33 INFO  :   Manually-specified variables were not used by the project:
+16:31:33 INFO  : 
+16:31:33 INFO  :     CMAKE_TOOLCHAIN_FILE
+16:31:33 INFO  : 
+16:31:33 INFO  : 
+16:31:33 INFO  : -- Build files have been written to: C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp
+16:31:33 INFO  : [INFO]: Regenerated BSP successfully.
+16:31:33 INFO  : BSP regenerated successfully
+16:31:33 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:31:33 INFO  : lopper command to reconfigure BSP :empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:31:33 INFO  : cmd.exe, /C, empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:31:36 INFO  : Domain reconfigured successfully
+16:31:36 INFO  : lopper command to regenerate BSP :empyro.bat regen_bsp -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\hw\sdt\system-top.dts -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+16:31:36 INFO  : cmd.exe, /C, empyro.bat regen_bsp -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\hw\sdt\system-top.dts -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp -r C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+16:32:51 INFO  : [INFO]: Regenerating bsp
+16:32:51 INFO  : [INFO]: Starting domain creation
+16:32:51 INFO  : [INFO]: Found HLS driver within SDT, copying the sources
+16:32:51 INFO  : [INFO]: Generating Domain-specific DTS for psu_cortexa53_0
+16:32:51 INFO  : [INFO]: Generating required metadata from domain specific DT
+16:32:51 INFO  : [INFO]: Successfully created Domain at C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:32:51 INFO  : -- Configuring done
+16:32:51 INFO  : -- Generating done
+16:32:51 INFO  : CMake Warning:
+16:32:51 INFO  :   Manually-specified variables were not used by the project:
+16:32:51 INFO  : 
+16:32:51 INFO  :     CMAKE_TOOLCHAIN_FILE
+16:32:51 INFO  : 
+16:32:51 INFO  : 
+16:32:51 INFO  : -- Build files have been written to: C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/psu_cortexa53_0/standalone_psu_cortexa53_0/bsp/libsrc/build_configs/gen_bsp
+16:32:51 INFO  : [INFO]: Regenerated BSP successfully.
+16:32:51 INFO  : BSP regenerated successfully
+16:32:51 INFO  : Hardware XSA update finished successfully
+16:33:02 INFO  : BSP build will be initiated for Domain zynqmp_fsbl
+16:33:02 INFO  : BSP build will be initiated for Domain standalone_psu_cortexa53_0
+16:33:02 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:33:02 INFO  : lopper command to reconfigure BSP :empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:33:02 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:33:02 INFO  : lopper command to reconfigure BSP :empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:33:02 INFO  : cmd.exe, /C, empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:33:02 INFO  : cmd.exe, /C, empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:33:03 INFO  : Domain reconfigured successfully
+16:33:03 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:33:03 INFO  : lopper command to build BSP :empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:33:03 INFO  : cmd.exe, /C, empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:33:03 INFO  : Domain reconfigured successfully
+16:33:03 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:33:03 INFO  : lopper command to build BSP :empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:33:03 INFO  : cmd.exe, /C, empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:33:43 INFO  : Domain build successfully
+16:33:47 INFO  : Domain build successfully
+16:33:47 INFO  : Generating Boot ELFs
+16:33:47 INFO  : lopper command to retarget baremetal application :empyro.bat retarget_app -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp -b C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+16:33:47 INFO  : cmd.exe, /C, empyro.bat retarget_app -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp -b C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+16:33:49 INFO  : [INFO]: Retargeting app
+16:33:49 INFO  : [INFO]: Updating link libraries based on new domain
+16:33:49 INFO  : Successfully retargeted Application C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl
+16:33:49 INFO  : lopper command to build baremetal application :empyro.bat build_app --src_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl --build_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+16:33:49 INFO  : cmd.exe, /C, empyro.bat build_app --src_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl --build_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+16:34:06 INFO  : Successfully building the baremetal applicationC:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+16:34:06 INFO  : Generating Export directory
+16:34:07 INFO  : Platform Build Finished successfully.
+16:35:25 WARN  : Given repository already existing c:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform
+16:35:33 INFO  : BSP build will be initiated for Domain zynqmp_fsbl
+16:35:33 INFO  : BSP build will be initiated for Domain standalone_psu_cortexa53_0
+16:35:33 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:35:33 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:35:33 INFO  : lopper command to reconfigure BSP :empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:35:33 INFO  : lopper command to reconfigure BSP :empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:35:33 INFO  : cmd.exe, /C, empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:35:33 INFO  : cmd.exe, /C, empyro.bat reconfig_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:35:35 INFO  : Domain reconfigured successfully
+16:35:35 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:35:35 INFO  : lopper command to build BSP :empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:35:35 INFO  : cmd.exe, /C, empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:35:36 INFO  : Domain reconfigured successfully
+16:35:36 INFO  : Generating BSP for the domain C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:35:36 INFO  : lopper command to build BSP :empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:35:36 INFO  : cmd.exe, /C, empyro.bat build_bsp -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp
+16:35:39 INFO  : Domain build successfully
+16:35:41 INFO  : Domain build successfully
+16:35:41 INFO  : Generating Boot ELFs
+16:35:41 INFO  : lopper command to retarget baremetal application :empyro.bat retarget_app -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp -b C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+16:35:41 INFO  : cmd.exe, /C, empyro.bat retarget_app -s C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\zynqmp_fsbl_bsp -b C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+16:35:44 INFO  : [INFO]: Retargeting app
+16:35:44 INFO  : [INFO]: Updating link libraries based on new domain
+16:35:44 INFO  : Successfully retargeted Application C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl
+16:35:44 INFO  : lopper command to build baremetal application :empyro.bat build_app --src_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl --build_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+16:35:44 INFO  : cmd.exe, /C, empyro.bat build_app --src_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl --build_dir C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+16:36:03 INFO  : Successfully building the baremetal applicationC:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\zynqmp_fsbl\build
+16:36:03 INFO  : Generating Export directory
+16:36:03 INFO  : Platform Build Finished successfully.
+16:36:43 INFO  : cmd.exe, /C, lopper.bat -O  . C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\hw\sdt\system-top.dts -- baremetal_getsupported_comp_xlnx psu_cortexa53_0 C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\_ide\.wsdata\.repo.yaml
+16:36:50 INFO  : Supported Library List generated.
+16:36:54 INFO  : Updating Examples in Driver C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:36:54 INFO  : cmd.exe, /C, empyro.bat load_example -d C:\Users\dkhar\OneDrive\Documents\GitHub\ee4218\platform\psu_cortexa53_0\standalone_psu_cortexa53_0\bsp
+16:36:56 INFO  : [INFO]: Loading Valid Example names for BSP
+16:36:56 INFO  : [INFO]: Successfully loaded all the valid examples for the BSP
+16:36:56 INFO  : Updated Examples in Driver
+16:38:16 INFO  : connection terminated
+16:38:16 INFO  : connection terminated
+16:38:16 INFO  : scheduling shutdown timer for 2 seconds ...
+16:38:18 INFO  : Terminating Vitis C++ Server
+16:38:18 INFO  : Vitis C++ Server terminated

@@ -1,0 +1,22 @@
+create libxil.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/zdma/src/libzdma.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/wdtps/src/libwdtps.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/uartps/src/libuartps.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/ttcps/src/libttcps.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/tmrctr/src/libtmrctr.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/sysmonpsu/src/libsysmonpsu.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/scugic/src/libscugic.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/rtcpsu/src/librtcpsu.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/resetps/src/libresetps.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/qspipsu/src/libqspipsu.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/llfifo/src/libllfifo.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/ipipsu/src/libipipsu.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/iicps/src/libiicps.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/gpiops/src/libgpiops.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/ddrcpsu/src/libddrcpsu.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/csudma/src/libcsudma.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/coresightps_dcc/src/libcoresightps_dcc.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/clockps/src/libclockps.a
+addlib C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/zynqmp_fsbl_bsp/libsrc/build_configs/gen_bsp/libsrc/axipmon/src/libaxipmon.a
+save
+end

@@ -1,0 +1,3 @@
+C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/build/CMakeFiles/fsbl.elf.dir
+C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/build/CMakeFiles/edit_cache.dir
+C:/Users/dkhar/OneDrive/Documents/GitHub/ee4218/platform/zynqmp_fsbl/build/CMakeFiles/rebuild_cache.dir
