@@ -37,7 +37,7 @@ static const fixed_point sigmoid_lut[256] = {
 fixed_point sigmoid(ap_uint<16> x) {
 #pragma HLS INLINE
     // x is in range [0, 255] representing 0.8 fixed point
-    ap_uint<8> idx = (x > 255) ? 255 : (ap_uint<8>)x;
+    ap_uint<8> idx = (x > 255) ? ap_uint<8>(255) : ap_uint<8>(x);
     return sigmoid_lut[idx];
 }
 
@@ -71,6 +71,7 @@ void nn_accelerator(hls::stream<AXIS>& S_AXIS, hls::stream<AXIS>& M_AXIS) {
 #pragma HLS PIPELINE II=1
             read_input = S_AXIS.read();
             X[i][j] = (ap_uint<8>)(read_input.data & 0xFF);
+            // printf("DUT X[%d][%d] = %u\n", i, j, (unsigned)X[i][j]);
         }
     }
 
@@ -81,6 +82,7 @@ void nn_accelerator(hls::stream<AXIS>& S_AXIS, hls::stream<AXIS>& M_AXIS) {
 #pragma HLS PIPELINE II=1
             read_input = S_AXIS.read();
             W_hidden[i][j] = (ap_uint<8>)(read_input.data & 0xFF);
+            // printf("DUT W_hidden[%d][%d] = %u\n", i, j, (unsigned)W_hidden[i][j]);
         }
     }
 
@@ -91,6 +93,7 @@ void nn_accelerator(hls::stream<AXIS>& S_AXIS, hls::stream<AXIS>& M_AXIS) {
 #pragma HLS PIPELINE II=1
             read_input = S_AXIS.read();
             W_output[i][j] = (ap_uint<8>)(read_input.data & 0xFF);
+            // printf("DUT W_output[%d][%d] = %u\n", i, j, (unsigned)W_output[i][j]);
         }
     }
 
@@ -103,16 +106,32 @@ void nn_accelerator(hls::stream<AXIS>& S_AXIS, hls::stream<AXIS>& M_AXIS) {
             
             // Compute weighted sum: bias + X[i] * W_hidden[1..7, j]
             acc = (ap_uint<16>)W_hidden[0][j] << 8;  // Bias term (scale by 256)
+            // if (i == 0){
+            //     printf("current acc is %u\n", (unsigned)acc);
+            // }
             
             hidden_dot_product: for (k = 0; k < NUM_INPUTS; k++) { // compute the weighted matrix mul
                 ap_uint<16> product = (ap_uint<16>)X[i][k] * (ap_uint<16>)W_hidden[k+1][j];
-                product = product >> 8;  // Scale down by 256 (0.8 fixed point)
+                // if (i == 0){
+                //     printf("X[%d][%d] = %u, W_hidden[%d][%d] = %u, product = %u\n", i, k, (unsigned)X[i][k], k+1, j, (unsigned)W_hidden[k+1][j], (unsigned)product);
+                // }
+                // product = product;  // Scale down by 256 (0.8 fixed point)
+                // if (i == 0){
+                //     printf("Scaled product = %u\n", (unsigned)product);
+                // }
                 acc += product;
+                // if (i == 0){
+                //     printf("Accumulated sum after adding product: %u\n", (unsigned)acc);
+                // }
             }
-            
+            acc = acc >> 8;  // Scale down by 256 (0.8 fixed point)
             // Clamp accumulator to 8-bit range and apply sigmoid (TODO: should i truncate here? &0xFF)
             if (acc > 255) acc = 255;
+            // printf("Hidden acc before sigmoid (i=%d, j=%d): %u\n", i, j, (unsigned)acc);
             hidden[i][j] = sigmoid(acc);
+            // if (i == 0){
+            // printf("DUT hidden[%d][%d] = %u\n", i, j, (unsigned)hidden[i][j]);
+            // }
         }
     }
 
@@ -128,15 +147,20 @@ void nn_accelerator(hls::stream<AXIS>& S_AXIS, hls::stream<AXIS>& M_AXIS) {
             
             output_dot_product: for (k = 0; k < NUM_HIDDEN; k++) {
                 ap_uint<16> product = (ap_uint<16>)hidden[i][k] * (ap_uint<16>)W_output[k+1][j];
-                product = product >> 8;  // Scale down by 256
+                // product = product;  // Scale down by 256
                 acc += product;
             }
+            acc = acc >> 8;  // Scale down by 256
             
             // Clamp to 8-bit range
             if (acc > 255) acc = 255;
+            if (acc <= 128) acc = 0;
+            if (acc > 128) acc = 1;
             output_data[i][j] = (ap_uint<8>)acc;
+            // printf("DUT output[%d][%d] = %u\n", i, j, (unsigned)output_data[i][j]);
         }
     }
+
 
     // ========== WRITE OUTPUT ==========
     // Write output matrix (64 x 1 = 64 words)

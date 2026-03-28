@@ -34,6 +34,7 @@ static uint8_t W_output[OUTPUT_W_ROWS][OUTPUT_W_COLS];
 
 static uint8_t expected[NUM_SAMPLES][NUM_OUTPUTS];
 static uint8_t actual[NUM_SAMPLES][NUM_OUTPUTS];
+static uint8_t labels[NUM_SAMPLES][NUM_OUTPUTS]; //should be same as expected buffer
 
 // Same LUT as DUT for exact matching
 static const uint8_t sigmoid_lut[256] = {
@@ -135,16 +136,17 @@ int main() {
 
     // Try CSV first; fallback to generated test vectors.
     // Expected filenames in current working dir:
-    // X.csv (64x7), w_hid.csv (8x2), w_out.csv (3x1)
+    // X.csv (64x7), w_hid.csv (8x2), w_out.csv (3x1), labels.csv (64x1)
     bool okX  = read_csv_matrix_u8_2d("X.csv",     &X[0][0],        NUM_SAMPLES,   NUM_INPUTS);
     bool okWh = read_csv_matrix_u8_2d("w_hid.csv", &W_hidden[0][0], HIDDEN_W_ROWS, HIDDEN_W_COLS);
     bool okWo = read_csv_matrix_u8_2d("w_out.csv", &W_output[0][0], OUTPUT_W_ROWS, OUTPUT_W_COLS);
+    bool okLbl = read_csv_matrix_u8_2d("labels.csv", &labels[0][0], NUM_SAMPLES, NUM_OUTPUTS);
 
-    if (!(okX && okWh && okWo)) {
+    if (!(okX && okWh && okWo && okLbl)) {
         std::printf("CSV files not fully available. Using deterministic generated vectors.\n");
         generate_deterministic_data();
     } else {
-        std::printf("Loaded X.csv, w_hid.csv, w_out.csv successfully.\n");
+        std::printf("Loaded X.csv, w_hid.csv, w_out.csv, and labels.csv successfully.\n");
     }
 
     compute_expected_sw();
@@ -157,6 +159,7 @@ int main() {
             pkt.keep = 0xF;
             pkt.strb = 0xF;
             pkt.last = 0;
+            // std::printf("S_AXIS X[%d][%d] = %u\n", i, j, (unsigned)X[i][j]);
             S_AXIS.write(pkt);
         }
     }
@@ -167,6 +170,7 @@ int main() {
             pkt.keep = 0xF;
             pkt.strb = 0xF;
             pkt.last = 0;
+            // std::printf("S_AXIS W_hidden[%d][%d] = %u\n", i, j, (unsigned)W_hidden[i][j]);
             S_AXIS.write(pkt);
         }
     }
@@ -177,6 +181,7 @@ int main() {
             pkt.keep = 0xF;
             pkt.strb = 0xF;
             pkt.last = 0;
+            // std::printf("S_AXIS W_output[%d][%d] = %u\n", i, j, (unsigned)W_output[i][j]);
             S_AXIS.write(pkt);
         }
     }
@@ -192,17 +197,18 @@ int main() {
         for (int j = 0; j < NUM_OUTPUTS; j++) {
             AXIS out = M_AXIS.read();
             actual[i][j] = (uint8_t)(out.data & 0xFF);
+            std::printf("actual[%d][%d] = %u\n", i, j, (unsigned)actual[i][j]);
 
             bool should_last = (i == (NUM_SAMPLES - 1) && j == (NUM_OUTPUTS - 1));
             if ((bool)out.last != should_last) {
                 tlast_errors++;
             }
 
-            if (actual[i][j] != expected[i][j]) {
-                if (mismatches < 10) {
+            if (actual[i][j] != labels[i][j]) {
+                // if (mismatches < 10) {
                     std::printf("Mismatch at sample %d: exp=%u act=%u\n",
-                                i, (unsigned)expected[i][j], (unsigned)actual[i][j]);
-                }
+                                i, (unsigned)labels[i][j], (unsigned)actual[i][j]);
+                // }
                 mismatches++;
             }
         }
