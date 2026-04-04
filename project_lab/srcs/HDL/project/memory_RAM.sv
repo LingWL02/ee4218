@@ -18,18 +18,18 @@
 // width is the number of bits per location; depth_bits is the number of address bits. 2^depth_bits is the number of locations
 
 module memory_RAM
-	#(
-		parameter width = 8, 					// width is the number of bits per location
-		parameter depth_bits = 2				// depth is the number of locations (2^number of address bits)
-	)
-	(
-		input 					clk,
-		input 					en,
-		input 					wr,
-		input [depth_bits-1:0] 	address,
-		input [width-1:0] 		data_in,
-		output reg [width-1:0]	data_out
-	);
+#(
+	parameter WIDTH 		= 8, 					// width is the number of bits per location
+	parameter DEPTH_BITS 	= 2				// depth is the number of locations (2^number of address bits)
+)
+(
+	input 					clk,
+	input 					en,
+	input 					wr,
+	input [depth_bits-1:0] 	address,
+	input [width-1:0] 		data_in,
+	output reg [width-1:0]	data_out
+);
 
     reg [width-1:0] RAM [0:2**depth_bits-1];
     wire [depth_bits-1:0] address;

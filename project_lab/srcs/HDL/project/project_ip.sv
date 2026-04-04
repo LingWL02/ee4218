@@ -7,24 +7,24 @@ module project_ip
     localparam integer PTR_WIDTH = $clog2(N);
 )
 (
-	input wire                  aclk,
-	input wire                  aresetn,
-	input wire                  s_axis_tvalid,
-	output reg                  s_axis_tready,
-	input wire [DATA_WIDTH-1:0]   s_axis_tdata,
-	input wire                  s_axis_tlast,
-	output reg                  m_axis_tvalid,
-	input wire                  m_axis_tready
-    output reg [DATA_WIDTH-1:0]   m_axis_tdata,
-    output reg                  m_axis_tlast
+	input wire                      aclk,
+	input wire                      aresetn,
+	input wire                      s_axis_tvalid,
+	output reg                      s_axis_tready,
+	input wire [DATA_WIDTH-1:0]     s_axis_tdata,
+	input wire                      s_axis_tlast,
+	output reg                      m_axis_tvalid,
+	input wire                      m_axis_tready
+    output reg [DATA_WIDTH-1:0]     m_axis_tdata,
+    output reg                      m_axis_tlast
 );
 
-    typedef enum logic [2:0] {
-        IDLE        = 3'b001,
-        READ        = 3'b010,
-        WRITE_INIT  = 3'b100,
-        WRITE       = 4'b1000,
-        WRITE_LAST   = 5'b10000
+    typedef enum logic [4:0] {
+        IDLE            = 5'b00001,
+        READ            = 5'b00010,
+        WRITE_INIT      = 5'b00100,
+        WRITE           = 5'b01000,
+        WRITE_LAST      = 5'b10000
     } state_t;
 
 
@@ -217,5 +217,20 @@ module project_ip
             endcase
         end
     end
+
+    memory_RAM
+    #(
+        .WIDTH (DATA_WIDTH),
+        .DEPTH_BITS (PTR_WIDTH)
+    )
+    mram1
+    (
+        .clk    (aclk),
+        .en     (mram1_en),
+        .wr     (mram1_wr),
+        .addr   (mram1_addr),
+        .di     (mram1_di),
+        .do     (mram1_do)
+    )
 
 endmodule
