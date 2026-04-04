@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module sigmoid
+module sigmoid_lut
 (
     input               clk,
     input       [7:0]   value,
