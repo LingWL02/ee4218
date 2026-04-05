@@ -33,7 +33,7 @@ module project_ip
         READ_W_OUTPUT = 6'b000100,
         READ_X_ROW    = 6'b001000,
         ACCELERATE    = 6'b010000,
-        LAST          = 6'b100000,
+        LAST          = 6'b100000
     } state_t;
 
 
