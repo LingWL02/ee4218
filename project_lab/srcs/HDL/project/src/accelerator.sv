@@ -2,15 +2,20 @@
 
 module accelerator
 #(
+    parameter integer DATA_WIDTH = 8,   // matches project_ip
     parameter integer N_W_HIDDEN = 16,  // matches project_ip (total, both cols)
     parameter integer N_W_OUTPUT = 3,   // matches project_ip
     parameter integer N_X        = 7,   // matches project_ip
 
     // Derived address widths — do not override
-    localparam integer WH_ADDR_W = $clog2(N_W_HIDDEN/2),
-    localparam integer WO_ADDR_W = $clog2(N_W_OUTPUT),
-    localparam integer XR_ADDR_W = $clog2(N_X)
-    localparam integer ACC_LATENCY = 32 // TODO: replace with actual accelerator latency
+    localparam integer N_WH_PER_COL   = N_W_HIDDEN / 2,
+    localparam integer WH_ADDR_W            = $clog2(N_W_HIDDEN/2),
+    localparam integer WO_ADDR_W            = $clog2(N_W_OUTPUT),
+    localparam integer XR_ADDR_W            = $clog2(N_X),
+
+    localparam integer MAC_N                = $clog2(N_W_HIDDEN/2), // 3  (8 rows per col)
+    localparam integer MAC_FIXED_PT         = 8,
+    localparam integer MAC_OUT_WIDTH        = ((2*DATA_WIDTH) - MAC_FIXED_PT) + MAC_N // 11
 )
 (
     input  wire                    clk,
@@ -19,41 +24,260 @@ module accelerator
     // Handshake
     input  wire                    start,
     output reg                     done,
-    output reg  [7:0]              result,
+    output reg  [DATA_WIDTH-1:0]   result,
 
     // ---- W_hidden col-0 read port ----
-    output reg                     wh0_read_en,
+    output wire                    wh0_read_en,
     output reg  [WH_ADDR_W-1:0]    wh0_raddr,
-    input  wire [7:0]              wh0_dout,
+    input  wire [DATA_WIDTH-1:0]   wh0_dout,
 
     // ---- W_hidden col-1 read port ----
-    output reg                     wh1_read_en,
+    output wire                    wh1_read_en,
     output reg  [WH_ADDR_W-1:0]    wh1_raddr,
-    input  wire [7:0]              wh1_dout,
+    input  wire [DATA_WIDTH-1:0]   wh1_dout,
 
     // ---- W_output read port ----
-    output reg                     wo_read_en,
+    output wire                    wo_read_en,
     output reg  [WO_ADDR_W-1:0]    wo_raddr,
-    input  wire [7:0]              wo_dout,
+    input  wire [DATA_WIDTH-1:0]   wo_dout,
 
     // ---- x_row read port ----
-    output reg                     xr_read_en,
+    output wire                    xr_read_en,
     output reg  [XR_ADDR_W-1:0]    xr_raddr,
-    input  wire [7:0]              xr_dout
+    input  wire [DATA_WIDTH-1:0]   xr_dout
 );
+    // ---- Pipeline stage start cycles ----
+    localparam integer C_XR_READ_START      = 0;
+    localparam integer C_WH0_READ_START     = 0;
+    localparam integer C_WH1_READ_START     = 1;
+    localparam integer C_XR_EN_START        = C_XR_READ_START + 1;
+    localparam integer C_WH0_EN_START       = C_WH0_READ_START + 1;
+    localparam integer C_WH1_EN_START       = C_WH1_READ_START + 1;
+    localparam integer C_MAC0_START         = C_WH0_READ_START + 2;
+    localparam integer C_MAC1_START         = C_WH1_READ_START + 2;
+    localparam integer C_XR_READ_DONE       = C_XR_READ_START + N_X;
+    localparam integer C_WH0_READ_DONE      = C_WH0_READ_START + N_WH_PER_COL;
+    localparam integer C_WH1_READ_DONE      = C_WH1_READ_START + N_WH_PER_COL;
+    localparam integer C_XR_EN_DONE         = C_XR_EN_START + N_X;
+    localparam integer C_WH0_EN_DONE        = C_WH0_EN_START + N_WH_PER_COL;
+    localparam integer C_WH1_EN_DONE        = C_WH1_EN_START + N_WH_PER_COL;
+    localparam integer C_MAC0_DONE          = C_MAC0_START + N_WH_PER_COL;
+    localparam integer C_MAC1_DONE          = C_MAC1_START + N_WH_PER_COL;
+    localparam integer C_MAC0_EN_DONE       = C_MAC0_DONE + 1;
+    localparam integer C_MAC1_EN_DONE       = C_MAC1_DONE + 1;
+    localparam integer C_H0_START           = C_MAC0_EN_DONE + 1;
+    localparam integer C_H1_START           = C_MAC1_EN_DONE + 1;
+    localparam integer C_H0_CAPTURE         = C_H0_START  + 1;
+    localparam integer C_H1_CAPTURE         = C_H1_START  + 1;
+    localparam integer C_WO_READ_START      = C_HO_START;
+    localparam integer C_WO_EN_START        = C_WO_READ_START + 1;
+    localparam integer C_MAC0_START_R2      = C_H0_CAPTURE + 1;
+    localparam integer C_MAC0_DONE_R2       = C_H1_CAPTURE + 1;
+    localparam integer C_MAC0_EN_DONE_R2    = C_MAC0_DONE_R2 + 1;
+    localparam integer C_RES_START          = C_MAC0_EN_DONE_R2 + 1;
+    localparam integer C_RES_CAPTURE        = C_RES_START + 1;
+
+
+    // ... output MAC stages follow from C_H1_CAPTURE
     typedef enum logic [1:0] {
         IDLE            = 2'b01,
-        ACCELERATING    = 2'b10,
+        ACCELERATING    = 2'b10
     } state_t;
 
-    reg [31:0] cntr;
+    reg [31:0]          cntr;
+
+    reg [DATA_WIDTH-1:0]  xr_dout_dly;  // for MAC input setup
+
     state_t state;
+
+    // ---- MAC wires ----
+    wire                      mac0_en,  mac1_en;
+    wire                      mac0_clr, mac1_clr;
+    wire  [DATA_WIDTH-1:0]    mac0_a,   mac0_b;
+    wire  [DATA_WIDTH-1:0]    mac1_a,   mac1_b;
+    wire [MAC_OUT_WIDTH-1:0]  mac0_out, mac1_out;
+
+    // ---- Sigmoid LUT wires ----
+    wire [DATA_WIDTH-1:0] sigmoid_in;
+    wire [DATA_WIDTH-1:0] sigmoid_out; // valid 1 cycle after sigmoid_in is set (registered LUT)
+
+    reg  [DATA_WIDTH-1:0] h0, h1; // MAC outputs are truncated and stored here before sigmoid
+
+    // --- //
+
+    assign wh0_read_en = ((cntr >= C_WH0_EN_START) & (cntr < C_WH0_EN_DONE));
+
+    always_ff @(posedge clk) begin
+        if (rst)
+            wh0_raddr <= '0;
+        else
+        begin
+            wh0_raddr <= '0;
+
+            if ((cntr >= C_WH0_READ_START) & (cntr < C_WH0_READ_DONE))
+                wh0_raddr <= (cntr - C_WH0_READ_STAR)[WH_ADDR_W-1:0];
+        end
+    end
+
+    // --- //
+
+    assign wh1_read_en = ((cntr >= C_WH1_EN_START) & (cntr < C_WH1_EN_DONE));
+
+    always_ff @(posedge clk) begin
+        if (rst)
+            wh1_raddr <= '0;
+        else
+        begin
+            wh1_raddr <= '0;
+
+            if ((cntr >= C_WH1_READ_START) & (cntr < C_WH1_READ_DONE))
+                wh1_raddr <= (cntr - C_WH1_READ_START)[WH_ADDR_W-1:0];
+        end
+    end
+
+    // --- //
+    assign wo_read_en = ((cntr >= C_WO_EN_START) & (cntr < C_WO_EN_DONE));
+
+    always_ff @(posedge clk) begin
+        if (rst)
+            wo_raddr <= '0;
+        else
+        begin
+            wo_raddr <= '0;
+
+            if ((cntr >= C_WO_READ_START) & (cntr < C_WO_READ_DONE))
+                wo_raddr <= (cntr - C_WO_READ_START)[WO_ADDR_W-1:0];
+        end
+    end
+
+    // --- //
+
+    assign xr_read_en = ((cntr >= C_XR_EN_START) & (cntr < C_XR_EN_DONE));
+
+    always_ff @(posedge clk) begin
+        if (rst)
+        begin
+            xr_raddr <= '0;
+
+            xr_dout_dly <= '0;
+        end
+        else
+        begin
+            xr_raddr <= '0;
+
+            xr_dout_dly <= xr_dout;
+            if ((cntr >= C_XR_READ_START) & (cntr < C_XR_READ_DONE))
+                xr_raddr <= (cntr -  C_XR_READ_START)[XR_ADDR_W-1:0];
+        end
+    end
+
+    // --- //
+
+    assign mac0_en  = ((cntr >= C_MAC0_START) & (cntr < C_MAC0_EN_DONE)) | ((cntr >= C_MAC0_START_R2) & (cntr < C_MAC0_EN_DONE_R2));
+    assign mac0_clr = ~mac0_en;
+
+    always_comb
+    begin
+        mac0_a = '0;
+        mac0_b = '0;
+
+        if ((cntr >= C_MAC0_START) & (cntr < C_MAC0_DONE))
+        begin
+            if (cntr < (C_MAC0_DONE - 1))
+                mac0_a = xr_dout;
+            else
+                mac0_a = '0;
+
+            mac0_b = wh0_dout;
+        end
+
+        else if ((cntr >= C_MAC0_START_R2) & (cntr < C_MAC0_DONE_R2))
+        begin
+            if (cntr == C_MAC0_START_R2)
+                mac0_a = h0;
+            else if (cntr == C_MAC0_START_R2 + 1)
+                mac0_a = h1;
+            else
+                mac0_a = '0;
+
+            mac0_b = wo_dout;
+        end
+
+    end
+
+    // --- //
+
+    assign mac1_en  = ((cntr >= C_MAC1_START) & (cntr < C_MAC1_EN_DONE));
+    assign mac1_clr = ~mac1_en;
+
+    always_comb
+    begin
+        mac1_a = '0;
+        mac1_b = '0;
+
+        if ((cntr >= C_MAC1_START) & (cntr < C_MAC1_DONE))
+        begin
+            if (cntr < (C_MAC1_DONE - 1))
+                mac1_a = xr_dout_dly;
+            else
+                mac1_a = '0;
+
+            mac1_b = wh1_dout;
+        end
+
+    end
+
+    // --- //
+    always_comb
+    begin
+        sigmoid_in = '0;
+
+        if ((cntr == C_H0_START) | (cntr == C_RES_START))
+            sigmoid_in = mac0_out[DATA_WIDTH-1:0];
+
+        else if (cntr == C_H1_START)
+            sigmoid_in = mac1_out[DATA_WIDTH-1:0];
+    end
+
+    always_ff @(posedge clk) begin
+        if (rst)
+        begin
+            h0 <= '0;
+            h1 <= '0;
+        end
+        else
+        begin
+            h0 <= '0;
+            h1 <= '0;
+
+            if (cntr == C_H0_CAPTURE)
+                h0 <= sigmoid_out;
+
+            if (cntr == C_H1_CAPTURE)
+                h1 <= sigmoid_out;
+        end
+    end
+
+    // --- //
+    always_ff @(posedge clk) begin
+        if (rst)
+        begin
+            result <= '0;
+        end
+        else
+        begin
+            result <= '0;
+
+            if (cntr == C_RES_CAPTURE)
+                result <= sigmoid_out;
+        end
+    end
+
 
     always_ff @(posedge clk) begin
         if (rst)
         begin
             done <= 1'b0;
-            result <= '0;
 
             cntr <= '0;
 
@@ -62,7 +286,6 @@ module accelerator
         else
         begin
             done <= 1'b0;
-            result <= '0;
 
             case (state)
                 IDLE:
@@ -77,10 +300,9 @@ module accelerator
 
                 ACCELERATING:
                 begin
-                    if (cntr == ACC_LATENCY - 1)
+                    if (cntr == C_RES_CAPTURE)
                     begin
                         done <= 1'b1;
-                        result <= 8'hFF; // TODO: replace with actual accelerator output
 
                         cntr <= '0;
                     end
@@ -98,6 +320,42 @@ module accelerator
         end
     end
 
-    // TODO: internal logic
+    // ---- MAC 0 — hidden neuron 0 (wh0 column) ----
+    mac #(
+        .WIDTH       (DATA_WIDTH),
+        .N           (MAC_N),
+        .FIXED_POINT (MAC_FIXED_PT)
+    ) u_mac0 (
+        .clk (clk),
+        .rst (rst),
+        .en  (mac0_en),
+        .clr (mac0_clr),
+        .a   (mac0_a),      // x[i]
+        .b   (mac0_b),      // wh0[i]
+        .out (mac0_out)
+    );
+
+    // ---- MAC 1 — hidden neuron 1 (wh1 column) ----
+    mac #(
+        .WIDTH       (DATA_WIDTH),
+        .N           (MAC_N),
+        .FIXED_POINT (MAC_FIXED_PT)
+    ) u_mac1 (
+        .clk (clk),
+        .rst (rst),
+        .en  (mac1_en),
+        .clr (mac1_clr),
+        .a   (mac1_a),      // x[i]  (same x, different weight)
+        .b   (mac1_b),      // wh1[i]
+        .out (mac1_out)
+    );
+
+    // ---- Sigmoid ----
+    int8_sigmoid_lut u_sigmoid (
+    .clk           (clk),
+    .rst           (rst),
+    .value         (sigmoid_in),
+    .sigmoid_value (sigmoid_out)
+);
 
 endmodule

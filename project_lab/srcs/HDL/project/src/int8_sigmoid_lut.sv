@@ -1,9 +1,10 @@
 `timescale 1ns / 1ps
 
-module sigmoid_lut
+module int8_sigmoid_lut
 (
-    input               clk,
-    input       [7:0]   value,
+    input wire          clk,
+    input wire          rst,
+    input wire  [7:0]   value,
     output reg  [7:0]   sigmoid_value
 );
     localparam logic [7:0] SIGMOID_LUT [0:255] = '{
@@ -26,6 +27,13 @@ module sigmoid_lut
     };
 
     always_ff @(posedge clk) begin
-        sigmoid_value <= SIGMOID_LUT[value];
+        if (rst)
+        begin
+            sigmoid_value <= '0;
+        end
+        else
+        begin
+            sigmoid_value <= SIGMOID_LUT[value];
+        end
     end
 endmodule
