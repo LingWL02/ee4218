@@ -5,7 +5,7 @@ module sigmoid_lut
     input               clk,
     input       [7:0]   value,
     output reg  [7:0]   sigmoid_value
-)
+);
     localparam logic [7:0] SIGMOID_LUT [0:255] = '{
         8'd12,8'd12,8'd12,8'd12,8'd13,8'd13,8'd13,8'd14,8'd14,8'd14,8'd15,8'd15,8'd15,8'd16,8'd16,8'd16,
         8'd17,8'd17,8'd18,8'd18,8'd18,8'd19,8'd19,8'd20,8'd20,8'd21,8'd21,8'd21,8'd22,8'd22,8'd23,8'd23,

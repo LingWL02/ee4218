@@ -1,10 +1,10 @@
-`timescale 1ps/
+`timescale 1ns / 1ps
 
 module project_ip
 # (
-    parameter integer  N = 32;
-    parameter integer  DATA_WIDTH = 32;
-    localparam integer PTR_WIDTH = $clog2(N);
+    parameter integer  N = 32,
+    parameter integer  DATA_WIDTH = 32,
+    localparam integer PTR_WIDTH = $clog2(N)
 )
 (
 	input wire                      aclk,
@@ -14,7 +14,7 @@ module project_ip
 	input wire [DATA_WIDTH-1:0]     s_axis_tdata,
 	input wire                      s_axis_tlast,
 	output reg                      m_axis_tvalid,
-	input wire                      m_axis_tready
+	input wire                      m_axis_tready,
     output reg [DATA_WIDTH-1:0]     m_axis_tdata,
     output reg                      m_axis_tlast
 );
@@ -31,7 +31,8 @@ module project_ip
 
     reg [PTR_WIDTH-1:0] wptr;
     reg [PTR_WIDTH-1:0] rptr;
-    reg [1:0] dly;
+    reg [1:0]           dly;
+    reg                 tlast_recvd;
 
     state_t state;
 
@@ -39,33 +40,35 @@ module project_ip
     wire                        mram1_en;
     reg                         mram1_wr;
     reg     [PTR_WIDTH-1:0]     mram1_addr;
-    wire    [DATA_WIDTH-1:0]    mram1_di;
+    reg     [DATA_WIDTH-1:0]    mram1_di;
     wire    [DATA_WIDTH-1:0]    mram1_do;
 
-    reg mram1_en_intrnl;
-    reg mram1_addr_dly;
+    reg                 mram1_en_intrnl;
+    reg [PTR_WIDTH-1:0] mram1_addr_dly;
 
 
     // wire assignments
     wire s_axis_en = s_axis_tvalid & s_axis_tready;
     wire m_axis_en = m_axis_tready & m_axis_tvalid;
 
-    mram1_en = (state == WRITE) ? m_axis_en : mram1_en_intrnl;
+    assign mram1_en = (state == WRITE) ? m_axis_en : mram1_en_intrnl;
 
     always_ff @(posedge aclk)
     begin
         if (~aresetn)
         begin
-            mram_addr_dly <= '0;
+            mram1_addr_dly <= '0;
+        end
         else
+        begin
             if (mram1_en)
             begin
-                mram_addr_dly <= mram1_addr;
+                mram1_addr_dly <= mram1_addr;
             end
         end
     end
 
-    always_ff @(posege clk)
+    always_ff @(posedge aclk)
     begin
         if (~aresetn)
         begin
@@ -77,6 +80,11 @@ module project_ip
             mram1_en_intrnl <= 1'b0;
             mram1_wr        <= 1'b0;
             mram1_addr      <= '0;
+
+            wptr        <= '0;
+            rptr        <= '0;
+            dly         <= '0;
+            tlast_recvd <= 1'b0;
 
             state <= IDLE;
         end
@@ -97,9 +105,10 @@ module project_ip
                 begin
                     s_axis_tready <= 1'b1;
 
-                    wptr <= '0;
-                    rptr <= '0;
-                    dly <=  '0;
+                    wptr        <= '0;
+                    rptr        <= '0;
+                    dly         <=  '0;
+                    tlast_recvd <= 1'b0;
 
                     state <= READ;
                 end
@@ -122,6 +131,7 @@ module project_ip
 
                             rptr    <= '0;
                             dly     <= '0;
+                            tlast_recvd <= s_axis_tlast;
 
                             state   <= WRITE_INIT;
                         end
@@ -138,7 +148,7 @@ module project_ip
 
                     if (rptr != wptr)
                     begin
-                        mram_en_intrnl  <= 1'b1;
+                        mram1_en_intrnl  <= 1'b1;
                         mram1_addr      <= rptr;
 
                         rptr <= rptr + 1;
@@ -179,12 +189,13 @@ module project_ip
                             rptr <= rptr + 1;
                         end
 
-                        if (mram_addr_dly == wptr)
+                        if (mram1_addr_dly == wptr)
                         begin
-                            m_axis_tlast <= 1'b1;
+                            m_axis_tlast <= tlast_recvd;
 
                             mram1_wr    <= '0;
                             mram1_addr  <= '0;
+                            tlast_recvd <= 1'b0;
 
                             wptr <= '0;
                             rptr <= '0;
@@ -206,7 +217,14 @@ module project_ip
                         m_axis_tdata <= '0;
                         m_axis_tlast <= 1'b0;
 
-                        state <= IDLE;
+                        if (m_axis_tlast)
+                        begin
+                            state <= IDLE;
+                        end
+                        else
+                        begin
+                            state <= READ;
+                        end
                     end
                 end
 
@@ -225,12 +243,12 @@ module project_ip
     )
     mram1
     (
-        .clk    (aclk),
-        .en     (mram1_en),
-        .wr     (mram1_wr),
-        .addr   (mram1_addr),
-        .di     (mram1_di),
-        .do     (mram1_do)
-    )
+        .clk        (aclk),
+        .en         (mram1_en),
+        .wr         (mram1_wr),
+        .address    (mram1_addr),
+        .data_in    (mram1_di),
+        .data_out   (mram1_do)
+    );
 
 endmodule

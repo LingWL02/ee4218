@@ -19,25 +19,25 @@
 
 module memory_RAM
 #(
-	parameter WIDTH 		= 8, 					// width is the number of bits per location
-	parameter DEPTH_BITS 	= 2				// depth is the number of locations (2^number of address bits)
+	parameter integer WIDTH 		= 8, 					// width is the number of bits per location
+	parameter integer DEPTH_BITS 	= 2				// depth is the number of locations (2^number of address bits)
 )
 (
 	input 					clk,
 	input 					en,
 	input 					wr,
-	input [depth_bits-1:0] 	address,
-	input [width-1:0] 		data_in,
-	output reg [width-1:0]	data_out
+	input [DEPTH_BITS-1:0] 	address,
+	input [WIDTH-1:0] 		data_in,
+	output reg [WIDTH-1:0]	data_out
 );
 
-    reg [width-1:0] RAM [0:2**depth_bits-1];
-    wire [depth_bits-1:0] address;
+    reg [WIDTH-1:0] RAM [0:2**DEPTH_BITS-1];
+    wire [DEPTH_BITS-1:0] address;
     wire enable;
 
 	always @(posedge clk)
 	begin
-		 if (ena)
+		 if (en)
 		 begin
 			if (wr)
 				RAM[address] <= data_in;
