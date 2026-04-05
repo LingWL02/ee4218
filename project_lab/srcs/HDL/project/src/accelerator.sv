@@ -94,13 +94,13 @@ module accelerator
     // ---- MAC wires ----
     wire                      mac0_en,  mac1_en;
     wire                      mac0_clr, mac1_clr;
-    wire  [DATA_WIDTH-1:0]    mac0_a,   mac0_b;
-    wire  [DATA_WIDTH-1:0]    mac1_a,   mac1_b;
+    logic  [DATA_WIDTH-1:0]   mac0_a,   mac0_b;
+    logic  [DATA_WIDTH-1:0]   mac1_a,   mac1_b;
     wire [MAC_OUT_WIDTH-1:0]  mac0_out, mac1_out;
 
     // ---- Sigmoid LUT wires ----
-    wire [DATA_WIDTH-1:0] sigmoid_in;
-    wire [DATA_WIDTH-1:0] sigmoid_out; // valid 1 cycle after sigmoid_in is set (registered LUT)
+    logic [DATA_WIDTH-1:0] sigmoid_in;
+    wire  [DATA_WIDTH-1:0] sigmoid_out; // valid 1 cycle after sigmoid_in is set (registered LUT)
 
     // --- //
 
