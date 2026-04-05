@@ -27,14 +27,13 @@ module project_ip
     output reg                      m_axis_tlast
 );
 
-    typedef enum logic [6:0] {
-        IDLE          = 7'b0000001,
-        READ_W_HIDDEN = 7'b0000010,
-        READ_W_OUTPUT = 7'b0000100,
-        READ_X_ROW    = 7'b0001000,
-        ACCELERATE    = 7'b0010000,
-        LAST          = 7'b0100000,
-        INVALID       = 7'b1000000
+    typedef enum logic [5:0] {
+        IDLE          = 6'b000001,
+        READ_W_HIDDEN = 6'b000010,
+        READ_W_OUTPUT = 6'b000100,
+        READ_X_ROW    = 6'b001000,
+        ACCELERATE    = 6'b010000,
+        LAST          = 6'b100000,
     } state_t;
 
 
@@ -165,9 +164,13 @@ module project_ip
 
                         if (s_axis_tlast)
                         begin
-                            wptr <= '0;
+                            m_axis_tvalid <= 1'b1;
+                            m_axis_tdata  <= INVALID_TOKEN;
+                            m_axis_tlast  <= 1'b1;
 
-                            state <= INVALID;
+                            wptr  <= '0;
+
+                            state <= LAST;
                         end
                         else if ((wptr == (N_W_HIDDEN - 1)))
                         begin
@@ -194,9 +197,13 @@ module project_ip
 
                         if (s_axis_tlast)
                         begin
-                            wptr <= '0;
+                            m_axis_tvalid <= 1'b1;
+                            m_axis_tdata  <= INVALID_TOKEN;
+                            m_axis_tlast  <= 1'b1;
 
-                            state <= INVALID;
+                            wptr  <= '0;
+
+                            state <= LAST;
                         end
                         else if ((wptr == (N_W_OUTPUT - 1)))
                         begin
@@ -232,9 +239,13 @@ module project_ip
                         end
                         else if (s_axis_tlast)             // tlast mid-row → genuinely invalid
                         begin
+                            m_axis_tvalid <= 1'b1;
+                            m_axis_tdata  <= INVALID_TOKEN;
+                            m_axis_tlast  <= 1'b1;
+
                             wptr  <= '0;
 
-                            state <= INVALID;
+                            state <= LAST;
                         end
                         else
                         begin
@@ -281,20 +292,6 @@ module project_ip
 
                             state <= READ_X_ROW;
                         end
-                    end
-                end
-
-                INVALID:
-                begin
-                    s_axis_tready   <= 1'b1;
-
-                    if (s_axis_tlast)
-                    begin
-                        m_axis_tvalid <= 1'b1;
-                        m_axis_tdata  <= INVALID_TOKEN;
-                        m_axis_tlast  <= 1'b1;
-
-                        state <= LAST;
                     end
                 end
 
