@@ -65,18 +65,19 @@ module accelerator
     localparam integer C_MAC1_DONE          = C_MAC1_START + N_WH_PER_COL;
     localparam integer C_MAC0_EN_DONE       = C_MAC0_DONE + 1;
     localparam integer C_MAC1_EN_DONE       = C_MAC1_DONE + 1;
-    localparam integer C_H0_START           = C_MAC0_EN_DONE + 1;
-    localparam integer C_H1_START           = C_MAC1_EN_DONE + 1;
-    localparam integer C_H0_CAPTURE         = C_H0_START  + 1;
-    localparam integer C_H1_CAPTURE         = C_H1_START  + 1;
-    localparam integer C_WO_READ_START      = C_HO_START;
+    localparam integer C_SIG0               = C_MAC0_EN_DONE + 1;
+    localparam integer C_SIG1               = C_MAC1_EN_DONE + 1;
+    localparam integer C_WO_READ_START      = C_MAC0_EN_DONE;
     localparam integer C_WO_EN_START        = C_WO_READ_START + 1;
-    localparam integer C_MAC0_START_R2      = C_H0_CAPTURE + 1;
-    localparam integer C_MAC0_DONE_R2       = C_H1_CAPTURE + 1;
+    localparam integer C_MAC0_START_R2      = C_SIG0 + 1;
+    localparam integer C_WO_READ_DONE       = C_WO_READ_START + N_W_OUTPUT;
+    localparam integer C_WO_EN_DONE         = C_WO_EN_START + N_W_OUTPUT;
+    localparam integer C_MAC0_DONE_R2       = C_MAC0_START_R2 + N_W_OUTPUT;
     localparam integer C_MAC0_EN_DONE_R2    = C_MAC0_DONE_R2 + 1;
-    localparam integer C_RES_START          = C_MAC0_EN_DONE_R2 + 1;
-    localparam integer C_RES_CAPTURE        = C_RES_START + 1;
-
+    localparam integer C_SIG_RES            = C_MAC0_EN_DONE_R2 + 1;
+    localparam integer C_RES_CAPTURE        = C_SIG_RES + 1;
+    localparam integer C_RES_THRESHOLD      = C_RES_CAPTURE + 1;
+    localparam integer ACC_LATENCY          = C_RES_THRESHOLD + 1; // total
 
     // ... output MAC stages follow from C_H1_CAPTURE
     typedef enum logic [1:0] {
@@ -101,8 +102,6 @@ module accelerator
     wire [DATA_WIDTH-1:0] sigmoid_in;
     wire [DATA_WIDTH-1:0] sigmoid_out; // valid 1 cycle after sigmoid_in is set (registered LUT)
 
-    reg  [DATA_WIDTH-1:0] h0, h1; // MAC outputs are truncated and stored here before sigmoid
-
     // --- //
 
     assign wh0_read_en = ((cntr >= C_WH0_EN_START) & (cntr < C_WH0_EN_DONE));
@@ -115,7 +114,7 @@ module accelerator
             wh0_raddr <= '0;
 
             if ((cntr >= C_WH0_READ_START) & (cntr < C_WH0_READ_DONE))
-                wh0_raddr <= (cntr - C_WH0_READ_STAR)[WH_ADDR_W-1:0];
+                wh0_raddr <= (cntr - C_WH0_READ_START)[WH_ADDR_W-1:0];
         end
     end
 
@@ -193,10 +192,8 @@ module accelerator
 
         else if ((cntr >= C_MAC0_START_R2) & (cntr < C_MAC0_DONE_R2))
         begin
-            if (cntr == C_MAC0_START_R2)
-                mac0_a = h0;
-            else if (cntr == C_MAC0_START_R2 + 1)
-                mac0_a = h1;
+            if (cntr < (C_MAC0_DONE_R2 - 1))
+                mac0_a = sigmoid_out;
             else
                 mac0_a = '0;
 
@@ -232,31 +229,13 @@ module accelerator
     begin
         sigmoid_in = '0;
 
-        if ((cntr == C_H0_START) | (cntr == C_RES_START))
+        if ((cntr == C_SIG0) | (cntr == C_SIG_RES))
             sigmoid_in = mac0_out[DATA_WIDTH-1:0];
 
-        else if (cntr == C_H1_START)
+        else if (cntr == C_SIG1)
             sigmoid_in = mac1_out[DATA_WIDTH-1:0];
     end
 
-    always_ff @(posedge clk) begin
-        if (rst)
-        begin
-            h0 <= '0;
-            h1 <= '0;
-        end
-        else
-        begin
-            h0 <= '0;
-            h1 <= '0;
-
-            if (cntr == C_H0_CAPTURE)
-                h0 <= sigmoid_out;
-
-            if (cntr == C_H1_CAPTURE)
-                h1 <= sigmoid_out;
-        end
-    end
 
     // --- //
     always_ff @(posedge clk) begin
@@ -270,6 +249,9 @@ module accelerator
 
             if (cntr == C_RES_CAPTURE)
                 result <= sigmoid_out;
+
+            if (cntr == C_RES_THRESHOLD)
+                result <= {{(DATA_WIDTH-1){1'b0}}, result[DATA_WIDTH-1]}; // clamp to DATA_WIDTH bits
         end
     end
 
@@ -300,7 +282,7 @@ module accelerator
 
                 ACCELERATING:
                 begin
-                    if (cntr == C_RES_CAPTURE)
+                    if (cntr == (ACC_LATENCY - 1))
                     begin
                         done <= 1'b1;
 
