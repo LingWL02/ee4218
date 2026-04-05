@@ -114,7 +114,7 @@ module accelerator
             wh0_raddr <= '0;
 
             if ((cntr >= C_WH0_READ_START) & (cntr < C_WH0_READ_DONE))
-                wh0_raddr <= (cntr - C_WH0_READ_START)[WH_ADDR_W-1:0];
+                wh0_raddr <= WH_ADDR_W'(cntr - C_WH0_READ_START);
         end
     end
 
@@ -130,7 +130,7 @@ module accelerator
             wh1_raddr <= '0;
 
             if ((cntr >= C_WH1_READ_START) & (cntr < C_WH1_READ_DONE))
-                wh1_raddr <= (cntr - C_WH1_READ_START)[WH_ADDR_W-1:0];
+                wh1_raddr <= WH_ADDR_W'(cntr - C_WH1_READ_START);
         end
     end
 
@@ -145,7 +145,7 @@ module accelerator
             wo_raddr <= '0;
 
             if ((cntr >= C_WO_READ_START) & (cntr < C_WO_READ_DONE))
-                wo_raddr <= (cntr - C_WO_READ_START)[WO_ADDR_W-1:0];
+                wo_raddr <= WO_ADDR_W'(cntr - C_WO_READ_START);
         end
     end
 
@@ -166,7 +166,7 @@ module accelerator
 
             xr_dout_dly <= xr_dout;
             if ((cntr >= C_XR_READ_START) & (cntr < C_XR_READ_DONE))
-                xr_raddr <= (cntr -  C_XR_READ_START)[XR_ADDR_W-1:0];
+                xr_raddr <= XR_ADDR_W'(cntr - C_XR_READ_START);
         end
     end
 
