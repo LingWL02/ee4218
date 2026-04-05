@@ -24,25 +24,29 @@ module memory_RAM
 )
 (
 	input 					clk,
-	input 					en,
-	input 					wr,
-	input [DEPTH_BITS-1:0] 	address,
+	input 					write_en,
+	input                   read_en,
+	input [DEPTH_BITS-1:0] 	write_address,
+	input [DEPTH_BITS-1:0] 	read_address,
 	input [WIDTH-1:0] 		data_in,
 	output reg [WIDTH-1:0]	data_out
 );
 
     reg [WIDTH-1:0] RAM [0:2**DEPTH_BITS-1];
-    wire [DEPTH_BITS-1:0] address;
-    wire enable;
+    wire en = write_en | read_en;
 
 	always @(posedge clk)
 	begin
 		 if (en)
 		 begin
-			if (wr)
-				RAM[address] <= data_in;
+			if (write_en)
+			begin
+				RAM[write_address] <= data_in;
+			end
 			else
-				data_out <= RAM[address];
+			begin
+				data_out <= RAM[read_address];
+			end
 		end
 	end
 
