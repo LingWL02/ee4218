@@ -67,11 +67,9 @@ module accelerator
     localparam integer C_MAC1_EN_DONE       = C_MAC1_DONE + 1;
     localparam integer C_SIG0_START         = C_MAC0_EN_DONE;
     localparam integer C_SIG1_START         = C_MAC1_EN_DONE;
-    localparam integer C_SIG0_DONE          = C_SIG0_START + 1;
-    localparam integer C_SIG1_DONE          = C_SIG1_START + 1;;
-    localparam integer C_WO_READ_START      = C_MAC0_DONE;
+    localparam integer C_WO_READ_START      = C_MAC0_DONE - 1;
     localparam integer C_WO_EN_START        = C_WO_READ_START + 1;
-    localparam integer C_MAC0_START_R2      = C_SIG0_START + 1;
+    localparam integer C_MAC0_START_R2      = C_MAC0_EN_DONE;
     localparam integer C_WO_READ_DONE       = C_WO_READ_START + N_W_OUTPUT;
     localparam integer C_WO_EN_DONE         = C_WO_EN_START + N_W_OUTPUT;
     localparam integer C_MAC0_DONE_R2       = C_MAC0_START_R2 + N_W_OUTPUT;
@@ -205,7 +203,7 @@ module accelerator
                 mac0_a          = DATA_WIDTH'(1);
             end
             else
-                mac0_a = result;
+                mac0_a = sigmoid_out;
 
             mac0_b = wo_dout;
         end
@@ -260,17 +258,11 @@ module accelerator
         else
         begin
             case (cntr)
-                C_SIG0_DONE:
-                    result <= sigmoid_out;
-
-                C_SIG1_DONE:
-                    result <= sigmoid_out;
-
                 C_SIG_RES_DONE:
                     result <= sigmoid_out;
 
                 C_RES_THRESHOLD:
-                    result <= {{(DATA_WIDTH-1){1'b0}}, result[DATA_WIDTH-1]}; // clamp to DATA_WIDTH bits
+                    result <= {{(DATA_WIDTH-1){1'b0}}, (result > DATA_WIDTH'(128))}; // clamp to DATA_WIDTH bits
 
                 default :
                     result <= '0;
