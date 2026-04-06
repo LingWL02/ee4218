@@ -8,13 +8,13 @@
 //  using $fopen / $fscanf — no intermediate .mem files required.
 //
 //  CSV layout expected (no header row):
-//    w_hid.csv   – 8 rows × 2 comma-separated cols  (weights + bias, hidden)
-//    w_out.csv   – 3 rows × 1 col                   (weights + bias, output)
-//    X.csv       – 64 rows × 7 comma-separated cols  (input features)
-//    labels.csv  – 64 rows × 1 col                   (ground-truth class 0/1)
+//    w_hid.csv   - 8 rows × 2 comma-separated cols  (weights + bias, hidden)
+//    w_out.csv   - 3 rows × 1 col                   (weights + bias, output)
+//    X.csv       - 64 rows × 7 comma-separated cols  (input features)
+//    labels.csv  - 64 rows × 1 col                   (ground-truth class 0/1)
 //
 //  AXI-S stream layout sent over S_AXIS (one 32-bit word per beat):
-//    [0  .. 15] : w_hid interleaved – beat 2i → col0, beat 2i+1 → col1
+//    [0  .. 15] : w_hid interleaved - beat 2i → col0, beat 2i+1 → col1
 //    [16 .. 18] : w_out[0], w_out[1], w_out[2]
 //    [19 .. 466]: X rows, 7 features each; tlast on the very last beat
 //
@@ -22,18 +22,18 @@
 //                  tlast propagated from the last input tlast.
 //
 //  Tests (reuse send/recv tasks from the FIFO testbench template):
-//    TEST 1 – no stalls
-//    TEST 2 – front-pressure  (S_AXIS stalls)
-//    TEST 3 – back-pressure   (M_AXIS stalls)
-//    TEST 4 – simultaneous front + back pressure
-//    TEST 5 – early tlast inside w_hid phase   → INVALID_TOKEN expected
-//    TEST 6 – early tlast mid-row in X phase   → INVALID_TOKEN expected
+//    TEST 1 - no stalls
+//    TEST 2 - front-pressure  (S_AXIS stalls)
+//    TEST 3 - back-pressure   (M_AXIS stalls)
+//    TEST 4 - simultaneous front + back pressure
+//    TEST 5 - early tlast inside w_hid phase   → INVALID_TOKEN expected
+//    TEST 6 - early tlast mid-row in X phase   → INVALID_TOKEN expected
 // =============================================================================
 
 module tb_project_ip;
 
     // -------------------------------------------------------------------------
-    // Parameters – must match project_ip defaults
+    // Parameters - must match project_ip defaults
     // -------------------------------------------------------------------------
     localparam integer N_W_HIDDEN = 16;   // 8 rows × 2 cols interleaved
     localparam integer N_W_OUTPUT = 3;    // 2 weights + 1 bias
@@ -92,12 +92,12 @@ module tb_project_ip;
     );
 
     // -------------------------------------------------------------------------
-    // Clock – 100 ns period
+    // Clock - 100 ns period
     // -------------------------------------------------------------------------
     always #50 aclk = ~aclk;
 
     // -------------------------------------------------------------------------
-    // tlast edge detector – recv exits one cycle after the last handshake
+    // tlast edge detector - recv exits one cycle after the last handshake
     // -------------------------------------------------------------------------
     reg m_axis_tlast_prev = 1'b0;
     always @(posedge aclk) m_axis_tlast_prev <= m_axis_tlast;
@@ -108,8 +108,8 @@ module tb_project_ip;
     //  Task : load_csv
     //
     //  Opens each CSV file with $fopen and reads all values into:
-    //    send_buff[]  – full AXI-S payload (w_hid interleaved, w_out, X rows)
-    //    label_buff[] – expected predicted class per row (from labels.csv)
+    //    send_buff[]  - full AXI-S payload (w_hid interleaved, w_out, X rows)
+    //    label_buff[] - expected predicted class per row (from labels.csv)
     // =========================================================================
     task automatic load_csv;
         integer fd;
@@ -127,7 +127,7 @@ module tb_project_ip;
             end
             for (r = 0; r < 8; r = r + 1) begin
                 if ($fscanf(fd, "%d,%d\n", val0, val1) != 2) begin
-                    $display("ERROR: w_hid.csv – bad data at row %0d", r); $finish;
+                    $display("ERROR: w_hid.csv - bad data at row %0d", r); $finish;
                 end
                 send_buff[2*r]   = val0;   // col0 → wh0
                 send_buff[2*r+1] = val1;   // col1 → wh1
@@ -143,7 +143,7 @@ module tb_project_ip;
             end
             for (r = 0; r < 3; r = r + 1) begin
                 if ($fscanf(fd, "%d\n", val0) != 1) begin
-                    $display("ERROR: w_out.csv – bad data at row %0d", r); $finish;
+                    $display("ERROR: w_out.csv - bad data at row %0d", r); $finish;
                 end
                 send_buff[N_W_HIDDEN + r] = val0;
             end
@@ -163,7 +163,7 @@ module tb_project_ip;
                         send_buff[base+2], send_buff[base+3],
                         send_buff[base+4], send_buff[base+5],
                         send_buff[base+6]) != N_X) begin
-                    $display("ERROR: X.csv – bad data at row %0d", r); $finish;
+                    $display("ERROR: X.csv - bad data at row %0d", r); $finish;
                 end
             end
             $fclose(fd);
@@ -177,7 +177,7 @@ module tb_project_ip;
             end
             for (r = 0; r < N_ROWS; r = r + 1) begin
                 if ($fscanf(fd, "%d\n", label_buff[r]) != 1) begin
-                    $display("ERROR: labels.csv – bad data at row %0d", r); $finish;
+                    $display("ERROR: labels.csv - bad data at row %0d", r); $finish;
                 end
             end
             $fclose(fd);
@@ -404,7 +404,7 @@ module tb_project_ip;
         $display("");
 
         // =====================================================================
-        // TEST 1 – Full inference, no stalls
+        // TEST 1 - Full inference, no stalls
         // =====================================================================
         $display("=== TEST 1: Full inference, no stalls ===");
         fork
@@ -416,7 +416,7 @@ module tb_project_ip;
         repeat (4) @(posedge aclk);
 
         // =====================================================================
-        // TEST 2 – Front-pressure only (S_AXIS stalls)
+        // TEST 2 - Front-pressure only (S_AXIS stalls)
         // =====================================================================
         $display("=== TEST 2: Full inference, front-pressure (S_AXIS stalls) ===");
         fork
@@ -428,7 +428,7 @@ module tb_project_ip;
         repeat (4) @(posedge aclk);
 
         // =====================================================================
-        // TEST 3 – Back-pressure only (M_AXIS stalls)
+        // TEST 3 - Back-pressure only (M_AXIS stalls)
         // =====================================================================
         $display("=== TEST 3: Full inference, back-pressure (M_AXIS stalls) ===");
         fork
@@ -440,7 +440,7 @@ module tb_project_ip;
         repeat (4) @(posedge aclk);
 
         // =====================================================================
-        // TEST 4 – Simultaneous front + back pressure
+        // TEST 4 - Simultaneous front + back pressure
         // =====================================================================
         $display("=== TEST 4: Full inference, simultaneous front + back pressure ===");
         fork
@@ -451,77 +451,69 @@ module tb_project_ip;
         total_pass = total_pass + pass;
         repeat (4) @(posedge aclk);
 
-        // // =====================================================================
-        // // TEST 5 – Early tlast inside READ_W_HIDDEN → INVALID_TOKEN expected
-        // //   Send only 8 of 16 w_hid words then assert tlast prematurely.
-        // // =====================================================================
-        // $display("=== TEST 5: Early tlast in w_hid phase (error path) ===");
-        // begin : EARLY_TLAST_WHID
-        //     integer k;
-        //     for (k = 0; k < 8; k = k + 1) begin
-        //         @(posedge aclk) begin
-        //             s_axis_tvalid <= 1'b1;
-        //             s_axis_tdata  <= send_buff[k];
-        //             s_axis_tlast  <= (k == 7) ? 1'b1 : 1'b0;
-        //         end
-        //         // Wait for handshake
-        //         @(posedge aclk);
-        //         while (~(s_axis_tvalid & s_axis_tready)) @(posedge aclk);
-        //     end
-        //     s_axis_tvalid <= 1'b0;
-        //     s_axis_tlast  <= 1'b0;
-        // end
-        // @(posedge aclk) m_axis_tready <= 1'b1;
-        // repeat (20) @(posedge aclk);
-        // if (m_axis_tvalid && m_axis_tdata === 32'hDEADBEEF)
-        //     $display("  PASS  – INVALID_TOKEN (0xDEADBEEF) received as expected");
-        // else if (m_axis_tvalid)
-        //     $display("  FAIL  – got 0x%08H, expected 0xDEADBEEF", m_axis_tdata);
-        // else
-        //     $display("  INFO  – no output seen within timeout window");
-        // m_axis_tready <= 1'b0;
-        // repeat (4) @(posedge aclk);
+        // =====================================================================
+        // TEST 5, 6, 7, 8 - Invalid tlast assertions → INVALID_TOKEN expected
+        //   Send only 8 of 16 w_hid words then assert tlast prematurely.
+        // =====================================================================
+        $display("=== TEST 5: Early tlast in w_hid phase (error path) ===");
+        begin : EARLY_TLAST_WHID
+        fork
+            send(6, 0, sim_s_stall_w, sim_s_stall_c);
+            recv(        0, sim_r_stall_w,  sim_r_stall_c);
+        join
+        if (recv_cnt !== 1)
+            $display("  COUNT MISMATCH : expected %0d rows, got %0d", 1, recv_cnt);
+        else if (recv_buff[0] === 32'hDEADBEEF)
+            $display("  PASS  - INVALID_TOKEN (0xDEADBEEF) received as expected");
+        else
+            $display("  FAIL  - got 0x%08H, expected 0xDEADBEEF", recv_buff[0]);
+        repeat (4) @(posedge aclk);
+        end
 
-        // // =====================================================================
-        // // TEST 6 – Early tlast mid-row in READ_X_ROW → INVALID_TOKEN expected
-        // //   Send full weights (19 words), then only 4 of 7 features + tlast.
-        // // =====================================================================
-        // $display("=== TEST 6: Early tlast mid-row in X phase (error path) ===");
-        // begin : EARLY_TLAST_XROW
-        //     integer k;
-        //     // Send all weight beats without tlast
-        //     for (k = 0; k < N_W_HIDDEN + N_W_OUTPUT; k = k + 1) begin
-        //         @(posedge aclk) begin
-        //             s_axis_tvalid <= 1'b1;
-        //             s_axis_tdata  <= send_buff[k];
-        //             s_axis_tlast  <= 1'b0;
-        //         end
-        //         @(posedge aclk);
-        //         while (~(s_axis_tvalid & s_axis_tready)) @(posedge aclk);
-        //     end
-        //     // Send only 4 features then assert tlast (complete row needs 7)
-        //     for (k = 0; k < 4; k = k + 1) begin
-        //         @(posedge aclk) begin
-        //             s_axis_tvalid <= 1'b1;
-        //             s_axis_tdata  <= send_buff[N_W_HIDDEN + N_W_OUTPUT + k];
-        //             s_axis_tlast  <= (k == 3) ? 1'b1 : 1'b0;
-        //         end
-        //         @(posedge aclk);
-        //         while (~(s_axis_tvalid & s_axis_tready)) @(posedge aclk);
-        //     end
-        //     s_axis_tvalid <= 1'b0;
-        //     s_axis_tlast  <= 1'b0;
-        // end
-        // @(posedge aclk) m_axis_tready <= 1'b1;
-        // repeat (20) @(posedge aclk);
-        // if (m_axis_tvalid && m_axis_tdata === 32'hDEADBEEF)
-        //     $display("  PASS  – INVALID_TOKEN (0xDEADBEEF) received as expected");
-        // else if (m_axis_tvalid)
-        //     $display("  FAIL  – got 0x%08H, expected 0xDEADBEEF", m_axis_tdata);
-        // else
-        //     $display("  INFO  – no output seen within timeout window");
-        // m_axis_tready <= 1'b0;
-        // repeat (4) @(posedge aclk);
+        $display("=== TEST 6: Early tlast in w_out phase (error path) ===");
+        begin : EARLY_TLAST_WOUT
+        fork
+            send(N_W_HIDDEN + 1, 0, sim_s_stall_w, sim_s_stall_c);
+            recv(                0, sim_r_stall_w,  sim_r_stall_c);
+        join
+        if (recv_cnt !== 1)
+            $display("  COUNT MISMATCH : expected %0d rows, got %0d", 1, recv_cnt);
+        else if (recv_buff[0] === 32'hDEADBEEF)
+            $display("  PASS  - INVALID_TOKEN (0xDEADBEEF) received as expected");
+        else
+            $display("  FAIL  - got 0x%08H, expected 0xDEADBEEF", recv_buff[0]);
+        repeat (4) @(posedge aclk);
+        end
+
+        $display("=== TEST 7: Early tlast in x phase (error path) ===");
+        begin : EARLY_TLAST_X
+        fork
+            send(N_W_HIDDEN + N_W_OUTPUT + 4, 0, sim_s_stall_w, sim_s_stall_c);
+            recv(                             0, sim_r_stall_w,  sim_r_stall_c);
+        join
+        if (recv_cnt !== 1)
+            $display("  COUNT MISMATCH : expected %0d rows, got %0d", 1, recv_cnt);
+        else if (recv_buff[0] === 32'hDEADBEEF)
+            $display("  PASS  - INVALID_TOKEN (0xDEADBEEF) received as expected");
+        else
+            $display("  FAIL  - got 0x%08H, expected 0xDEADBEEF", recv_buff[0]);
+        repeat (4) @(posedge aclk);
+        end
+
+        $display("=== TEST 8: Early tlast in x phase (error path) ===");
+        begin : INVALID_TLAST_X
+        fork
+            send(N_W_HIDDEN + N_W_OUTPUT + N_X + 5, 0, sim_s_stall_w, sim_s_stall_c);
+            recv(                                0, sim_r_stall_w,  sim_r_stall_c);
+        join
+        if (recv_cnt !== 2)
+            $display("  COUNT MISMATCH : expected %0d rows, got %0d", 1, recv_cnt);
+        else if ((recv_buff[0] === label_buff[0]) & (recv_buff[1] === 32'hDEADBEEF))
+            $display("  PASS  - INVALID_TOKEN (0xDEADBEEF) received as expected");
+        else
+            $display("  FAIL  - got 0x%08H, 0x%08H, expected 0x%08H, 0xDEADBEEF", recv_buff[0], recv_buff[1], label_buff[0]);
+        repeat (4) @(posedge aclk);
+        end
 
         // =====================================================================
         // Summary
@@ -533,7 +525,7 @@ module tb_project_ip;
     end
 
     // -------------------------------------------------------------------------
-    // Watchdog – abort if simulation runs away (500 µs wall time)
+    // Watchdog - abort if simulation runs away (500 µs wall time)
     // -------------------------------------------------------------------------
     initial begin
         #500_000_000;
