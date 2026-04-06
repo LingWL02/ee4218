@@ -3,10 +3,10 @@ generate_test_data.py
 
 Generates X.csv and labels.csv compatible with the NN HLS accelerator.
 
-Usage:
-    python generate_test_data.py --samples 64
-    python generate_test_data.py --samples 128 --seed 42
-    python generate_test_data.py --samples 200 --out_dir ./test_data
+Usage (use --w_hid and --w_out to set weight dir):
+    python generateTestData.py --samples 64
+    python generateTestData.py --samples 128 --seed 42
+    python generateTestData.py --samples 200 --out_dir ./test_data
 
 All values are in 0.8 unsigned fixed-point format (integers 0-255).
 Labels are derived by running the same fixed-point inference as the HLS DUT,
