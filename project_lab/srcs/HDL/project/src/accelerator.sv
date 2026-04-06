@@ -8,14 +8,14 @@ module accelerator
     parameter integer N_X        = 7,   // matches project_ip
 
     // Derived address widths — do not override
-    localparam integer N_WH_PER_COL   = N_W_HIDDEN / 2,
+    localparam integer N_WH_PER_COL         = N_W_HIDDEN / 2,
     localparam integer WH_ADDR_W            = $clog2(N_W_HIDDEN/2),
     localparam integer WO_ADDR_W            = $clog2(N_W_OUTPUT),
     localparam integer XR_ADDR_W            = $clog2(N_X),
 
-    localparam integer MAC_N                = $clog2(N_W_HIDDEN/2), // 3  (8 rows per col)
+    localparam integer MAC_N                = N_WH_PER_COL, // (8 rows per col)
     localparam integer MAC_FIXED_PT         = 8,
-    localparam integer MAC_OUT_WIDTH        = ((2*DATA_WIDTH) - MAC_FIXED_PT) + MAC_N // 11
+    localparam integer MAC_OUT_WIDTH        = ((2*DATA_WIDTH) - MAC_FIXED_PT) + $clog2(MAC_N)
 )
 (
     input  wire                    clk,
@@ -47,9 +47,9 @@ module accelerator
     input  wire [DATA_WIDTH-1:0]   xr_dout
 );
     // ---- Pipeline stage start cycles ----
-    localparam integer C_XR_READ_START      = 0;
     localparam integer C_WH0_READ_START     = 0;
     localparam integer C_WH1_READ_START     = 1;
+    localparam integer C_XR_READ_START      = 1;
     localparam integer C_XR_EN_START        = C_XR_READ_START + 1;
     localparam integer C_WH0_EN_START       = C_WH0_READ_START + 1;
     localparam integer C_WH1_EN_START       = C_WH1_READ_START + 1;
@@ -65,18 +65,20 @@ module accelerator
     localparam integer C_MAC1_DONE          = C_MAC1_START + N_WH_PER_COL;
     localparam integer C_MAC0_EN_DONE       = C_MAC0_DONE + 1;
     localparam integer C_MAC1_EN_DONE       = C_MAC1_DONE + 1;
-    localparam integer C_SIG0               = C_MAC0_EN_DONE + 1;
-    localparam integer C_SIG1               = C_MAC1_EN_DONE + 1;
-    localparam integer C_WO_READ_START      = C_MAC0_EN_DONE;
+    localparam integer C_SIG0_START         = C_MAC0_EN_DONE;
+    localparam integer C_SIG1_START         = C_MAC1_EN_DONE;
+    localparam integer C_SIG0_DONE          = C_SIG0_START + 1;
+    localparam integer C_SIG1_DONE          = C_SIG1_START + 1;;
+    localparam integer C_WO_READ_START      = C_MAC0_DONE;
     localparam integer C_WO_EN_START        = C_WO_READ_START + 1;
-    localparam integer C_MAC0_START_R2      = C_SIG0 + 1;
+    localparam integer C_MAC0_START_R2      = C_SIG0_START + 1;
     localparam integer C_WO_READ_DONE       = C_WO_READ_START + N_W_OUTPUT;
     localparam integer C_WO_EN_DONE         = C_WO_EN_START + N_W_OUTPUT;
     localparam integer C_MAC0_DONE_R2       = C_MAC0_START_R2 + N_W_OUTPUT;
     localparam integer C_MAC0_EN_DONE_R2    = C_MAC0_DONE_R2 + 1;
-    localparam integer C_SIG_RES            = C_MAC0_EN_DONE_R2 + 1;
-    localparam integer C_RES_CAPTURE        = C_SIG_RES + 1;
-    localparam integer C_RES_THRESHOLD      = C_RES_CAPTURE + 1;
+    localparam integer C_SIG_RES            = C_MAC0_EN_DONE_R2;
+    localparam integer C_SIG_RES_DONE       = C_SIG_RES + 1;
+    localparam integer C_RES_THRESHOLD      = C_SIG_RES_DONE + 1;
     localparam integer ACC_LATENCY          = C_RES_THRESHOLD + 1; // total
 
     // ... output MAC stages follow from C_H1_CAPTURE
@@ -92,11 +94,12 @@ module accelerator
     state_t state;
 
     // ---- MAC wires ----
-    wire                      mac0_en,  mac1_en;
-    wire                      mac0_clr, mac1_clr;
-    logic  [DATA_WIDTH-1:0]   mac0_a,   mac0_b;
-    logic  [DATA_WIDTH-1:0]   mac1_a,   mac1_b;
-    wire [MAC_OUT_WIDTH-1:0]  mac0_out, mac1_out;
+    wire                      mac0_en,      mac1_en;
+    wire                      mac0_clr,     mac1_clr;
+    logic                     mac0_dsbl_fp, mac1_dsbl_fp;
+    logic  [DATA_WIDTH-1:0]   mac0_a,       mac0_b;
+    logic  [DATA_WIDTH-1:0]   mac1_a,       mac1_b;
+    wire [MAC_OUT_WIDTH-1:0]  mac0_out,     mac1_out;
 
     // ---- Sigmoid LUT wires ----
     logic [DATA_WIDTH-1:0] sigmoid_in;
@@ -173,29 +176,36 @@ module accelerator
     // --- //
 
     assign mac0_en  = ((cntr >= C_MAC0_START) & (cntr < C_MAC0_EN_DONE)) | ((cntr >= C_MAC0_START_R2) & (cntr < C_MAC0_EN_DONE_R2));
-    assign mac0_clr = ~mac0_en;
+    assign mac0_clr = ((cntr == C_MAC0_DONE) | (cntr == C_MAC0_DONE_R2));
 
     always_comb
     begin
+        mac0_dsbl_fp = 1'b0; // default use fixed point for scaling
         mac0_a = '0;
         mac0_b = '0;
 
         if ((cntr >= C_MAC0_START) & (cntr < C_MAC0_DONE))
         begin
-            if (cntr < (C_MAC0_DONE - 1))
-                mac0_a = xr_dout;
+            if (cntr == C_MAC0_START)
+            begin
+                mac0_dsbl_fp    = 1'b1; // disable fixed point for bias
+                mac0_a          = DATA_WIDTH'(1);
+            end
             else
-                mac0_a = '0;
+                mac0_a = xr_dout;
 
             mac0_b = wh0_dout;
         end
 
         else if ((cntr >= C_MAC0_START_R2) & (cntr < C_MAC0_DONE_R2))
         begin
-            if (cntr < (C_MAC0_DONE_R2 - 1))
-                mac0_a = sigmoid_out;
+            if (cntr == C_MAC0_START_R2)
+            begin
+                mac0_dsbl_fp    = 1'b1; // disable fixed point for bias
+                mac0_a          = DATA_WIDTH'(1);
+            end
             else
-                mac0_a = '0;
+                mac0_a = result;
 
             mac0_b = wo_dout;
         end
@@ -205,19 +215,23 @@ module accelerator
     // --- //
 
     assign mac1_en  = ((cntr >= C_MAC1_START) & (cntr < C_MAC1_EN_DONE));
-    assign mac1_clr = ~mac1_en;
+    assign mac1_clr = (cntr == C_MAC1_DONE);
 
     always_comb
     begin
+        mac1_dsbl_fp = 1'b0; // default use fixed point for scaling
         mac1_a = '0;
         mac1_b = '0;
 
         if ((cntr >= C_MAC1_START) & (cntr < C_MAC1_DONE))
         begin
-            if (cntr < (C_MAC1_DONE - 1))
-                mac1_a = xr_dout_dly;
+            if (cntr == C_MAC1_START)
+            begin
+                mac1_dsbl_fp    = 1'b1; // disable fixed point for bias
+                mac1_a          = DATA_WIDTH'(1);
+            end
             else
-                mac1_a = '0;
+                mac1_a = xr_dout_dly;
 
             mac1_b = wh1_dout;
         end
@@ -229,10 +243,10 @@ module accelerator
     begin
         sigmoid_in = '0;
 
-        if ((cntr == C_SIG0) | (cntr == C_SIG_RES))
+        if ((cntr == C_SIG0_START) | (cntr == C_SIG_RES))
             sigmoid_in = mac0_out[DATA_WIDTH-1:0];
 
-        else if (cntr == C_SIG1)
+        else if (cntr == C_SIG1_START)
             sigmoid_in = mac1_out[DATA_WIDTH-1:0];
     end
 
@@ -245,13 +259,22 @@ module accelerator
         end
         else
         begin
-            result <= '0;
+            case (cntr)
+                C_SIG0_DONE:
+                    result <= sigmoid_out;
 
-            if (cntr == C_RES_CAPTURE)
-                result <= sigmoid_out;
+                C_SIG1_DONE:
+                    result <= sigmoid_out;
 
-            if (cntr == C_RES_THRESHOLD)
-                result <= {{(DATA_WIDTH-1){1'b0}}, result[DATA_WIDTH-1]}; // clamp to DATA_WIDTH bits
+                C_SIG_RES_DONE:
+                    result <= sigmoid_out;
+
+                C_RES_THRESHOLD:
+                    result <= {{(DATA_WIDTH-1){1'b0}}, result[DATA_WIDTH-1]}; // clamp to DATA_WIDTH bits
+
+                default :
+                    result <= '0;
+            endcase
         end
     end
 
@@ -287,6 +310,8 @@ module accelerator
                         done <= 1'b1;
 
                         cntr <= '0;
+
+                        state <= IDLE;
                     end
                     else
                     begin
@@ -304,7 +329,7 @@ module accelerator
 
     // ---- MAC 0 — hidden neuron 0 (wh0 column) ----
     mac #(
-        .WIDTH       (DATA_WIDTH),
+        .DATA_WIDTH  (DATA_WIDTH),
         .N           (MAC_N),
         .FIXED_POINT (MAC_FIXED_PT)
     ) u_mac0 (
@@ -312,6 +337,7 @@ module accelerator
         .rst (rst),
         .en  (mac0_en),
         .clr (mac0_clr),
+        .dsbl_fp (mac0_dsbl_fp),
         .a   (mac0_a),      // x[i]
         .b   (mac0_b),      // wh0[i]
         .out (mac0_out)
@@ -319,7 +345,7 @@ module accelerator
 
     // ---- MAC 1 — hidden neuron 1 (wh1 column) ----
     mac #(
-        .WIDTH       (DATA_WIDTH),
+        .DATA_WIDTH  (DATA_WIDTH),
         .N           (MAC_N),
         .FIXED_POINT (MAC_FIXED_PT)
     ) u_mac1 (
@@ -327,6 +353,7 @@ module accelerator
         .rst (rst),
         .en  (mac1_en),
         .clr (mac1_clr),
+        .dsbl_fp (mac1_dsbl_fp),
         .a   (mac1_a),      // x[i]  (same x, different weight)
         .b   (mac1_b),      // wh1[i]
         .out (mac1_out)

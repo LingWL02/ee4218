@@ -230,6 +230,7 @@ module project_ip
 
                         if (wptr == (N_X - 1))
                         begin
+                            s_axis_tready   <= 1'b0;
                             acc_start <= 1'b1; // start accelerator after last feature is received
 
                             wptr    <= '0;
@@ -239,6 +240,7 @@ module project_ip
                         end
                         else if (s_axis_tlast)             // tlast mid-row → genuinely invalid
                         begin
+                            s_axis_tready   <= 1'b0;
                             m_axis_tvalid <= 1'b1;
                             m_axis_tdata  <= INVALID_TOKEN;
                             m_axis_tlast  <= 1'b1;
