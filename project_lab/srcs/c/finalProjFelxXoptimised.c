@@ -1,17 +1,11 @@
 /******************************************************************************
 * NN DMA Application for Vitis
-*
-* Stream order to accelerator (three separate DMA TX transfers):
-*   1) W_hidden : 8  x 2  = 16 words  — TLAST asserted by DMA at end of buffer
-*   2) W_output : 3  x 1  =  3 words  — TLAST asserted by DMA at end of buffer
-*   3) X        : N  x 7  words       — TLAST asserted by DMA at end of buffer
-*                                        N is determined at runtime from UART input
+* Input stream order:
+*   1) W_hidden: 8  x 2   = 16 words
+*   2) W_output: 3  x 1   = 3 words
+*   3) X       : N  x 7   words  (N determined at runtime; host sends END_OF_DATA after last row)
 * Output:
-*   N x 1 words  (one prediction per sample, DUT asserts TLAST on last word)
-*
-* Key point: The DMA hardware automatically asserts TLAST on the last beat of
-* whatever buffer size you give it. You never set TLAST manually in software —
-* you just tell the DMA how many bytes to send per transfer.
+*   N x 1 words
 ******************************************************************************/
 
 #include "xparameters.h"
@@ -40,31 +34,33 @@ typedef struct {
 } Stats;
 
 // -------------------------
-// Fixed accelerator dimensions
-// (only X rows are dynamic)
+// Accelerator dimensions
 // -------------------------
-#define NUM_INPUTS      7
-#define NUM_HIDDEN      2
-#define NUM_OUTPUTS     1
-#define MAX_SAMPLES     1024    // Maximum X rows this application will accept
+#define NUM_INPUTS     7
+#define NUM_HIDDEN     2
+#define NUM_OUTPUTS    1
+#define MAX_SAMPLES    1024     // Maximum X rows this application will accept
 
-#define WH_ROWS         (NUM_INPUTS + 1)    // 8
-#define WH_COLS         NUM_HIDDEN          // 2
-#define WO_ROWS         (NUM_HIDDEN + 1)    // 3
-#define WO_COLS         NUM_OUTPUTS         // 1
+#define WH_ROWS        (NUM_INPUTS + 1)     // 8
+#define WH_COLS        NUM_HIDDEN           // 2
+#define WO_ROWS        (NUM_HIDDEN + 1)     // 3
+#define WO_COLS        NUM_OUTPUTS          // 1
 
-#define WH_SIZE         (WH_ROWS * WH_COLS) // 16  (fixed)
-#define WO_SIZE         (WO_ROWS * WO_COLS) // 3   (fixed)
+#define WH_SIZE        (WH_ROWS * WH_COLS)  // 16  (fixed)
+#define WO_SIZE        (WO_ROWS * WO_COLS)  // 3   (fixed)
 
-#define TIMER_COUNTER_0         0
-#define POLL_TIMEOUT_COUNTER    10000000
+#define TIMER_COUNTER_0          0
+#define POLL_TIMEOUT_COUNTER     10000000
 
+// -------------------------
+// Board-specific IDs
+// -------------------------
 #ifndef SDT
-#define DMA_DEV_ID          XPAR_AXIDMA_0_DEVICE_ID
-#define TMRCTR_DEVICE_ID    XPAR_TMRCTR_0_DEVICE_ID
+#define DMA_DEV_ID              XPAR_AXIDMA_0_DEVICE_ID
+#define TMRCTR_DEVICE_ID        XPAR_TMRCTR_0_DEVICE_ID
 #else
-#define DMA_BASEADDR        XPAR_XAXIDMA_0_BASEADDR
-#define TMRCTR_BASEADDR     XPAR_XTMRCTR_0_BASEADDR
+#define DMA_BASEADDR            XPAR_XAXIDMA_0_BASEADDR
+#define TMRCTR_BASEADDR         XPAR_XTMRCTR_0_BASEADDR
 #endif
 
 static XAxiDma  DmaInstance;
@@ -73,14 +69,16 @@ static XTmrCtr  TmrCtrInstance;
 // Fixed-size weight buffers
 static u32 W_hidden_buf[WH_SIZE];
 static u32 W_output_buf[WO_SIZE];
-static u32 SourceBuffer[WH_SIZE + WO_SIZE + MAX_SAMPLES * NUM_INPUTS];
-
 
 // Dynamic X buffer and output buffer — sized to MAX_SAMPLES
 static u32 X_buf[MAX_SAMPLES * NUM_INPUTS];
 static u32 DestinationBuffer[MAX_SAMPLES * NUM_OUTPUTS];
 
+// Single TX buffer: W_hidden | W_output | X (packed at runtime)
+static u32 SourceBuffer[WH_SIZE + WO_SIZE + MAX_SAMPLES * NUM_INPUTS];
+
 static char TERMINATE_TOKEN[] = "TERMINATE";
+static char END_OF_DATA_TOKEN[] = "END_OF_DATA";
 
 // -------------------------
 // Forward declarations
@@ -90,9 +88,16 @@ static int  RunNNInference(XAxiDma *DmaInstancePtr, XTmrCtr *TmrCtrInstancePtr,
 static int  ReceiveCSVFixed(u32 *Buffer, int TotalElements, Stats *stats, bool *no_fail);
 static int  ReceiveCSVRows(u32 *Buffer, int cols, int max_rows,
                            int *rows_received, Stats *stats, bool *no_fail);
-static int  WaitDmaDone(XAxiDma *DmaInstancePtr, int direction, int timeout_us);
+static void MergeThreeArrays(u32 *dest, u32 *A, int sizeA, u32 *B, int sizeB, u32 *C, int sizeC);
 static void SendCSVResults(u32 *data, int rows, int cols);
 static void SendStats(Stats *stats);
+
+static void FlushDCaches(u32 *SourceAddr, u32 tx_bytes, u32 *DestinationAddr, u32 rx_bytes);
+static int  TxSend(XAxiDma *DmaInstancePtr, u32 *SourceAddr, u32 tx_bytes,
+                   u32 *DestinationAddr, u32 rx_bytes,
+                   XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber);
+static int  RxReceive(XAxiDma *DmaInstancePtr, u32 *DestinationAddr, u32 rx_bytes,
+                      XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber, Stats *stats);
 
 #ifndef SDT
 static int InitDMA(XAxiDma *DmaInstancePtr, u16 DmaDeviceId);
@@ -106,8 +111,8 @@ static int InitTmrCtr(XTmrCtr *TmrCtrInstancePtr, UINTPTR TmrCtrBaseAddress, u8 
 int main()
 // =========================================================================
 {
-    int   Status  = XST_SUCCESS;
-    Stats stats   = {0, 0, 0};
+    int   Status = XST_SUCCESS;
+    Stats stats  = {0, 0, 0};
     bool  no_fail = false;
 
 #ifndef SDT
@@ -145,9 +150,8 @@ int main()
     return XST_SUCCESS;
 }
 
-
 // =========================================================================
-// RunNNInference  
+// RunNNInference
 // =========================================================================
 static int RunNNInference(XAxiDma *DmaInstancePtr, XTmrCtr *TmrCtrInstancePtr,
                           u8 TmrCtrNumber, Stats *stats, bool *no_fail)
@@ -155,87 +159,159 @@ static int RunNNInference(XAxiDma *DmaInstancePtr, XTmrCtr *TmrCtrInstancePtr,
     int Status;
     int num_samples = 0;
 
-    // Steps 1-3: UART receive — unchanged
+    // Step 1: Receive fixed-size weight matrices
     xil_printf("Send w_hid.csv (%d values)\r\n", WH_SIZE);
     Status = ReceiveCSVFixed(W_hidden_buf, WH_SIZE, stats, no_fail);
-    if (Status != XST_SUCCESS) { if (!(*no_fail)) xil_printf("Failed W_hidden\r\n"); return XST_FAILURE; }
+    if (Status != XST_SUCCESS) {
+        if (!(*no_fail)) xil_printf("Failed to receive W_hidden\r\n");
+        return XST_FAILURE;
+    }
 
     xil_printf("Send w_out.csv (%d values)\r\n", WO_SIZE);
     Status = ReceiveCSVFixed(W_output_buf, WO_SIZE, stats, no_fail);
-    if (Status != XST_SUCCESS) { if (!(*no_fail)) xil_printf("Failed W_output\r\n"); return XST_FAILURE; }
+    if (Status != XST_SUCCESS) {
+        if (!(*no_fail)) xil_printf("Failed to receive W_output\r\n");
+        return XST_FAILURE;
+    }
 
-    xil_printf("Send X.csv (N x %d, END_OF_DATA after last row)\r\n", NUM_INPUTS);
+    // Step 2: Receive X rows until END_OF_DATA — num_samples set at runtime
+    xil_printf("Send X.csv (N x %d, send END_OF_DATA after last row)\r\n", NUM_INPUTS);
     Status = ReceiveCSVRows(X_buf, NUM_INPUTS, MAX_SAMPLES, &num_samples, stats, no_fail);
-    if (Status != XST_SUCCESS) { if (!(*no_fail)) xil_printf("Failed X\r\n"); return XST_FAILURE; }
+    if (Status != XST_SUCCESS) {
+        if (!(*no_fail)) xil_printf("Failed to receive X\r\n");
+        return XST_FAILURE;
+    }
     xil_printf("Received %d samples.\r\n", num_samples);
 
+    // Step 3: Compute exact transfer sizes now that N is known
     int x_size   = num_samples * NUM_INPUTS;
+    int tx_words = WH_SIZE + WO_SIZE + x_size;
     int rx_words = num_samples * NUM_OUTPUTS;
-    int tx_words = WH_SIZE + WO_SIZE + x_size;   // <-- total single burst size
 
-    u32 tx_bytes = tx_words * sizeof(u32);
-    u32 rx_bytes = rx_words * sizeof(u32);
+    u32 tx_bytes = (u32)(tx_words * sizeof(u32));
+    u32 rx_bytes = (u32)(rx_words * sizeof(u32));
 
-    // -----------------------------------------------------------------
-    // Pack W_hidden | W_output | X into one contiguous TX buffer.
-    // The HLS core reads them in this order so the stream content is
-    // identical to three separate packets — just without TLAST gaps.
-    // -----------------------------------------------------------------
-    // (SourceBuffer must be declared as static u32 SourceBuffer[WH_SIZE + WO_SIZE + MAX_SAMPLES * NUM_INPUTS])
-    int idx = 0;
-    for (int i = 0; i < WH_SIZE; i++) SourceBuffer[idx++] = W_hidden_buf[i];
-    for (int i = 0; i < WO_SIZE; i++) SourceBuffer[idx++] = W_output_buf[i];
-    for (int i = 0; i < x_size;  i++) SourceBuffer[idx++] = X_buf[i];
+    // Step 4: Pack W_hidden | W_output | X into one contiguous TX buffer
+    xil_printf("Packing TX buffer (%d words)...\r\n", tx_words);
+    MergeThreeArrays(SourceBuffer,
+                     W_hidden_buf, WH_SIZE,
+                     W_output_buf, WO_SIZE,
+                     X_buf,        x_size);
 
-    // Flush all touched regions
-    Xil_DCacheFlushRange((UINTPTR)SourceBuffer,       tx_bytes);
-    Xil_DCacheFlushRange((UINTPTR)DestinationBuffer,  rx_bytes);
+    // Step 5: Flush caches for exactly the bytes we will transfer
+    FlushDCaches(SourceBuffer, tx_bytes, DestinationBuffer, rx_bytes);
 
-    // Arm RX first
-    xil_printf("Arming RX DMA (%d words)...\r\n", rx_words);
-    Status = XAxiDma_SimpleTransfer(DmaInstancePtr,
-                                    (UINTPTR)DestinationBuffer,
-                                    rx_bytes, XAXIDMA_DEVICE_TO_DMA);
-    if (Status != XST_SUCCESS) { xil_printf("RX arm failed\r\n"); return XST_FAILURE; }
+    // Step 6: Start DMA (timer starts inside TxSend, before both transfers)
+    Status = TxSend(DmaInstancePtr,
+                    SourceBuffer,      tx_bytes,
+                    DestinationBuffer, rx_bytes,
+                    TmrCtrInstancePtr, TmrCtrNumber);
+    if (Status != XST_SUCCESS) {
+        xil_printf("TX start failed\r\n");
+        return XST_FAILURE;
+    }
 
-    // Start timer
+    // Step 7: Poll until both TX and RX complete, record cycle counts
+    Status = RxReceive(DmaInstancePtr, DestinationBuffer, rx_bytes,
+                       TmrCtrInstancePtr, TmrCtrNumber, stats);
+    if (Status != XST_SUCCESS) {
+        xil_printf("RX failed\r\n");
+        return XST_FAILURE;
+    }
+
+    xil_printf("Output received: %d x %d\r\n", num_samples, NUM_OUTPUTS);
+    SendCSVResults(DestinationBuffer, num_samples, NUM_OUTPUTS);
+
+    return XST_SUCCESS;
+}
+
+// =========================================================================
+// FlushDCaches
+// =========================================================================
+static void FlushDCaches(u32 *SourceAddr, u32 tx_bytes,
+                         u32 *DestinationAddr, u32 rx_bytes)
+{
+    Xil_DCacheFlushRange((UINTPTR)SourceAddr,      tx_bytes);
+    Xil_DCacheFlushRange((UINTPTR)DestinationAddr, rx_bytes);
+}
+
+// =========================================================================
+// TxSend
+// Timer starts here, then RX is armed, then TX fires — correct order.
+// =========================================================================
+static int TxSend(XAxiDma *DmaInstancePtr,
+                  u32 *SourceAddr,      u32 tx_bytes,
+                  u32 *DestinationAddr, u32 rx_bytes,
+                  XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber)
+{
+    int Status;
+
+    xil_printf("Starting DMA transfers...\r\n");
+
+    // Start the timer BEFORE arming any DMA channel
     XTmrCtr_Reset(TmrCtrInstancePtr, TmrCtrNumber);
     XTmrCtr_Start(TmrCtrInstancePtr, TmrCtrNumber);
 
-    // Single TX burst — DMA asserts TLAST on the very last word of X
-    xil_printf("TX: %d words (W_hidden + W_output + X) in one burst...\r\n", tx_words);
+    // Arm RX first so it is ready before data arrives
     Status = XAxiDma_SimpleTransfer(DmaInstancePtr,
-                                    (UINTPTR)SourceBuffer,
-                                    tx_bytes, XAXIDMA_DMA_TO_DEVICE);
-    if (Status != XST_SUCCESS) { xil_printf("TX start failed\r\n"); return XST_FAILURE; }
+                                    (UINTPTR)DestinationAddr,
+                                    rx_bytes, XAXIDMA_DEVICE_TO_DMA);
+    if (Status != XST_SUCCESS) {
+        xil_printf("Failed to start RX DMA\r\n");
+        return XST_FAILURE;
+    }
 
-    // Wait for TX and RX to both finish
-    int TimeOut = POLL_TIMEOUT_COUNTER;
-    bool txDone = false, rxDone = false;
-    u32 TxElapsed = 0, TotalElapsed = 0;
+    // Fire TX — DMA asserts TLAST on the final word of X
+    Status = XAxiDma_SimpleTransfer(DmaInstancePtr,
+                                    (UINTPTR)SourceAddr,
+                                    tx_bytes, XAXIDMA_DMA_TO_DEVICE);
+    if (Status != XST_SUCCESS) {
+        xil_printf("Failed to start TX DMA\r\n");
+        return XST_FAILURE;
+    }
+
+    return XST_SUCCESS;
+}
+
+// =========================================================================
+// RxReceive — poll until TX and RX both done, then record stats
+// =========================================================================
+static int RxReceive(XAxiDma *DmaInstancePtr, u32 *DestinationAddr, u32 rx_bytes,
+                     XTmrCtr *TmrCtrInstancePtr, u8 TmrCtrNumber, Stats *stats)
+{
+    int  TimeOut     = POLL_TIMEOUT_COUNTER;
+    bool txDone      = false;
+    bool rxDone      = false;
+    u32  TxElapsed   = 0;
+    u32  TotalElapsed = 0;
 
     while (TimeOut) {
         if (!txDone && !XAxiDma_Busy(DmaInstancePtr, XAXIDMA_DMA_TO_DEVICE)) {
             txDone    = true;
             TxElapsed = XTmrCtr_GetValue(TmrCtrInstancePtr, TmrCtrNumber);
         }
+
         if (!rxDone && !XAxiDma_Busy(DmaInstancePtr, XAXIDMA_DEVICE_TO_DMA)) {
             rxDone       = true;
             TotalElapsed = XTmrCtr_GetValue(TmrCtrInstancePtr, TmrCtrNumber);
         }
+
         if (txDone && rxDone) break;
+
         TimeOut--;
         usleep(1U);
     }
 
-    XTmrCtr_Stop(TmrCtrInstancePtr, TmrCtrNumber);
-
     if (!(txDone && rxDone)) {
+        XTmrCtr_Stop(TmrCtrInstancePtr, TmrCtrNumber);
         xil_printf("DMA timeout\r\n");
         return XST_FAILURE;
     }
 
-    Xil_DCacheInvalidateRange((UINTPTR)DestinationBuffer, rx_bytes);
+    TotalElapsed = XTmrCtr_GetValue(TmrCtrInstancePtr, TmrCtrNumber);
+    XTmrCtr_Stop(TmrCtrInstancePtr, TmrCtrNumber);
+
+    Xil_DCacheInvalidateRange((UINTPTR)DestinationAddr, rx_bytes);
 
     stats->TxElapsed    = TxElapsed;
     stats->RxElapsed    = TotalElapsed - TxElapsed;
@@ -245,14 +321,11 @@ static int RunNNInference(XAxiDma *DmaInstancePtr, XTmrCtr *TmrCtrInstancePtr,
     xil_printf("Rx cycles   : %u\r\n", stats->RxElapsed);
     xil_printf("Total cycles: %u\r\n", stats->TotalElapsed);
 
-    xil_printf("Output: %d x %d\r\n", num_samples, NUM_OUTPUTS);
-    SendCSVResults(DestinationBuffer, num_samples, NUM_OUTPUTS);
     return XST_SUCCESS;
 }
 
 // =========================================================================
-// ReceiveCSVFixed
-// Receive exactly TotalElements comma/newline separated integers over UART.
+// ReceiveCSVFixed — receive exactly TotalElements values over UART
 // Used for the fixed-size weight matrices.
 // =========================================================================
 static int ReceiveCSVFixed(u32 *Buffer, int TotalElements, Stats *stats, bool *no_fail)
@@ -280,12 +353,18 @@ static int ReceiveCSVFixed(u32 *Buffer, int TotalElements, Stats *stats, bool *n
                     return XST_FAILURE;
                 }
 
-                Buffer[count++] = (u32)atoi(msg);
+                Buffer[count] = (u32)atoi(msg);
+                count++;
                 msg_idx = 0;
+
+                if ((count % 64) == 0) {
+                    xil_printf("Progress: %d/%d\r\n", count, TotalElements);
+                }
             }
         } else {
-            if (msg_idx < (int)(sizeof(msg) - 1))
+            if (msg_idx < (int)(sizeof(msg) - 1)) {
                 msg[msg_idx++] = RecvChar;
+            }
         }
     }
 
@@ -294,11 +373,11 @@ static int ReceiveCSVFixed(u32 *Buffer, int TotalElements, Stats *stats, bool *n
 }
 
 // =========================================================================
-// ReceiveCSVRows
-// Receive an unknown number of rows (each row has `cols` values) over UART.
-// Stops when it receives a line containing only "END_OF_DATA".
+// ReceiveCSVRows — receive an unknown number of rows over UART.
+// Each row has `cols` comma-separated values followed by '\n'.
+// Stops when it receives a token of "END_OF_DATA".
 //
-// The host PC should send:
+// Host should send:
 //   44,90,0,0,24,81,22\n       <- row 0
 //   159,250,140,176,...\n      <- row 1
 //   ...
@@ -310,9 +389,9 @@ static int ReceiveCSVRows(u32 *Buffer, int cols, int max_rows,
                           int *rows_received, Stats *stats, bool *no_fail)
 {
     char msg[20];
-    int  msg_idx   = 0;
-    int  col       = 0;     // current column within the row being received
-    int  row       = 0;     // number of complete rows received so far
+    int  msg_idx = 0;
+    int  col     = 0;   // current column within the row being received
+    int  row     = 0;   // number of complete rows received so far
     char RecvChar;
 
     *rows_received = 0;
@@ -327,7 +406,6 @@ static int ReceiveCSVRows(u32 *Buffer, int cols, int max_rows,
                 msg[msg_idx] = '\0';
                 msg_idx = 0;
 
-                // Check for termination / end-of-data tokens
                 if (strcmp(msg, TERMINATE_TOKEN) == 0) {
                     xil_printf("Termination command received.\r\n");
                     SendStats(stats);
@@ -335,18 +413,16 @@ static int ReceiveCSVRows(u32 *Buffer, int cols, int max_rows,
                     return XST_FAILURE;
                 }
 
-                if (strcmp(msg, "END_OF_DATA") == 0) {
-                    // End of X stream — row count is finalised
+                if (strcmp(msg, END_OF_DATA_TOKEN) == 0) {
                     *rows_received = row;
                     xil_printf("END_OF_DATA received after %d rows.\r\n", row);
                     return (row > 0) ? XST_SUCCESS : XST_FAILURE;
                 }
 
-                // Store the value
+                // Store value and advance column/row counters
                 Buffer[row * cols + col] = (u32)atoi(msg);
                 col++;
 
-                // When we have collected a full row, advance to the next
                 if (col == cols) {
                     col = 0;
                     row++;
@@ -360,42 +436,22 @@ static int ReceiveCSVRows(u32 *Buffer, int cols, int max_rows,
         }
     }
 
-    // Reached max_rows without seeing END_OF_DATA
+    // Reached MAX_SAMPLES without seeing END_OF_DATA — treat as done
     xil_printf("Warning: MAX_SAMPLES (%d) reached without END_OF_DATA\r\n", max_rows);
     *rows_received = row;
     return XST_SUCCESS;
 }
 
 // =========================================================================
-// WaitDmaDone — poll until a DMA channel is no longer busy
+// MergeThreeArrays — pack A | B | C into dest contiguously
 // =========================================================================
-static int WaitDmaDone(XAxiDma *DmaInstancePtr, int direction, int timeout_us)
+static void MergeThreeArrays(u32 *dest, u32 *A, int sizeA,
+                              u32 *B, int sizeB, u32 *C, int sizeC)
 {
-    while (timeout_us--) {
-        if (!XAxiDma_Busy(DmaInstancePtr, direction))
-            return XST_SUCCESS;
-        usleep(1U);
-    }
-    return XST_FAILURE;
-}
-
-// =========================================================================
-// SendCSVResults — send output predictions back to the host PC over UART
-// =========================================================================
-static void SendCSVResults(u32 *data, int rows, int cols)
-{
-    for (int i = 0; i < rows; i++) {
-        for (int j = 0; j < cols; j++) {
-            char buffer[12];
-            sprintf(buffer, "%u", (unsigned int)(data[i * cols + j] & 0xFFU));
-            for (char *p = buffer; *p != '\0'; p++)
-                XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, *p);
-            if (j < cols - 1)
-                XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, ',');
-        }
-        XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, '\r');
-        XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, '\n');
-    }
+    int idx = 0, i;
+    for (i = 0; i < sizeA; i++) dest[idx++] = A[i];
+    for (i = 0; i < sizeB; i++) dest[idx++] = B[i];
+    for (i = 0; i < sizeC; i++) dest[idx++] = C[i];
 }
 
 // =========================================================================
@@ -419,6 +475,25 @@ static void SendStats(Stats *stats)
 }
 
 // =========================================================================
+// SendCSVResults — send output predictions back to the host over UART
+// =========================================================================
+static void SendCSVResults(u32 *data, int rows, int cols)
+{
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            char buffer[12];
+            sprintf(buffer, "%u", (unsigned int)(data[i * cols + j] & 0xFFU));
+            for (char *p = buffer; *p != '\0'; p++)
+                XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, *p);
+            if (j < cols - 1)
+                XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, ',');
+        }
+        XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, '\r');
+        XUartPs_SendByte(XPAR_XUARTPS_0_BASEADDR, '\n');
+    }
+}
+
+// =========================================================================
 // InitDMA
 // =========================================================================
 #ifndef SDT
@@ -435,10 +510,16 @@ static int InitDMA(XAxiDma *DmaInstancePtr, UINTPTR DmaBaseAddress)
 #else
     CfgPtr = XAxiDma_LookupConfig(DmaBaseAddress);
 #endif
-    if (!CfgPtr) { xil_printf("No DMA config found\r\n"); return XST_FAILURE; }
+    if (!CfgPtr) {
+        xil_printf("No DMA config found\r\n");
+        return XST_FAILURE;
+    }
 
     Status = XAxiDma_CfgInitialize(DmaInstancePtr, CfgPtr);
-    if (Status != XST_SUCCESS) { xil_printf("DMA init failed\r\n"); return XST_FAILURE; }
+    if (Status != XST_SUCCESS) {
+        xil_printf("DMA init failed: %d\r\n", Status);
+        return XST_FAILURE;
+    }
 
     if (XAxiDma_HasSg(DmaInstancePtr)) {
         xil_printf("DMA is in SG mode, expected simple mode\r\n");
@@ -449,7 +530,10 @@ static int InitDMA(XAxiDma *DmaInstancePtr, UINTPTR DmaBaseAddress)
     XAxiDma_IntrDisable(DmaInstancePtr, XAXIDMA_IRQ_ALL_MASK, XAXIDMA_DMA_TO_DEVICE);
 
     Status = XAxiDma_Selftest(DmaInstancePtr);
-    if (Status != XST_SUCCESS) { xil_printf("DMA self-test failed\r\n"); return XST_FAILURE; }
+    if (Status != XST_SUCCESS) {
+        xil_printf("DMA self-test failed\r\n");
+        return XST_FAILURE;
+    }
 
     return XST_SUCCESS;
 }
@@ -470,13 +554,19 @@ static int InitTmrCtr(XTmrCtr *TmrCtrInstancePtr, UINTPTR TmrCtrBaseAddress, u8 
 #else
     Status = XTmrCtr_Initialize(TmrCtrInstancePtr, TmrCtrBaseAddress);
 #endif
-    if (Status != XST_SUCCESS) { xil_printf("Timer init failed\r\n"); return XST_FAILURE; }
+    if (Status != XST_SUCCESS) {
+        xil_printf("Timer init failed\r\n");
+        return XST_FAILURE;
+    }
 
     XTmrCtr_SetOptions(TmrCtrInstancePtr, TmrCtrNumber, 0);
     XTmrCtr_SetResetValue(TmrCtrInstancePtr, TmrCtrNumber, 0);
 
     Status = XTmrCtr_SelfTest(TmrCtrInstancePtr, TmrCtrNumber);
-    if (Status != XST_SUCCESS) { xil_printf("Timer self-test failed\r\n"); return XST_FAILURE; }
+    if (Status != XST_SUCCESS) {
+        xil_printf("Timer self-test failed\r\n");
+        return XST_FAILURE;
+    }
 
     return XST_SUCCESS;
 }
