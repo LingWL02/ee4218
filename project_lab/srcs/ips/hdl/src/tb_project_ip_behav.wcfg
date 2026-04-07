@@ -1,0 +1,875 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_project_ip_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="glbl" />
+            <top_module name="tb_project_ip" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="106,205.000 ns"></ZoomStartTime>
+      <ZoomEndTime time="109,083.001 ns"></ZoomEndTime>
+      <Cursor1Time time="107,403.000 ns"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="339"></NameColumnWidth>
+      <ValueColumnWidth column_width="90"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="7" />
+   <wvobject fp_name="group24" type="group">
+      <obj_property name="label">sim</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/tb_project_ip/send_buff" type="array">
+         <obj_property name="ElementShortName">send_buff[0:466][31:0]</obj_property>
+         <obj_property name="ObjectShortName">send_buff[0:466][31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/label_buff" type="array">
+         <obj_property name="ElementShortName">label_buff[0:63][31:0]</obj_property>
+         <obj_property name="ObjectShortName">label_buff[0:63][31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/recv_buff" type="array">
+         <obj_property name="ElementShortName">recv_buff[0:63][31:0]</obj_property>
+         <obj_property name="ObjectShortName">recv_buff[0:63][31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/aclk" type="logic">
+         <obj_property name="ElementShortName">aclk</obj_property>
+         <obj_property name="ObjectShortName">aclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/aresetn" type="logic">
+         <obj_property name="ElementShortName">aresetn</obj_property>
+         <obj_property name="ObjectShortName">aresetn</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/s_axis_tdata" type="array">
+         <obj_property name="ElementShortName">s_axis_tdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">s_axis_tdata[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/s_axis_tlast" type="logic">
+         <obj_property name="ElementShortName">s_axis_tlast</obj_property>
+         <obj_property name="ObjectShortName">s_axis_tlast</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/s_axis_tvalid" type="logic">
+         <obj_property name="ElementShortName">s_axis_tvalid</obj_property>
+         <obj_property name="ObjectShortName">s_axis_tvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/s_axis_tready" type="logic">
+         <obj_property name="ElementShortName">s_axis_tready</obj_property>
+         <obj_property name="ObjectShortName">s_axis_tready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/m_axis_tvalid" type="logic">
+         <obj_property name="ElementShortName">m_axis_tvalid</obj_property>
+         <obj_property name="ObjectShortName">m_axis_tvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/m_axis_tdata" type="array">
+         <obj_property name="ElementShortName">m_axis_tdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">m_axis_tdata[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/m_axis_tlast" type="logic">
+         <obj_property name="ElementShortName">m_axis_tlast</obj_property>
+         <obj_property name="ObjectShortName">m_axis_tlast</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/m_axis_tready" type="logic">
+         <obj_property name="ElementShortName">m_axis_tready</obj_property>
+         <obj_property name="ObjectShortName">m_axis_tready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/m_axis_tlast_prev" type="logic">
+         <obj_property name="ElementShortName">m_axis_tlast_prev</obj_property>
+         <obj_property name="ObjectShortName">m_axis_tlast_prev</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/recv_cnt" type="array">
+         <obj_property name="ElementShortName">recv_cnt[31:0]</obj_property>
+         <obj_property name="ObjectShortName">recv_cnt[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/N_W_HIDDEN" type="array">
+         <obj_property name="ElementShortName">N_W_HIDDEN[31:0]</obj_property>
+         <obj_property name="ObjectShortName">N_W_HIDDEN[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/N_W_OUTPUT" type="array">
+         <obj_property name="ElementShortName">N_W_OUTPUT[31:0]</obj_property>
+         <obj_property name="ObjectShortName">N_W_OUTPUT[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/N_X" type="array">
+         <obj_property name="ElementShortName">N_X[31:0]</obj_property>
+         <obj_property name="ObjectShortName">N_X[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/DATA_WIDTH" type="array">
+         <obj_property name="ElementShortName">DATA_WIDTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">DATA_WIDTH[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/N_ROWS" type="array">
+         <obj_property name="ElementShortName">N_ROWS[31:0]</obj_property>
+         <obj_property name="ObjectShortName">N_ROWS[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/N_SEND" type="array">
+         <obj_property name="ElementShortName">N_SEND[31:0]</obj_property>
+         <obj_property name="ObjectShortName">N_SEND[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/N_RECV" type="array">
+         <obj_property name="ElementShortName">N_RECV[31:0]</obj_property>
+         <obj_property name="ObjectShortName">N_RECV[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/MAX_STALLS" type="array">
+         <obj_property name="ElementShortName">MAX_STALLS[31:0]</obj_property>
+         <obj_property name="ObjectShortName">MAX_STALLS[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group25" type="group">
+      <obj_property name="label">dut</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/tb_project_ip/dut/aclk" type="logic">
+         <obj_property name="ElementShortName">aclk</obj_property>
+         <obj_property name="ObjectShortName">aclk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/aresetn" type="logic">
+         <obj_property name="ElementShortName">aresetn</obj_property>
+         <obj_property name="ObjectShortName">aresetn</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/s_axis_tvalid" type="logic">
+         <obj_property name="ElementShortName">s_axis_tvalid</obj_property>
+         <obj_property name="ObjectShortName">s_axis_tvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/s_axis_tready" type="logic">
+         <obj_property name="ElementShortName">s_axis_tready</obj_property>
+         <obj_property name="ObjectShortName">s_axis_tready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/s_axis_tdata" type="array">
+         <obj_property name="ElementShortName">s_axis_tdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">s_axis_tdata[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/s_axis_tlast" type="logic">
+         <obj_property name="ElementShortName">s_axis_tlast</obj_property>
+         <obj_property name="ObjectShortName">s_axis_tlast</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/m_axis_tvalid" type="logic">
+         <obj_property name="ElementShortName">m_axis_tvalid</obj_property>
+         <obj_property name="ObjectShortName">m_axis_tvalid</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/m_axis_tready" type="logic">
+         <obj_property name="ElementShortName">m_axis_tready</obj_property>
+         <obj_property name="ObjectShortName">m_axis_tready</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/m_axis_tdata" type="array">
+         <obj_property name="ElementShortName">m_axis_tdata[31:0]</obj_property>
+         <obj_property name="ObjectShortName">m_axis_tdata[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/m_axis_tlast" type="logic">
+         <obj_property name="ElementShortName">m_axis_tlast</obj_property>
+         <obj_property name="ObjectShortName">m_axis_tlast</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wptr" type="array">
+         <obj_property name="ElementShortName">wptr[3:0]</obj_property>
+         <obj_property name="ObjectShortName">wptr[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/tlast_recvd" type="logic">
+         <obj_property name="ElementShortName">tlast_recvd</obj_property>
+         <obj_property name="ObjectShortName">tlast_recvd</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/state" type="array">
+         <obj_property name="ElementShortName">state[5:0]</obj_property>
+         <obj_property name="ObjectShortName">state[5:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wh0_write_en" type="logic">
+         <obj_property name="ElementShortName">wh0_write_en</obj_property>
+         <obj_property name="ObjectShortName">wh0_write_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wh0_read_en" type="logic">
+         <obj_property name="ElementShortName">wh0_read_en</obj_property>
+         <obj_property name="ObjectShortName">wh0_read_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wh0_waddr" type="array">
+         <obj_property name="ElementShortName">wh0_waddr[2:0]</obj_property>
+         <obj_property name="ObjectShortName">wh0_waddr[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wh0_raddr" type="array">
+         <obj_property name="ElementShortName">wh0_raddr[2:0]</obj_property>
+         <obj_property name="ObjectShortName">wh0_raddr[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wh0_din" type="array">
+         <obj_property name="ElementShortName">wh0_din[7:0]</obj_property>
+         <obj_property name="ObjectShortName">wh0_din[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wh0_dout" type="array">
+         <obj_property name="ElementShortName">wh0_dout[7:0]</obj_property>
+         <obj_property name="ObjectShortName">wh0_dout[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wh1_write_en" type="logic">
+         <obj_property name="ElementShortName">wh1_write_en</obj_property>
+         <obj_property name="ObjectShortName">wh1_write_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wh1_read_en" type="logic">
+         <obj_property name="ElementShortName">wh1_read_en</obj_property>
+         <obj_property name="ObjectShortName">wh1_read_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wh1_waddr" type="array">
+         <obj_property name="ElementShortName">wh1_waddr[2:0]</obj_property>
+         <obj_property name="ObjectShortName">wh1_waddr[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wh1_raddr" type="array">
+         <obj_property name="ElementShortName">wh1_raddr[2:0]</obj_property>
+         <obj_property name="ObjectShortName">wh1_raddr[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wh1_din" type="array">
+         <obj_property name="ElementShortName">wh1_din[7:0]</obj_property>
+         <obj_property name="ObjectShortName">wh1_din[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wh1_dout" type="array">
+         <obj_property name="ElementShortName">wh1_dout[7:0]</obj_property>
+         <obj_property name="ObjectShortName">wh1_dout[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wo_write_en" type="logic">
+         <obj_property name="ElementShortName">wo_write_en</obj_property>
+         <obj_property name="ObjectShortName">wo_write_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wo_read_en" type="logic">
+         <obj_property name="ElementShortName">wo_read_en</obj_property>
+         <obj_property name="ObjectShortName">wo_read_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wo_waddr" type="array">
+         <obj_property name="ElementShortName">wo_waddr[1:0]</obj_property>
+         <obj_property name="ObjectShortName">wo_waddr[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wo_raddr" type="array">
+         <obj_property name="ElementShortName">wo_raddr[1:0]</obj_property>
+         <obj_property name="ObjectShortName">wo_raddr[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wo_din" type="array">
+         <obj_property name="ElementShortName">wo_din[7:0]</obj_property>
+         <obj_property name="ObjectShortName">wo_din[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wo_dout" type="array">
+         <obj_property name="ElementShortName">wo_dout[7:0]</obj_property>
+         <obj_property name="ObjectShortName">wo_dout[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/xr_write_en" type="logic">
+         <obj_property name="ElementShortName">xr_write_en</obj_property>
+         <obj_property name="ObjectShortName">xr_write_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/xr_read_en" type="logic">
+         <obj_property name="ElementShortName">xr_read_en</obj_property>
+         <obj_property name="ObjectShortName">xr_read_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/xr_waddr" type="array">
+         <obj_property name="ElementShortName">xr_waddr[2:0]</obj_property>
+         <obj_property name="ObjectShortName">xr_waddr[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/xr_raddr" type="array">
+         <obj_property name="ElementShortName">xr_raddr[2:0]</obj_property>
+         <obj_property name="ObjectShortName">xr_raddr[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/xr_din" type="array">
+         <obj_property name="ElementShortName">xr_din[7:0]</obj_property>
+         <obj_property name="ObjectShortName">xr_din[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/xr_dout" type="array">
+         <obj_property name="ElementShortName">xr_dout[7:0]</obj_property>
+         <obj_property name="ObjectShortName">xr_dout[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/acc_start" type="logic">
+         <obj_property name="ElementShortName">acc_start</obj_property>
+         <obj_property name="ObjectShortName">acc_start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/acc_done" type="logic">
+         <obj_property name="ElementShortName">acc_done</obj_property>
+         <obj_property name="ObjectShortName">acc_done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/acc_result" type="array">
+         <obj_property name="ElementShortName">acc_result[7:0]</obj_property>
+         <obj_property name="ObjectShortName">acc_result[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/s_axis_en" type="logic">
+         <obj_property name="ElementShortName">s_axis_en</obj_property>
+         <obj_property name="ObjectShortName">s_axis_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/m_axis_en" type="logic">
+         <obj_property name="ElementShortName">m_axis_en</obj_property>
+         <obj_property name="ObjectShortName">m_axis_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/wptr_div2" type="array">
+         <obj_property name="ElementShortName">wptr_div2[3:0]</obj_property>
+         <obj_property name="ObjectShortName">wptr_div2[3:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/N_W_HIDDEN" type="array">
+         <obj_property name="ElementShortName">N_W_HIDDEN[31:0]</obj_property>
+         <obj_property name="ObjectShortName">N_W_HIDDEN[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/N_W_OUTPUT" type="array">
+         <obj_property name="ElementShortName">N_W_OUTPUT[31:0]</obj_property>
+         <obj_property name="ObjectShortName">N_W_OUTPUT[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/N_X" type="array">
+         <obj_property name="ElementShortName">N_X[31:0]</obj_property>
+         <obj_property name="ObjectShortName">N_X[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/DATA_WIDTH" type="array">
+         <obj_property name="ElementShortName">DATA_WIDTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">DATA_WIDTH[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/INVALID_TOKEN" type="array">
+         <obj_property name="ElementShortName">INVALID_TOKEN[31:0]</obj_property>
+         <obj_property name="ObjectShortName">INVALID_TOKEN[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/PTR_WIDTH" type="array">
+         <obj_property name="ElementShortName">PTR_WIDTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">PTR_WIDTH[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/ACC_DATA_WIDTH" type="array">
+         <obj_property name="ElementShortName">ACC_DATA_WIDTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">ACC_DATA_WIDTH[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/WIDTH_W_HIDDEN" type="array">
+         <obj_property name="ElementShortName">WIDTH_W_HIDDEN[31:0]</obj_property>
+         <obj_property name="ObjectShortName">WIDTH_W_HIDDEN[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/WIDTH_W_OUTPUT" type="array">
+         <obj_property name="ElementShortName">WIDTH_W_OUTPUT[31:0]</obj_property>
+         <obj_property name="ObjectShortName">WIDTH_W_OUTPUT[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/WIDTH_X" type="array">
+         <obj_property name="ElementShortName">WIDTH_X[31:0]</obj_property>
+         <obj_property name="ObjectShortName">WIDTH_X[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group111" type="group">
+      <obj_property name="label">RAM_wh0</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh0/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh0/write_en" type="logic">
+         <obj_property name="ElementShortName">write_en</obj_property>
+         <obj_property name="ObjectShortName">write_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh0/read_en" type="logic">
+         <obj_property name="ElementShortName">read_en</obj_property>
+         <obj_property name="ObjectShortName">read_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh0/write_address" type="array">
+         <obj_property name="ElementShortName">write_address[2:0]</obj_property>
+         <obj_property name="ObjectShortName">write_address[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh0/read_address" type="array">
+         <obj_property name="ElementShortName">read_address[2:0]</obj_property>
+         <obj_property name="ObjectShortName">read_address[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh0/data_in" type="array">
+         <obj_property name="ElementShortName">data_in[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data_in[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh0/data_out" type="array">
+         <obj_property name="ElementShortName">data_out[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data_out[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh0/RAM" type="array">
+         <obj_property name="ElementShortName">RAM[0:7][7:0]</obj_property>
+         <obj_property name="ObjectShortName">RAM[0:7][7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="isExpanded"></obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh0/en" type="logic">
+         <obj_property name="ElementShortName">en</obj_property>
+         <obj_property name="ObjectShortName">en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh0/WIDTH" type="array">
+         <obj_property name="ElementShortName">WIDTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">WIDTH[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh0/DEPTH_BITS" type="array">
+         <obj_property name="ElementShortName">DEPTH_BITS[31:0]</obj_property>
+         <obj_property name="ObjectShortName">DEPTH_BITS[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group111" type="group">
+      <obj_property name="label">RAM_wh1</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh1/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh1/write_en" type="logic">
+         <obj_property name="ElementShortName">write_en</obj_property>
+         <obj_property name="ObjectShortName">write_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh1/read_en" type="logic">
+         <obj_property name="ElementShortName">read_en</obj_property>
+         <obj_property name="ObjectShortName">read_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh1/write_address" type="array">
+         <obj_property name="ElementShortName">write_address[2:0]</obj_property>
+         <obj_property name="ObjectShortName">write_address[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh1/read_address" type="array">
+         <obj_property name="ElementShortName">read_address[2:0]</obj_property>
+         <obj_property name="ObjectShortName">read_address[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh1/data_in" type="array">
+         <obj_property name="ElementShortName">data_in[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data_in[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh1/data_out" type="array">
+         <obj_property name="ElementShortName">data_out[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data_out[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh1/RAM" type="array">
+         <obj_property name="ElementShortName">RAM[0:7][7:0]</obj_property>
+         <obj_property name="ObjectShortName">RAM[0:7][7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh1/en" type="logic">
+         <obj_property name="ElementShortName">en</obj_property>
+         <obj_property name="ObjectShortName">en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh1/WIDTH" type="array">
+         <obj_property name="ElementShortName">WIDTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">WIDTH[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wh1/DEPTH_BITS" type="array">
+         <obj_property name="ElementShortName">DEPTH_BITS[31:0]</obj_property>
+         <obj_property name="ObjectShortName">DEPTH_BITS[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group114" type="group">
+      <obj_property name="label">RAM_wo</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/tb_project_ip/dut/u_wo/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wo/write_en" type="logic">
+         <obj_property name="ElementShortName">write_en</obj_property>
+         <obj_property name="ObjectShortName">write_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wo/read_en" type="logic">
+         <obj_property name="ElementShortName">read_en</obj_property>
+         <obj_property name="ObjectShortName">read_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wo/write_address" type="array">
+         <obj_property name="ElementShortName">write_address[1:0]</obj_property>
+         <obj_property name="ObjectShortName">write_address[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wo/read_address" type="array">
+         <obj_property name="ElementShortName">read_address[1:0]</obj_property>
+         <obj_property name="ObjectShortName">read_address[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wo/data_in" type="array">
+         <obj_property name="ElementShortName">data_in[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data_in[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wo/data_out" type="array">
+         <obj_property name="ElementShortName">data_out[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data_out[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wo/RAM" type="array">
+         <obj_property name="ElementShortName">RAM[0:3][7:0]</obj_property>
+         <obj_property name="ObjectShortName">RAM[0:3][7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wo/en" type="logic">
+         <obj_property name="ElementShortName">en</obj_property>
+         <obj_property name="ObjectShortName">en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wo/WIDTH" type="array">
+         <obj_property name="ElementShortName">WIDTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">WIDTH[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_wo/DEPTH_BITS" type="array">
+         <obj_property name="ElementShortName">DEPTH_BITS[31:0]</obj_property>
+         <obj_property name="ObjectShortName">DEPTH_BITS[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group115" type="group">
+      <obj_property name="label">RAM_xrow</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <wvobject fp_name="/tb_project_ip/dut/u_xrow/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_xrow/write_en" type="logic">
+         <obj_property name="ElementShortName">write_en</obj_property>
+         <obj_property name="ObjectShortName">write_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_xrow/read_en" type="logic">
+         <obj_property name="ElementShortName">read_en</obj_property>
+         <obj_property name="ObjectShortName">read_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_xrow/write_address" type="array">
+         <obj_property name="ElementShortName">write_address[2:0]</obj_property>
+         <obj_property name="ObjectShortName">write_address[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_xrow/read_address" type="array">
+         <obj_property name="ElementShortName">read_address[2:0]</obj_property>
+         <obj_property name="ObjectShortName">read_address[2:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_xrow/data_in" type="array">
+         <obj_property name="ElementShortName">data_in[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data_in[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_xrow/data_out" type="array">
+         <obj_property name="ElementShortName">data_out[7:0]</obj_property>
+         <obj_property name="ObjectShortName">data_out[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_xrow/RAM" type="array">
+         <obj_property name="ElementShortName">RAM[0:7][7:0]</obj_property>
+         <obj_property name="ObjectShortName">RAM[0:7][7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_xrow/en" type="logic">
+         <obj_property name="ElementShortName">en</obj_property>
+         <obj_property name="ObjectShortName">en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_xrow/WIDTH" type="array">
+         <obj_property name="ElementShortName">WIDTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">WIDTH[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_xrow/DEPTH_BITS" type="array">
+         <obj_property name="ElementShortName">DEPTH_BITS[31:0]</obj_property>
+         <obj_property name="ObjectShortName">DEPTH_BITS[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject fp_name="group176" type="group">
+      <obj_property name="label">accel</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/clk" type="logic">
+         <obj_property name="ElementShortName">clk</obj_property>
+         <obj_property name="ObjectShortName">clk</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/rst" type="logic">
+         <obj_property name="ElementShortName">rst</obj_property>
+         <obj_property name="ObjectShortName">rst</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/start" type="logic">
+         <obj_property name="ElementShortName">start</obj_property>
+         <obj_property name="ObjectShortName">start</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/done" type="logic">
+         <obj_property name="ElementShortName">done</obj_property>
+         <obj_property name="ObjectShortName">done</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/result" type="array">
+         <obj_property name="ElementShortName">result[7:0]</obj_property>
+         <obj_property name="ObjectShortName">result[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/wh0_read_en" type="logic">
+         <obj_property name="ElementShortName">wh0_read_en</obj_property>
+         <obj_property name="ObjectShortName">wh0_read_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/wh0_raddr" type="array">
+         <obj_property name="ElementShortName">wh0_raddr[2:0]</obj_property>
+         <obj_property name="ObjectShortName">wh0_raddr[2:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/wh0_dout" type="array">
+         <obj_property name="ElementShortName">wh0_dout[7:0]</obj_property>
+         <obj_property name="ObjectShortName">wh0_dout[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/wh1_read_en" type="logic">
+         <obj_property name="ElementShortName">wh1_read_en</obj_property>
+         <obj_property name="ObjectShortName">wh1_read_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/wh1_raddr" type="array">
+         <obj_property name="ElementShortName">wh1_raddr[2:0]</obj_property>
+         <obj_property name="ObjectShortName">wh1_raddr[2:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/wh1_dout" type="array">
+         <obj_property name="ElementShortName">wh1_dout[7:0]</obj_property>
+         <obj_property name="ObjectShortName">wh1_dout[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/wo_read_en" type="logic">
+         <obj_property name="ElementShortName">wo_read_en</obj_property>
+         <obj_property name="ObjectShortName">wo_read_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/wo_raddr" type="array">
+         <obj_property name="ElementShortName">wo_raddr[1:0]</obj_property>
+         <obj_property name="ObjectShortName">wo_raddr[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/wo_dout" type="array">
+         <obj_property name="ElementShortName">wo_dout[7:0]</obj_property>
+         <obj_property name="ObjectShortName">wo_dout[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/xr_read_en" type="logic">
+         <obj_property name="ElementShortName">xr_read_en</obj_property>
+         <obj_property name="ObjectShortName">xr_read_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/xr_raddr" type="array">
+         <obj_property name="ElementShortName">xr_raddr[2:0]</obj_property>
+         <obj_property name="ObjectShortName">xr_raddr[2:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/xr_dout" type="array">
+         <obj_property name="ElementShortName">xr_dout[7:0]</obj_property>
+         <obj_property name="ObjectShortName">xr_dout[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/cntr" type="array">
+         <obj_property name="ElementShortName">cntr[31:0]</obj_property>
+         <obj_property name="ObjectShortName">cntr[31:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FAAFBE</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/xr_dout_dly" type="array">
+         <obj_property name="ElementShortName">xr_dout_dly[7:0]</obj_property>
+         <obj_property name="ObjectShortName">xr_dout_dly[7:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/state" type="array">
+         <obj_property name="ElementShortName">state[1:0]</obj_property>
+         <obj_property name="ObjectShortName">state[1:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/mac0_en" type="logic">
+         <obj_property name="ElementShortName">mac0_en</obj_property>
+         <obj_property name="ObjectShortName">mac0_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/mac1_en" type="logic">
+         <obj_property name="ElementShortName">mac1_en</obj_property>
+         <obj_property name="ObjectShortName">mac1_en</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/mac0_clr" type="logic">
+         <obj_property name="ElementShortName">mac0_clr</obj_property>
+         <obj_property name="ObjectShortName">mac0_clr</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/mac1_clr" type="logic">
+         <obj_property name="ElementShortName">mac1_clr</obj_property>
+         <obj_property name="ObjectShortName">mac1_clr</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/mac0_a" type="array">
+         <obj_property name="ElementShortName">mac0_a[7:0]</obj_property>
+         <obj_property name="ObjectShortName">mac0_a[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/mac0_b" type="array">
+         <obj_property name="ElementShortName">mac0_b[7:0]</obj_property>
+         <obj_property name="ObjectShortName">mac0_b[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/mac1_a" type="array">
+         <obj_property name="ElementShortName">mac1_a[7:0]</obj_property>
+         <obj_property name="ObjectShortName">mac1_a[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FFA500</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/mac1_b" type="array">
+         <obj_property name="ElementShortName">mac1_b[7:0]</obj_property>
+         <obj_property name="ObjectShortName">mac1_b[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FFA500</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/mac0_out" type="array">
+         <obj_property name="ElementShortName">mac0_out[10:0]</obj_property>
+         <obj_property name="ObjectShortName">mac0_out[10:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#FFFF00</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/mac1_out" type="array">
+         <obj_property name="ElementShortName">mac1_out[10:0]</obj_property>
+         <obj_property name="ObjectShortName">mac1_out[10:0]</obj_property>
+         <obj_property name="CustomSignalColor">#FFA500</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/sigmoid_in" type="array">
+         <obj_property name="ElementShortName">sigmoid_in[7:0]</obj_property>
+         <obj_property name="ObjectShortName">sigmoid_in[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/sigmoid_out" type="array">
+         <obj_property name="ElementShortName">sigmoid_out[7:0]</obj_property>
+         <obj_property name="ObjectShortName">sigmoid_out[7:0]</obj_property>
+         <obj_property name="Radix">UNSIGNEDDECRADIX</obj_property>
+         <obj_property name="CustomSignalColor">#00FFFF</obj_property>
+         <obj_property name="UseCustomSignalColor">true</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/DATA_WIDTH" type="array">
+         <obj_property name="ElementShortName">DATA_WIDTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">DATA_WIDTH[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/N_W_HIDDEN" type="array">
+         <obj_property name="ElementShortName">N_W_HIDDEN[31:0]</obj_property>
+         <obj_property name="ObjectShortName">N_W_HIDDEN[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/N_W_OUTPUT" type="array">
+         <obj_property name="ElementShortName">N_W_OUTPUT[31:0]</obj_property>
+         <obj_property name="ObjectShortName">N_W_OUTPUT[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/N_X" type="array">
+         <obj_property name="ElementShortName">N_X[31:0]</obj_property>
+         <obj_property name="ObjectShortName">N_X[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/N_WH_PER_COL" type="array">
+         <obj_property name="ElementShortName">N_WH_PER_COL[31:0]</obj_property>
+         <obj_property name="ObjectShortName">N_WH_PER_COL[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/WH_ADDR_W" type="array">
+         <obj_property name="ElementShortName">WH_ADDR_W[31:0]</obj_property>
+         <obj_property name="ObjectShortName">WH_ADDR_W[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/WO_ADDR_W" type="array">
+         <obj_property name="ElementShortName">WO_ADDR_W[31:0]</obj_property>
+         <obj_property name="ObjectShortName">WO_ADDR_W[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/XR_ADDR_W" type="array">
+         <obj_property name="ElementShortName">XR_ADDR_W[31:0]</obj_property>
+         <obj_property name="ObjectShortName">XR_ADDR_W[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/MAC_N" type="array">
+         <obj_property name="ElementShortName">MAC_N[31:0]</obj_property>
+         <obj_property name="ObjectShortName">MAC_N[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/MAC_FIXED_PT" type="array">
+         <obj_property name="ElementShortName">MAC_FIXED_PT[31:0]</obj_property>
+         <obj_property name="ObjectShortName">MAC_FIXED_PT[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/MAC_OUT_WIDTH" type="array">
+         <obj_property name="ElementShortName">MAC_OUT_WIDTH[31:0]</obj_property>
+         <obj_property name="ObjectShortName">MAC_OUT_WIDTH[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_XR_READ_START" type="array">
+         <obj_property name="ElementShortName">C_XR_READ_START[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_XR_READ_START[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_WH0_READ_START" type="array">
+         <obj_property name="ElementShortName">C_WH0_READ_START[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_WH0_READ_START[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_WH1_READ_START" type="array">
+         <obj_property name="ElementShortName">C_WH1_READ_START[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_WH1_READ_START[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_XR_EN_START" type="array">
+         <obj_property name="ElementShortName">C_XR_EN_START[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_XR_EN_START[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_WH0_EN_START" type="array">
+         <obj_property name="ElementShortName">C_WH0_EN_START[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_WH0_EN_START[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_WH1_EN_START" type="array">
+         <obj_property name="ElementShortName">C_WH1_EN_START[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_WH1_EN_START[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_MAC0_START" type="array">
+         <obj_property name="ElementShortName">C_MAC0_START[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_MAC0_START[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_MAC1_START" type="array">
+         <obj_property name="ElementShortName">C_MAC1_START[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_MAC1_START[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_XR_READ_DONE" type="array">
+         <obj_property name="ElementShortName">C_XR_READ_DONE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_XR_READ_DONE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_WH0_READ_DONE" type="array">
+         <obj_property name="ElementShortName">C_WH0_READ_DONE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_WH0_READ_DONE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_WH1_READ_DONE" type="array">
+         <obj_property name="ElementShortName">C_WH1_READ_DONE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_WH1_READ_DONE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_XR_EN_DONE" type="array">
+         <obj_property name="ElementShortName">C_XR_EN_DONE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_XR_EN_DONE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_WH0_EN_DONE" type="array">
+         <obj_property name="ElementShortName">C_WH0_EN_DONE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_WH0_EN_DONE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_WH1_EN_DONE" type="array">
+         <obj_property name="ElementShortName">C_WH1_EN_DONE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_WH1_EN_DONE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_MAC0_DONE" type="array">
+         <obj_property name="ElementShortName">C_MAC0_DONE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_MAC0_DONE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_MAC1_DONE" type="array">
+         <obj_property name="ElementShortName">C_MAC1_DONE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_MAC1_DONE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_MAC0_EN_DONE" type="array">
+         <obj_property name="ElementShortName">C_MAC0_EN_DONE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_MAC0_EN_DONE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_MAC1_EN_DONE" type="array">
+         <obj_property name="ElementShortName">C_MAC1_EN_DONE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_MAC1_EN_DONE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_WO_READ_START" type="array">
+         <obj_property name="ElementShortName">C_WO_READ_START[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_WO_READ_START[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_WO_EN_START" type="array">
+         <obj_property name="ElementShortName">C_WO_EN_START[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_WO_EN_START[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_MAC0_START_R2" type="array">
+         <obj_property name="ElementShortName">C_MAC0_START_R2[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_MAC0_START_R2[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_WO_READ_DONE" type="array">
+         <obj_property name="ElementShortName">C_WO_READ_DONE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_WO_READ_DONE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_WO_EN_DONE" type="array">
+         <obj_property name="ElementShortName">C_WO_EN_DONE[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_WO_EN_DONE[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_MAC0_DONE_R2" type="array">
+         <obj_property name="ElementShortName">C_MAC0_DONE_R2[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_MAC0_DONE_R2[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_MAC0_EN_DONE_R2" type="array">
+         <obj_property name="ElementShortName">C_MAC0_EN_DONE_R2[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_MAC0_EN_DONE_R2[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_SIG_RES" type="array">
+         <obj_property name="ElementShortName">C_SIG_RES[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_SIG_RES[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/C_RES_THRESHOLD" type="array">
+         <obj_property name="ElementShortName">C_RES_THRESHOLD[31:0]</obj_property>
+         <obj_property name="ObjectShortName">C_RES_THRESHOLD[31:0]</obj_property>
+      </wvobject>
+      <wvobject fp_name="/tb_project_ip/dut/u_acc/ACC_LATENCY" type="array">
+         <obj_property name="ElementShortName">ACC_LATENCY[31:0]</obj_property>
+         <obj_property name="ObjectShortName">ACC_LATENCY[31:0]</obj_property>
+      </wvobject>
+   </wvobject>
+</wave_config>
